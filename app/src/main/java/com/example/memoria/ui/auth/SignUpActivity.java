@@ -2,6 +2,7 @@ package com.example.memoria.ui.auth;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Patterns;
 import android.widget.*;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,6 +16,12 @@ public class SignUpActivity extends AppCompatActivity {
     private EditText etEmail, etPassword, etConfirmPassword;
     private FirebaseAuth mAuth;
 
+    private TextView tvTabLogin;
+
+    private Button btnSignUp;
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,37 +32,74 @@ public class SignUpActivity extends AppCompatActivity {
         etEmail = findViewById(R.id.auth_signup_et_email);
         etPassword = findViewById(R.id.auth_signup_et_password);
         etConfirmPassword = findViewById(R.id.auth_signup_et_confirm_password);
-        Button btnSignUp = findViewById(R.id.auth_signup_btn_signup);
-        TextView tvTabLogin = findViewById(R.id.auth_signup_tv_tab_login);
+        btnSignUp = findViewById(R.id.auth_signup_btn_signup);
+        tvTabLogin = findViewById(R.id.auth_signup_tv_tab_login);
 
         btnSignUp.setOnClickListener(v -> {
             String email = etEmail.getText().toString().trim();
-            String pass = etPassword.getText().toString().trim();
+            String password = etPassword.getText().toString().trim();
             String confirmPass = etConfirmPassword.getText().toString().trim();
-            
-            if(email.isEmpty() || pass.isEmpty() || confirmPass.isEmpty()) {
-                Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            
-            if(!pass.equals(confirmPass)) {
-                Toast.makeText(this, "Passwords do not match", Toast.LENGTH_SHORT).show();
-                return;
+
+
+            if (checkValidInput(email, password, confirmPass)) {
+                registerUser(email, password);
             }
 
-            mAuth.createUserWithEmailAndPassword(email, pass).addOnCompleteListener(task -> {
-                if(task.isSuccessful()) {
-                    startActivity(new Intent(this, MainActivity.class));
-                    finish();
-                } else {
-                    Toast.makeText(this, "Sign Up Failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
         });
 
         tvTabLogin.setOnClickListener(v -> {
             finish();
             overridePendingTransition(0, 0);
         });
+    }
+
+    private boolean checkValidInput(String email, String password, String confirmPass) {
+        if (email.isEmpty()) {
+            etEmail.setError(getString(R.string.err_email_empty));
+            etEmail.requestFocus();
+            return false;
+        }
+
+        if (password.isEmpty()) {
+            etPassword.setError(getString(R.string.err_password_empty));
+            etPassword.requestFocus();
+            return false;
+        }
+
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            etEmail.setError(getString(R.string.err_email_invalid));
+            etEmail.requestFocus();
+            return false;
+        }
+
+        if (password.length() < 6) {
+            etPassword.setError(getString(R.string.err_password_short));
+            etPassword.requestFocus();
+            return false;
+        }
+
+        if (!password.equals(confirmPass)) {
+            etConfirmPassword.setError(getString(R.string.err_password_notMatch));
+            etConfirmPassword.requestFocus();
+            return false;
+        }
+
+        return true;
+    }
+
+    private void registerUser(String email, String password) {
+        // Hiện Loading (nếu muốn xịn)
+
+        mAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        Toast.makeText(this, getString(R.string.success_signup), Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(this, MainActivity.class));
+                        finishAffinity();
+                    } else {
+                        String errorMsg = task.getException() != null ? task.getException().getMessage() : getString(R.string.err_signup);
+                        Toast.makeText(this, errorMsg, Toast.LENGTH_LONG).show();
+                    }
+                });
     }
 }

@@ -16,4 +16,6 @@
     <string name="err_password_empty">Vui lòng nhập mật khẩu</string>
     <string name="err_password_short">Mật khẩu phải ít nhất 6 kí tự</string>
     <string name="err_password_notMatch">Mật khẩu không khớp</string>
+    <string name="success_signup">Đăng kí thành công</string>
+    <string name="err_signup">Đăng kí thất bại</string>
 </resources>

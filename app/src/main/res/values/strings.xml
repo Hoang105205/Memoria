@@ -17,6 +17,10 @@
     <string name="err_password_empty">Please enter your password</string>
     <string name="err_password_short">Password must be at least 6 characters</string>
     <string name="err_password_notMatch">Password does not match</string>
+
+    <string name="success_signup">Sign up successfully</string>
+    <string name="err_signup">Sign up failed</string>
+
     <!-- AUTH PAGE -->
 
 
