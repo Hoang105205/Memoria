@@ -8,5 +8,6 @@
     <string name="enter_email">Enter your email</string>
     <string name="password">Password</string>
     <string name="create_password">Create password</string>
+    <string name="confirm_password">Confirm password</string>
     <string name="copyright">© Nhom 08</string>
 </resources>
