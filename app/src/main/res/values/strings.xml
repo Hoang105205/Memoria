@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">Memoria</string>
-    <string name="welcome_back">Hey!\nWelcome Back</string>
+
+    <!-- AUTH PAGE -->
+    <string name="welcome_back">Hey! Welcome Back</string>
     <string name="join_now">Hey!\nJoin now</string>
     <string name="login">Login</string>
     <string name="sign_up">Sign Up</string>
@@ -9,5 +11,13 @@
     <string name="password">Password</string>
     <string name="create_password">Create password</string>
     <string name="confirm_password">Confirm password</string>
-    <string name="copyright">© Nhom 08</string>
+    <string name="copyright">© Team 08</string>
+    <string name="err_email_empty">Please enter your email</string>
+    <string name="err_email_invalid">Email is invalid</string>
+    <string name="err_password_empty">Please enter your password</string>
+    <string name="err_password_short">Password must be at least 6 characters</string>
+    <string name="err_password_notMatch">Password does not match</string>
+    <!-- AUTH PAGE -->
+
+
 </resources>
