@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">Memoria</string>
+    <string name="welcome_back">Hey!\nWelcome Back</string>
+    <string name="join_now">Hey!\nJoin now</string>
+    <string name="login">Login</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="email">Email</string>
+    <string name="enter_email">Enter your email</string>
+    <string name="password">Password</string>
+    <string name="create_password">Create password</string>
+    <string name="copyright">© Nhom 08</string>
 </resources>
