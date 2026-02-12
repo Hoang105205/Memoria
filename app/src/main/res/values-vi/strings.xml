@@ -18,4 +18,6 @@
     <string name="err_password_notMatch">Mật khẩu không khớp</string>
     <string name="success_signup">Đăng kí thành công</string>
     <string name="err_signup">Đăng kí thất bại</string>
+    <string name="success_login">Đăng nhập thành công</string>
+    <string name="err_login">Đăng nhập thất bại</string>
 </resources>

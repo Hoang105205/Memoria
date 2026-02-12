@@ -3,6 +3,7 @@ package com.example.memoria.ui.auth;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Patterns;
+import android.view.View;
 import android.widget.*;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,12 +16,8 @@ public class SignUpActivity extends AppCompatActivity {
 
     private EditText etEmail, etPassword, etConfirmPassword;
     private FirebaseAuth mAuth;
-
-    private TextView tvTabLogin;
-
     private Button btnSignUp;
-
-
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,18 +30,17 @@ public class SignUpActivity extends AppCompatActivity {
         etPassword = findViewById(R.id.auth_signup_et_password);
         etConfirmPassword = findViewById(R.id.auth_signup_et_confirm_password);
         btnSignUp = findViewById(R.id.auth_signup_btn_signup);
-        tvTabLogin = findViewById(R.id.auth_signup_tv_tab_login);
+        TextView tvTabLogin = findViewById(R.id.auth_signup_tv_tab_login);
+        progressBar = findViewById(R.id.auth_signup_progressBar);
 
         btnSignUp.setOnClickListener(v -> {
             String email = etEmail.getText().toString().trim();
             String password = etPassword.getText().toString().trim();
             String confirmPass = etConfirmPassword.getText().toString().trim();
 
-
             if (checkValidInput(email, password, confirmPass)) {
                 registerUser(email, password);
             }
-
         });
 
         tvTabLogin.setOnClickListener(v -> {
@@ -88,10 +84,11 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
     private void registerUser(String email, String password) {
-        // Hiện Loading (nếu muốn xịn)
+        setLoading(true);
 
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, task -> {
+                    setLoading(false);
                     if (task.isSuccessful()) {
                         Toast.makeText(this, getString(R.string.success_signup), Toast.LENGTH_SHORT).show();
                         startActivity(new Intent(this, MainActivity.class));
@@ -101,5 +98,15 @@ public class SignUpActivity extends AppCompatActivity {
                         Toast.makeText(this, errorMsg, Toast.LENGTH_LONG).show();
                     }
                 });
+    }
+
+    private void setLoading(boolean isLoading) {
+        if (isLoading) {
+            progressBar.setVisibility(View.VISIBLE);
+            btnSignUp.setEnabled(false);
+        } else {
+            progressBar.setVisibility(View.GONE);
+            btnSignUp.setEnabled(true);
+        }
     }
 }

@@ -21,6 +21,9 @@
     <string name="success_signup">Sign up successfully</string>
     <string name="err_signup">Sign up failed</string>
 
+    <string name="success_login">Log in successfully</string>
+    <string name="err_login">Log in failed</string>
+
     <!-- AUTH PAGE -->
 
 
