@@ -31,6 +31,7 @@ public class LoginActivity extends AppCompatActivity {
         etPassword = findViewById(R.id.auth_login_et_password);
         btnLogin = findViewById(R.id.auth_login_btn_login);
         TextView tvTabSignup = findViewById(R.id.auth_login_tv_tab_signup);
+        TextView tvForgotPassword = findViewById(R.id.auth_login_tv_forgot_password);
         progressBar = findViewById(R.id.auth_login_progressBar);
 
         btnLogin.setOnClickListener(v -> {
@@ -44,6 +45,11 @@ public class LoginActivity extends AppCompatActivity {
 
         tvTabSignup.setOnClickListener(v -> {
             startActivity(new Intent(this, SignUpActivity.class));
+            overridePendingTransition(0, 0);
+        });
+
+        tvForgotPassword.setOnClickListener(v -> {
+            startActivity(new Intent(this, ForgotPasswordActivity.class));
             overridePendingTransition(0, 0);
         });
     }
