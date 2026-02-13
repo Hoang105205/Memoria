@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Memoria</string>
+    <string name="welcome_back">Chào mừng bạn trở lại!</string>
+    <string name="join_now">Tham gia ngay nào!</string>
+    <string name="forgot_password_title">Quên mật khẩu?</string>
+    <string name="login">Đăng nhập</string>
+    <string name="sign_up">Đăng kí</string>
+    <string name="email">Email</string>
+    <string name="enter_email">Nhập email của bạn</string>
+    <string name="password">Mật khẩu</string>
+    <string name="create_password">Tạo mật khẩu</string>
+    <string name="confirm_password">Nhập lại mật khẩu</string>
+    <string name="back_to_login">Quay lại đăng nhập</string>
+    <string name="copyright">© Team 08</string>
+    <string name="msg_reset_password">Một đường link đã được gửi tới email của bạn! Vui lòng kiểm tra thư mục rác</string>
+    <string name="err_email_empty">Vui lòng nhập email</string>
+    <string name="err_email_invalid">Email không hợp lệ</string>
+    <string name="err_password_empty">Vui lòng nhập mật khẩu</string>
+    <string name="err_password_short">Mật khẩu phải ít nhất 6 kí tự</string>
+    <string name="err_password_notMatch">Mật khẩu không khớp</string>
+    <string name="success_signup">Đăng kí thành công</string>
+    <string name="err_signup">Đăng kí thất bại</string>
+    <string name="err_forgot_password">Yêu cầu đặt lại mật khẩu thật bại</string>
+    <string name="success_login">Đăng nhập thành công</string>
+    <string name="err_login">Đăng nhập thất bại</string>
+    <string name="forgot_password">Quên mật khẩu?</string>
+    <string name="reset_password">Thiết lập lại mật khẩu</string>
+    <string name="success_forgot_password">Đã gửi email đặt lại! Hãy kiểm tra email của bạn</string>
+    <string name="title_reset_password">Yêu cầu đặt lại mật khẩu</string>
+</resources>

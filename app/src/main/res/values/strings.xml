@@ -1,3 +1,37 @@
 <resources>
+
+    <!-- Auth -->
     <string name="app_name">Memoria</string>
+    <string name="welcome_back">Hey!\nWelcome Back</string>
+    <string name="join_now">Hey!\nJoin now</string>
+    <string name="forgot_password_title">Forgot\nPassword?</string>
+    <string name="login">Login</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="email">Email</string>
+    <string name="enter_email">Enter your email</string>
+    <string name="password">Password</string>
+    <string name="create_password">Create password</string>
+    <string name="confirm_password">Confirm password</string>
+    <string name="forgot_password">Forgot password?</string>
+    <string name="reset_password">Reset Password</string>
+    <string name="back_to_login">Back to Login</string>
+    <string name="copyright">© Nhom 08</string>
+    <string name="title_reset_password">Reset Password</string>
+    <string name="msg_reset_password">A reset link has been sent to your email address.</string>
+
+    <!-- Error messages -->
+    <string name="err_email_empty">Email cannot be empty</string>
+    <string name="err_email_invalid">Invalid email format</string>
+    <string name="err_password_empty">Password cannot be empty</string>
+    <string name="err_password_short">Password must be at least 6 characters</string>
+    <string name="err_password_notMatch">Passwords do not match</string>
+    <string name="err_login">Login failed</string>
+    <string name="err_signup">Sign up failed</string>
+    <string name="err_forgot_password">Request to reset password failed</string>
+
+    <!-- Success messages -->
+    <string name="success_login">Login successful</string>
+    <string name="success_signup">Sign up successful</string>
+    <string name="success_forgot_password">Reset email sent!</string>
+    <!-- Auth -->
 </resources>
