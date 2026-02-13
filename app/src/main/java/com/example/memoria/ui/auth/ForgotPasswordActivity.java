@@ -1,13 +1,16 @@
 package com.example.memoria.ui.auth;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.*;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.memoria.R;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class ForgotPasswordActivity extends AppCompatActivity {
@@ -63,12 +66,24 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         mAuth.sendPasswordResetEmail(email).addOnCompleteListener(task -> {
             setLoading(false);
             if (task.isSuccessful()) {
-                Toast.makeText(this, getString(R.string.success_forgot_password), Toast.LENGTH_SHORT).show();
-                finish();
+                showSuccessDialog();
             } else {
-                Toast.makeText(this, getString(R.string.err_forgot_password), Toast.LENGTH_SHORT).show();
+                showSnackbar(getString(R.string.err_forgot_password));
             }
         });
+    }
+
+    private void showSuccessDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle(getString(R.string.title_reset_password))
+                .setMessage(getString(R.string.msg_reset_password))
+                .setPositiveButton("OK", (dialog, which) -> finish())
+                .setCancelable(false)
+                .show();
+    }
+
+    private void showSnackbar(String message) {
+        Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_SHORT).show();
     }
 
     private void setLoading(boolean isLoading) {

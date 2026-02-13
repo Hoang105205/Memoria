@@ -16,6 +16,8 @@
     <string name="reset_password">Reset Password</string>
     <string name="back_to_login">Back to Login</string>
     <string name="copyright">© Nhom 08</string>
+    <string name="title_reset_password">Reset Password</string>
+    <string name="msg_reset_password">A reset link has been sent to your email address.</string>
 
     <!-- Error messages -->
     <string name="err_email_empty">Email cannot be empty</string>

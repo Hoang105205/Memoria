@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.memoria.MainActivity;
 import com.example.memoria.R;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class SignUpActivity extends AppCompatActivity {
@@ -90,14 +91,22 @@ public class SignUpActivity extends AppCompatActivity {
                 .addOnCompleteListener(this, task -> {
                     setLoading(false);
                     if (task.isSuccessful()) {
-                        Toast.makeText(this, getString(R.string.success_signup), Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(this, MainActivity.class));
-                        finishAffinity();
+                        showSnackbar(getString(R.string.success_signup));
+                        goToMainActivity();
                     } else {
-                        String errorMsg = task.getException() != null ? task.getException().getMessage() : getString(R.string.err_signup);
-                        Toast.makeText(this, errorMsg, Toast.LENGTH_LONG).show();
+                        showSnackbar(task.getException() != null ? task.getException().getMessage() : getString(R.string.err_signup));
                     }
                 });
+    }
+
+    private void showSnackbar(String message) {
+        Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_SHORT).show();
+    }
+
+    private void goToMainActivity() {
+        Intent intent = new Intent(SignUpActivity.this, MainActivity.class);
+        startActivity(intent);
+        finishAffinity();
     }
 
     private void setLoading(boolean isLoading) {

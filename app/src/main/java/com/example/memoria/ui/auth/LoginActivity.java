@@ -1,6 +1,7 @@
 package com.example.memoria.ui.auth;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Patterns;
 import android.view.View;
@@ -10,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.memoria.MainActivity;
 import com.example.memoria.R;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -99,12 +101,16 @@ public class LoginActivity extends AppCompatActivity {
                     setLoading(false);
 
                     if (task.isSuccessful()) {
-                        Toast.makeText(LoginActivity.this, getString(R.string.success_login), Toast.LENGTH_SHORT).show();
+                        showSnackbar(getString(R.string.success_login));
                         goToMainActivity();
                     } else {
-                        Toast.makeText(LoginActivity.this, getString(R.string.err_login), Toast.LENGTH_SHORT).show();
+                        showSnackbar(getString(R.string.err_login));
                     }
                 });
+    }
+
+    private void showSnackbar(String message) {
+        Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_SHORT).show();
     }
 
     private void goToMainActivity() {

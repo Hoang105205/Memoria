@@ -13,6 +13,7 @@
     <string name="confirm_password">Nhập lại mật khẩu</string>
     <string name="back_to_login">Quay lại đăng nhập</string>
     <string name="copyright">© Team 08</string>
+    <string name="msg_reset_password">Một đường link đã được gửi tới email của bạn! Vui lòng kiểm tra thư mục rác</string>
     <string name="err_email_empty">Vui lòng nhập email</string>
     <string name="err_email_invalid">Email không hợp lệ</string>
     <string name="err_password_empty">Vui lòng nhập mật khẩu</string>
@@ -26,4 +27,5 @@
     <string name="forgot_password">Quên mật khẩu?</string>
     <string name="reset_password">Thiết lập lại mật khẩu</string>
     <string name="success_forgot_password">Đã gửi email đặt lại! Hãy kiểm tra email của bạn</string>
+    <string name="title_reset_password">Yêu cầu đặt lại mật khẩu</string>
 </resources>
