@@ -34,4 +34,9 @@
     <string name="success_signup">Sign up successful</string>
     <string name="success_forgot_password">Reset email sent!</string>
     <!-- Auth -->
+
+    <!-- Mockup -->
+    <string name="mockup_flashcard_1" translatable="false">Scrumptious</string>
+    <string name="mockup_flashcard_2" translatable="false">(noun)</string>
+    <string name="mockup_flashcard_3" translatable="false">• (Of food) Very delicious\n\n• (Of a person) Very attractive</string>
 </resources>
