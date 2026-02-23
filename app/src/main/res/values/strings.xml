@@ -33,5 +33,9 @@
     <string name="success_login">Login successful</string>
     <string name="success_signup">Sign up successful</string>
     <string name="success_forgot_password">Reset email sent!</string>
+    <string name="home">Home</string>
+    <string name="search">Search</string>
+    <string name="library">Library</string>
+    <string name="profile">Profile</string>
     <!-- Auth -->
 </resources>
