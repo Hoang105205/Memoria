@@ -14,6 +14,8 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import com.example.memoria.ui.study.LearnFragment;
+
 public class MainActivity extends AppCompatActivity {
 
     @Override
