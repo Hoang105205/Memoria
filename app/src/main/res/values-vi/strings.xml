@@ -28,4 +28,8 @@
     <string name="reset_password">Thiết lập lại mật khẩu</string>
     <string name="success_forgot_password">Đã gửi email đặt lại! Hãy kiểm tra email của bạn</string>
     <string name="title_reset_password">Yêu cầu đặt lại mật khẩu</string>
+    <string name="home">Trang chủ</string>
+    <string name="search">Tra cứu</string>
+    <string name="library">Thư viện</string>
+    <string name="profile">Hồ sơ</string>
 </resources>

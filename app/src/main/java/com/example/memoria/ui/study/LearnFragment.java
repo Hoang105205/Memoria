@@ -47,10 +47,10 @@ public class LearnFragment extends Fragment {
     private void flipCard() {
         final float originalElevation = cardFlashcard.getCardElevation();
 
-        ObjectAnimator flipOut = ObjectAnimator.ofFloat(cardFlashcard, "rotationY", 0f, 90f);
+        ObjectAnimator flipOut = ObjectAnimator.ofFloat(cardFlashcard, "rotationY", 0f, -90f);
         flipOut.setDuration(150);
 
-        ObjectAnimator flipIn = ObjectAnimator.ofFloat(cardFlashcard, "rotationY", -90f, 0f);
+        ObjectAnimator flipIn = ObjectAnimator.ofFloat(cardFlashcard, "rotationY", 90f, 0f);
         flipIn.setDuration(150);
 
         flipOut.addListener(new AnimatorListenerAdapter() {
