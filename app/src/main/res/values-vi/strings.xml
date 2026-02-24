@@ -32,4 +32,7 @@
     <string name="search">Tra cứu</string>
     <string name="library">Thư viện</string>
     <string name="profile">Hồ sơ</string>
+    <string name="remember_flashcard">NHỚ</string>
+    <string name="forgot_flashcard">QUÊN</string>
+    <string name="mockup_flashcard">Chúc mừng! Bạn đã học hết bài.</string>
 </resources>
