@@ -40,7 +40,7 @@
     <!-- Auth -->
 
     <!-- Mockup -->
-    <string name="mockup_flashcard_1" translatable="false">Scrumptious</string>
-    <string name="mockup_flashcard_2" translatable="false">(noun)</string>
-    <string name="mockup_flashcard_3" translatable="false">• (Of food) Very delicious\n\n• (Of a person) Very attractive</string>
+    <string name="remember_flashcard">REMEMBER</string>
+    <string name="forgot_flashcard">FORGOT</string>
+    <string name="mockup_flashcard">Congratulation! You have done the quiz.</string>
 </resources>
