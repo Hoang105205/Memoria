@@ -38,4 +38,7 @@ public class QuizHistory {
 
     @ColumnInfo(name = "expire_at")
     private Date expireAt;
+
+    @ColumnInfo(name = "firestore_id")
+    private String firestoreId;
 }
