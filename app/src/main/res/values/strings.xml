@@ -43,4 +43,8 @@
     <string name="remember_flashcard">REMEMBER</string>
     <string name="forgot_flashcard">FORGOT</string>
     <string name="mockup_flashcard">Congratulation! You have done the quiz.</string>
+
+    <!-- Search -->
+    <string name="camera" translatable="false">Camera</string>
+    <string name="microphone" translatable="false">Microphone</string>
 </resources>
