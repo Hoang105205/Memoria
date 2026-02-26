@@ -52,4 +52,8 @@
 
     <string name="lang_en">English</string>
     <string name="lang_vi">Vietnamese</string>
+
+    <!-- Search -->
+    <string name="camera" translatable="false">Camera</string>
+    <string name="microphone" translatable="false">Microphone</string>
 </resources>
