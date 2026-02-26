@@ -5,4 +5,8 @@
     <color name="input_background">#FFF8F2</color>
     <color name="text_primary">#1A1C1E</color>
     <color name="text_hint">#666666</color>
+    <color name="profile_gradient_start">#4E7DFF</color>
+    <color name="profile_gradient_end">#A664FF</color>
+    <color name="progress_card_bg_1">#F8EFFF</color>
+    <color name="progress_card_bg_2">#FFFCE0</color>
 </resources>
