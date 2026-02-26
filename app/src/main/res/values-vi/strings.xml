@@ -35,4 +35,12 @@
     <string name="remember_flashcard">NHỚ</string>
     <string name="forgot_flashcard">QUÊN</string>
     <string name="mockup_flashcard">Chúc mừng! Bạn đã học hết bài.</string>
+    <string name="edit_profile">Chỉnh sửa</string>
+    <string name="progress">Tiến trình</string>
+    <string name="words_learn_today">từ đã học hôm nay</string>
+    <string name="days_streak">ngày chuỗi</string>
+    <string name="setting">Cài đặt</string>
+    <string name="sign_out">Đăng xuất</string>
+    <string name="lang_en">Tiếng Anh</string>
+    <string name="lang_vi">Tiếng Việt</string>
 </resources>

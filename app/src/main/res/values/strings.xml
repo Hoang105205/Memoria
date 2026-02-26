@@ -43,6 +43,15 @@
     <string name="remember_flashcard">REMEMBER</string>
     <string name="forgot_flashcard">FORGOT</string>
     <string name="mockup_flashcard">Congratulation! You have done the quiz.</string>
+    <string name="edit_profile">Edit profile</string>
+    <string name="progress">Progress</string>
+    <string name="words_learn_today">words learn today</string>
+    <string name="days_streak">days streak</string>
+    <string name="setting">Setting</string>
+    <string name="sign_out">Sign out</string>
+
+    <string name="lang_en">English</string>
+    <string name="lang_vi">Vietnamese</string>
 
     <!-- Search -->
     <string name="camera" translatable="false">Camera</string>
