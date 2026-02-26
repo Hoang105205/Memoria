@@ -43,4 +43,8 @@
     <string name="mockup_flashcard_1" translatable="false">Scrumptious</string>
     <string name="mockup_flashcard_2" translatable="false">(noun)</string>
     <string name="mockup_flashcard_3" translatable="false">• (Of food) Very delicious\n\n• (Of a person) Very attractive</string>
+
+    <!-- Search -->
+    <string name="camera" translatable="false">Camera</string>
+    <string name="microphone" translatable="false">Microphone</string>
 </resources>
