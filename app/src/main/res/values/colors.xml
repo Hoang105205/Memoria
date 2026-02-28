@@ -9,4 +9,11 @@
     <color name="profile_gradient_end">#A664FF</color>
     <color name="progress_card_bg_1">#F8EFFF</color>
     <color name="progress_card_bg_2">#FFFCE0</color>
+    // Library
+    <color name="bg_screen">#F5F5F5</color>
+    <color name="text_secondary">#757575</color>
+    <color name="blue_primary">#4A90E2</color>
+    <color name="progress_track">#E0E0E0</color>
+    <color name="white">#FFFFFF</color>
+    <color name="bg_detail_header">#FFF0F5</color>
 </resources>
