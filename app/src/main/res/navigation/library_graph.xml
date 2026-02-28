@@ -10,4 +10,10 @@
         android:name="com.example.memoria.ui.library.LibraryFragment"
         android:label="fragment_library"
         tools:layout="@layout/fragment_library" />
+
+    <fragment
+        android:id="@+id/favDetailFragment"
+        android:name="com.example.memoria.ui.library.FavDetailFragment"
+        android:label="FavDetailFragment"
+        tools:layout="@layout/fragment_fav_detail" />
 </navigation>

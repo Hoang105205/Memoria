@@ -43,4 +43,21 @@
     <string name="sign_out">Đăng xuất</string>
     <string name="lang_en">Tiếng Anh</string>
     <string name="lang_vi">Tiếng Việt</string>
+    <string name="title_library">Thư Viện</string>
+    <string name="tab_collections">Bộ Sưu Tập</string>
+    <string name="tab_decks">Bộ Thẻ</string>
+    <string name="hint_search">Tìm kiếm...</string>
+    <string name="card_count">thẻ</string>
+    <string name="empty_deck">Bộ thẻ trống</string>
+    <string name="deck_progress">%1$d/%2$d</string>
+    <string name="word_count">%1$d từ</string>
+    <string name="action_edit_name">Sửa tên</string>
+    <string name="action_delete">Xóa</string>
+    <string name="action_save">Lưu</string>
+    <string name="action_cancel">Hủy</string>
+    <string name="desc_edit_options">Tùy chọn chỉnh sửa</string>
+    <string name="dialog_title_edit_folder_name">Đổi tên bộ sưu tập</string>
+    <string name="dialog_hint_folder_name">Nhập tên mới</string>
+    <string name="dialog_title_delete_folder">Xóa bộ sưu tập?</string>
+    <string name="dialog_message_delete_folder">Bạn có chắc chắn muốn xóa?</string>
 </resources>
