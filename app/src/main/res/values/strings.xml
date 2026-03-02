@@ -56,4 +56,13 @@
     <!-- Search -->
     <string name="camera" translatable="false">Camera</string>
     <string name="microphone" translatable="false">Microphone</string>
+    <string name="next">Next</string>
+    <string name="instant_word_lookup">Instant Word Lookup</string>
+    <string name="instant_word_lookup_des">Access a comprehensive dictionary with precise definitions, phonetics, and real-world examples.</string>
+    <string name="master_vocabulary">Master Vocabulary</string>
+    <string name="personalized_learning">Personalized Learning</string>
+    <string name="personalized_learning_des">Create custom decks, organize your vocabulary, and track your daily progress.</string>
+    <string name="master_vocabulary_des">Retain words longer using our scientific Spaced Repetition flashcard system.</string>
+    <string name="get_started">Get Started</string>
+    <string name="later">Later</string>
 </resources>
