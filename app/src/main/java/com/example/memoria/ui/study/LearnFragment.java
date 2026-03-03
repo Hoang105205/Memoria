@@ -10,31 +10,50 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.memoria.data.model.Card;
+import com.example.memoria.data.repository.CardRepository;
+
 import android.annotation.SuppressLint;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
 
 import com.example.memoria.R;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.UUID;
 
 public class LearnFragment extends Fragment {
 
+    private final UUID currentDeckId;
+    private static CardRepository localCardRepo;
     private CardView cardTop, cardBottom;
     private TextView tvBadgeRemember, tvBadgeForgot;
     private View vBackgroundRemember, vBackgroundForgot;
     private TextView tvEmpty;
 
-    private List<Map<String, Object>> flashcardList;
+    private List<Card> flashcardList;
+
     private int currentIndex = 0;
 
     private float startX;
     private static final int CLICK_THRESHOLD = 15;
+
+    public LearnFragment(UUID currentDeckId) {
+        this.currentDeckId = currentDeckId;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if (localCardRepo == null) {
+            localCardRepo = new CardRepository(requireActivity().getApplication());
+        }
+    }
 
     @Nullable
     @Override
@@ -54,51 +73,36 @@ public class LearnFragment extends Fragment {
         cardTop.setCameraDistance(8000 * scale);
         cardBottom.setCameraDistance(8000 * scale);
 
-        initMockData();
-        loadCards();
+        initCardData();
 
         setupTouchListener();
 
         return view;
     }
 
-    private void initMockData() {
-        flashcardList = new ArrayList<>();
+    private void initCardData() {
+        LiveData<List<Card>> liveData = localCardRepo.getCardsByDeckId(currentDeckId);
+        liveData.observe(getViewLifecycleOwner(), cardsFromDB -> {
+            if (cardsFromDB == null) return;
 
-        Map<String, Object> c1 = new HashMap<>();
-        c1.put("front", "Scrumptious");
-        c1.put("back", "Ngon tuyệt");
-        c1.put("type", "(adj)");
-        c1.put("def", "• (Of food) Very delicious\n\n• (Of a person) Very attractive");
-        flashcardList.add(c1);
+            flashcardList = new ArrayList<>();
+            long currentTime = System.currentTimeMillis();
+            long oneDayMillis = 24 * 60 * 60 * 1000L;
 
-        Map<String, Object> c2 = new HashMap<>();
-        c2.put("front", "Serendipity");
-        c2.put("back", "Tình cờ");
-        c2.put("type", "(noun)");
-        c2.put("def", "• The occurrence of events by chance in a happy or beneficial way\n\n• (Context) Good luck in finding valuable things one was not looking for");
-        flashcardList.add(c2);
+            for (Card card : cardsFromDB) {
+                long lastReviewTime = card.getLastReviewAt() != null ? card.getLastReviewAt().getTime() : 0;
+                long nextReviewTime = lastReviewTime + ((long) card.getIntervalDays() * oneDayMillis);
 
-        Map<String, Object> c3 = new HashMap<>();
-        c3.put("front", "Petrichor");
-        c3.put("back", "Mùi đất mưa");
-        c3.put("type", "(noun)");
-        c3.put("def", "• A pleasant smell that frequently accompanies the first rain after a long period of warm, dry weather\n\n• (Context) The distinct scent of rain on dry earth");
-        flashcardList.add(c3);
+                if (nextReviewTime <= currentTime) {
+                    flashcardList.add(card);
+                }
+            }
 
-        Map<String, Object> c4 = new HashMap<>();
-        c4.put("front", "Ephemeral");
-        c4.put("back", "Phù du");
-        c4.put("type", "(adj)");
-        c4.put("def", "• Lasting for a very short time\n\n• (Of plants) Having a very short life cycle");
-        flashcardList.add(c4);
+            loadCards();
 
-        Map<String, Object> c5 = new HashMap<>();
-        c5.put("front", "Ineffable");
-        c5.put("back", "Không thốt nên lời");
-        c5.put("type", "(adj)");
-        c5.put("def", "• Too great or extreme to be expressed in words\n\n• (Of a name) Too sacred to be spoken");
-        flashcardList.add(c5);
+            // Ngắt kết nối để tránh lỗi cập nhật liên tục
+            liveData.removeObservers(getViewLifecycleOwner());
+        });
     }
 
     private void loadCards() {
@@ -127,18 +131,28 @@ public class LearnFragment extends Fragment {
         }
     }
 
-    private void bindDataToView(View cardView, Map<String, Object> data) {
+    private void bindDataToView(View cardView, Card data) {
         if (cardView == null) return;
+
+        List<String> types = data.getBackTypes();
+        List<String> meanings = data.getBackMeanings();
+        int len = meanings.size();
+        StringBuilder backText = new StringBuilder();
+        for (int i = 0; i < len; i++) {
+            backText.append(String.format("• %s - %s", types.get(i), meanings.get(i)));
+
+            if (i < len - 1) {
+                backText.append("\n\n");
+            }
+        }
 
         TextView tvFront = cardView.findViewById(R.id.tv_word_front);
         TextView tvBack = cardView.findViewById(R.id.tv_word_back);
-        TextView tvType = cardView.findViewById(R.id.tv_type);
         TextView tvDef = cardView.findViewById(R.id.tv_definition);
 
-        if (tvFront != null) tvFront.setText((String) data.get("front"));
-        if (tvBack != null) tvBack.setText((String) data.get("back"));
-        if (tvType != null) tvType.setText((String) data.get("type"));
-        if (tvDef != null) tvDef.setText((String) data.get("def"));
+        if (tvFront != null) tvFront.setText(data.getFrontText());
+        if (tvBack != null) tvBack.setText(data.getFrontText());
+        if (tvDef != null) tvDef.setText(backText.toString());
 
         View front = cardView.findViewById(R.id.layout_front);
         View back = cardView.findViewById(R.id.layout_back);
@@ -240,13 +254,30 @@ public class LearnFragment extends Fragment {
                 .setListener(new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
+                        Card currentCard = flashcardList.get(currentIndex);
+
+                        // targetX > 0: Right (Remember)
+                        int quality = (targetX > 0) ? 4 : 1;
+
+                        processCardReview(currentCard, quality);
+
                         currentIndex++;
                         loadCards();
-
-                        // TODO: Lưu vào Database ở đây (Nhớ/Quên dựa vào targetX > 0 hay < 0)
                     }
                 })
                 .start();
+    }
+
+    private void processCardReview(Card card, int quality) {
+        String word = card.getFrontText();
+
+        if (quality == 4) {
+            // TODO: Mô phỏng: Set next_review_date lên 3 ngày sau
+        } else {
+            // TODO: Mô phỏng: Set next_review_date về 1 phút sau để học lại ngay
+        }
+
+        // TODO: GỌI DAO LƯU DATABASE
     }
 
     private void flipCard(CardView card) {
