@@ -5,6 +5,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -16,7 +19,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.memoria.R;
-import com.google.android.material.slider.Slider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,10 +26,11 @@ import java.util.List;
 public class SearchResultFragment extends Fragment {
 
     private SearchViewModel viewModel;
-    private TextView tvWord, tvPhonetic, tvSpeedLabel;
+    private TextView tvWord, tvPhonetic;
     private RecyclerView rvMeanings;
     private SearchWordResultAdapter adapter;
-    private Slider speedSlider;
+    private AutoCompleteTextView actvSpeed;
+    private ImageButton btnFavorite, btnSave, btnPlay;
 
     @Nullable
     @Override
@@ -42,13 +45,24 @@ public class SearchResultFragment extends Fragment {
         // Khởi tạo UI
         tvWord = view.findViewById(R.id.tv_result_word);
         tvPhonetic = view.findViewById(R.id.tv_result_phonetic);
-        tvSpeedLabel = view.findViewById(R.id.tv_speed_label);
         rvMeanings = view.findViewById(R.id.rv_result_meanings);
-        speedSlider = view.findViewById(R.id.slider_speed);
+        actvSpeed = view.findViewById(R.id.actv_speed);
+        btnFavorite = view.findViewById(R.id.btn_result_favorite);
+        btnSave = view.findViewById(R.id.btn_result_save);
+        btnPlay = view.findViewById(R.id.btn_play_audio);
 
         adapter = new SearchWordResultAdapter();
         rvMeanings.setLayoutManager(new LinearLayoutManager(requireContext()));
         rvMeanings.setAdapter(adapter);
+
+        // Setup Speed Dropdown
+        String[] speeds = {"0.5x", "1x", "1.5x"};
+        ArrayAdapter<String> speedAdapter = new ArrayAdapter<>(requireContext(),
+                android.R.layout.simple_dropdown_item_1line, speeds);
+        actvSpeed.setAdapter(speedAdapter);
+        actvSpeed.setOnItemClickListener((parent, v, position, id) -> {
+            Log.d("TTS", "Speed changed to: " + speeds[position]);
+        });
 
         // Sử dụng requireActivity() để dùng chung ViewModel với SearchFragment
         viewModel = new ViewModelProvider(requireActivity()).get(SearchViewModel.class);
@@ -61,23 +75,10 @@ public class SearchResultFragment extends Fragment {
             Navigation.findNavController(view).popBackStack();
         });
 
-        // Nút Save to favorites
-        view.findViewById(R.id.btn_result_save).setOnClickListener(v -> {
-            Log.d("SAVE", "Save to favorites clicked");
-            // BottomSheetDialogFragment will be implemented here later
-        });
-
-        // UI chỉnh tốc độ (Speed Slider)
-        speedSlider.addOnChangeListener((slider, value, fromUser) -> {
-            String speed = String.format("%.1fx", value);
-            tvSpeedLabel.setText(speed);
-            Log.d("TTS", "Speed set to: " + speed);
-        });
-
-        view.findViewById(R.id.fab_play_audio).setOnClickListener(v -> {
-            Log.d("TTS", "Play audio triggered");
-            // Sau này bạn sẽ implement TTS tại đây
-        });
+        // Action listeners
+        btnFavorite.setOnClickListener(v -> Log.d("ACTION", "Add to favorites clicked"));
+        btnSave.setOnClickListener(v -> Log.d("ACTION", "Create flashcard clicked"));
+        btnPlay.setOnClickListener(v -> Log.d("TTS", "Play audio triggered"));
     }
 
     private void updateUI(DictionaryResponse data) {
