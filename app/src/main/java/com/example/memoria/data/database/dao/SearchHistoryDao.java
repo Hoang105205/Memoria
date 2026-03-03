@@ -11,7 +11,7 @@ import com.example.memoria.data.model.SearchHistory;
 import java.util.List;
 
 @Dao
-public interface SearchDao {
+public interface SearchHistoryDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertSearch(SearchHistory searchHistory);
 

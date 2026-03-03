@@ -37,7 +37,7 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract CardDao cardDao();
     public abstract FavDao favDao();
     public abstract QuizDao quizDao();
-    public abstract SearchDao searchDao();
+    public abstract SearchHistoryDao searchDao();
 
     // Singleton Pattern (Chỉ tạo 1 instance duy nhất)
     private static volatile AppDatabase INSTANCE;

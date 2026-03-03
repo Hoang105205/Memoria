@@ -28,9 +28,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         // 1. Kiểm tra Onboarding trước
-        //SharedPreferences pref = getSharedPreferences("onboarding_pref", MODE_PRIVATE);
-        //boolean isFinished = pref.getBoolean("isFinished", false);
-        boolean isFinished = false;
+        SharedPreferences pref = getSharedPreferences("onboarding_pref", MODE_PRIVATE);
+        boolean isFinished = pref.getBoolean("isFinished", false);
+        //boolean isFinished = false;
         if (!isFinished) {
             startActivity(new Intent(this, OnboardingActivity.class));
             finish(); // Kết thúc MainActivity ngay lập tức
