@@ -1,5 +1,6 @@
 package com.example.memoria.ui.search;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,11 +18,10 @@ public class SearchWordResultAdapter extends RecyclerView.Adapter<RecyclerView.V
 
     private static final int VT_HEADER = 1;
     private static final int VT_DEFINITION = 2;
-    private static final int VT_EMPTY = 3;
 
     public static class UiItem {
         public final int type;
-        public final String title;      // header / empty
+        public final String title;      // header
         public final String definition; // definition
         public final String example;    // optional
 
@@ -38,10 +38,6 @@ public class SearchWordResultAdapter extends RecyclerView.Adapter<RecyclerView.V
 
         public static UiItem definition(String definition, String example) {
             return new UiItem(VT_DEFINITION, null, definition, example);
-        }
-
-        public static UiItem empty(String message) {
-            return new UiItem(VT_EMPTY, message, null, null);
         }
     }
 
@@ -64,13 +60,10 @@ public class SearchWordResultAdapter extends RecyclerView.Adapter<RecyclerView.V
         LayoutInflater inf = LayoutInflater.from(parent.getContext());
 
         if (viewType == VT_HEADER) {
-            View v = inf.inflate(android.R.layout.simple_list_item_1, parent, false);
+            View v = inf.inflate(R.layout.item_search_result_header, parent, false);
             return new HeaderVH(v);
-        } else if (viewType == VT_EMPTY) {
-            View v = inf.inflate(android.R.layout.simple_list_item_1, parent, false);
-            return new EmptyVH(v);
         } else {
-            View v = inf.inflate(android.R.layout.simple_list_item_2, parent, false);
+            View v = inf.inflate(R.layout.item_search_result_definition, parent, false);
             return new DefVH(v);
         }
     }
@@ -78,19 +71,22 @@ public class SearchWordResultAdapter extends RecyclerView.Adapter<RecyclerView.V
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         UiItem item = items.get(position);
+        Context context = holder.itemView.getContext();
 
         if (holder instanceof HeaderVH) {
             ((HeaderVH) holder).tv.setText(item.title);
-        } else if (holder instanceof EmptyVH) {
-            ((EmptyVH) holder).tv.setText(item.title);
-        } else {
+        } else if (holder instanceof DefVH) {
             DefVH vh = (DefVH) holder;
-            vh.tv1.setText(item.definition != null ? item.definition : "");
+            // Add dash prefix to definition
+            String definitionText = "- " + (item.definition != null ? item.definition : "");
+            vh.tvDef.setText(definitionText);
+
             if (item.example != null && !item.example.trim().isEmpty()) {
-                vh.tv2.setVisibility(View.VISIBLE);
-                vh.tv2.setText(item.example);
+                vh.tvEx.setVisibility(View.VISIBLE);
+                // Format example using localized string
+                vh.tvEx.setText(context.getString(R.string.example_label, item.example));
             } else {
-                vh.tv2.setVisibility(View.GONE);
+                vh.tvEx.setVisibility(View.GONE);
             }
         }
     }
@@ -104,26 +100,16 @@ public class SearchWordResultAdapter extends RecyclerView.Adapter<RecyclerView.V
         TextView tv;
         HeaderVH(@NonNull View itemView) {
             super(itemView);
-            tv = itemView.findViewById(android.R.id.text1);
-            tv.setTextSize(16);
-            tv.setTypeface(tv.getTypeface(), android.graphics.Typeface.BOLD);
-        }
-    }
-
-    static class EmptyVH extends RecyclerView.ViewHolder {
-        TextView tv;
-        EmptyVH(@NonNull View itemView) {
-            super(itemView);
-            tv = itemView.findViewById(android.R.id.text1);
+            tv = itemView.findViewById(R.id.tv_header);
         }
     }
 
     static class DefVH extends RecyclerView.ViewHolder {
-        TextView tv1, tv2;
+        TextView tvDef, tvEx;
         DefVH(@NonNull View itemView) {
             super(itemView);
-            tv1 = itemView.findViewById(android.R.id.text1);
-            tv2 = itemView.findViewById(android.R.id.text2);
+            tvDef = itemView.findViewById(R.id.tv_definition);
+            tvEx = itemView.findViewById(R.id.tv_example);
         }
     }
 }

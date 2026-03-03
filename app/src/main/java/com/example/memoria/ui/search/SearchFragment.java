@@ -1,6 +1,5 @@
 package com.example.memoria.ui.search;
 
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -13,12 +12,14 @@ import android.widget.EditText;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.memoria.R;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,19 +29,14 @@ import retrofit2.Response;
 
 public class SearchFragment extends Fragment {
 
-    EditText edtWord;
-
-    MediaPlayer mediaPlayer;
+    private EditText edtWord;
+    private SearchViewModel viewModel;
 
     // Suggestions (dropdown)
-    RecyclerView listSuggestions;
-    SearchSuggestionAdapter adapter;
-    final List<String> suggestionWords = new ArrayList<>();
+    private RecyclerView listSuggestions;
+    private SearchSuggestionAdapter adapter;
+    private final List<String> suggestionWords = new ArrayList<>();
     private boolean suppressSuggestionFetch = false;
-
-    // Search result (meaning list)
-    RecyclerView rvResult;
-    SearchWordResultAdapter resultAdapter;
 
     public SearchFragment() {}
 
@@ -53,14 +49,15 @@ public class SearchFragment extends Fragment {
 
         edtWord = view.findViewById(R.id.edt_search_searchBar);
 
-        // suggestions
+        // Khởi tạo Shared ViewModel
+        viewModel = new ViewModelProvider(requireActivity()).get(SearchViewModel.class);
+
+        // Suggestions setup
         listSuggestions = view.findViewById(R.id.rv_search_suggestion);
         adapter = new SearchSuggestionAdapter(word -> {
             suppressSuggestionFetch = true;
-
             edtWord.setText(word);
             edtWord.setSelection(word.length());
-
             hideSuggestions();
             searchWord(word);
         });
@@ -68,24 +65,16 @@ public class SearchFragment extends Fragment {
         listSuggestions.setAdapter(adapter);
         listSuggestions.setVisibility(View.GONE);
 
-        // result recycler
-        rvResult = view.findViewById(R.id.rv_search_result);
-        resultAdapter = new SearchWordResultAdapter();
-        rvResult.setLayoutManager(new LinearLayoutManager(requireContext()));
-        rvResult.setAdapter(resultAdapter);
-
-        // autocomplete
+        // Autocomplete logic
         edtWord.addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-
                 if (suppressSuggestionFetch) {
                     suppressSuggestionFetch = false;
                     return;
                 }
-
                 if (s.length() >= 2) {
                     fetchSuggestions(s.toString());
                 } else {
@@ -96,7 +85,7 @@ public class SearchFragment extends Fragment {
             @Override public void afterTextChanged(Editable s) {}
         });
 
-        // search on keyboard action
+        // Search on keyboard action
         edtWord.setOnEditorActionListener((v, actionId, event) -> {
             String word = edtWord.getText().toString().trim();
             if (!word.isEmpty()) {
@@ -116,8 +105,6 @@ public class SearchFragment extends Fragment {
     }
 
     private void searchWord(String word) {
-        hideSuggestions();
-
         RetrofitClient.getApi()
                 .getMeaning(word)
                 .enqueue(new Callback<List<DictionaryResponse>>() {
@@ -125,70 +112,26 @@ public class SearchFragment extends Fragment {
                     public void onResponse(Call<List<DictionaryResponse>> call,
                                            Response<List<DictionaryResponse>> response) {
 
-                        if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
-                            DictionaryResponse data = response.body().get(0);
-
-                            // Build UI list for RecyclerView
-                            List<SearchWordResultAdapter.UiItem> uiItems = new ArrayList<>();
-
-                            if (data.meanings != null) {
-                                for (Meaning meaning : data.meanings) {
-                                    if (meaning == null) continue;
-
-                                    String pos = meaning.partOfSpeech != null ? meaning.partOfSpeech : "";
-                                    uiItems.add(SearchWordResultAdapter.UiItem.header(pos));
-
-                                    if (meaning.definitions != null) {
-                                        for (Definition def : meaning.definitions) {
-                                            if (def == null) continue;
-                                            uiItems.add(SearchWordResultAdapter.UiItem.definition(
-                                                    def.definition,
-                                                    def.example
-                                            ));
-                                        }
-                                    }
-                                }
+                        if (isAdded() && response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
+                            // Đẩy dữ liệu vào Shared ViewModel
+                            viewModel.setSearchResult(response.body().get(0));
+                            
+                            // KIỂM TRA ĐIỂM ĐẾN HIỆN TẠI TRƯỚC KHI NAVIGATE
+                            NavController navController = Navigation.findNavController(requireView());
+                            if (navController.getCurrentDestination() != null && 
+                                navController.getCurrentDestination().getId() == R.id.searchFragment) {
+                                navController.navigate(R.id.action_searchFragment_to_searchResultFragment);
                             }
-
-                            if (uiItems.isEmpty()) {
-                                uiItems.add(SearchWordResultAdapter.UiItem.empty("No result"));
-                            }
-
-                            resultAdapter.submitItems(uiItems);
-
                         } else {
-                            resultAdapter.submitItems(
-                                    java.util.Collections.singletonList(
-                                            SearchWordResultAdapter.UiItem.empty("No result")
-                                    )
-                            );
+                            Log.e("SEARCH", "No result or API error");
                         }
                     }
 
                     @Override
                     public void onFailure(Call<List<DictionaryResponse>> call, Throwable t) {
                         Log.e("API", t.getMessage() != null ? t.getMessage() : "API error");
-                        resultAdapter.submitItems(
-                                java.util.Collections.singletonList(
-                                        SearchWordResultAdapter.UiItem.empty("API error")
-                                )
-                        );
                     }
                 });
-    }
-
-    private void playAudio(String audioUrl) {
-        if (audioUrl == null || audioUrl.isEmpty()) return;
-
-        try {
-            if (mediaPlayer != null) mediaPlayer.release();
-            mediaPlayer = new MediaPlayer();
-            mediaPlayer.setDataSource(audioUrl);
-            mediaPlayer.prepare();
-            mediaPlayer.start();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     private void fetchSuggestions(String query) {

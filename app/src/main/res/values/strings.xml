@@ -56,6 +56,9 @@
     <!-- Search -->
     <string name="camera" translatable="false">Camera</string>
     <string name="microphone" translatable="false">Microphone</string>
+    <string name="example_label">Example: %1$s</string>
+    <string name="save_to_favorites">Save to favorites</string>
+    <string name="action_back">Back</string>
     <string name="next">Next</string>
     <string name="instant_word_lookup">Instant Word Lookup</string>
     <string name="instant_word_lookup_des">Access a comprehensive dictionary with precise definitions, phonetics, and real-world examples.</string>

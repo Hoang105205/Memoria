@@ -43,6 +43,9 @@
     <string name="sign_out">Đăng xuất</string>
     <string name="lang_en">Tiếng Anh</string>
     <string name="lang_vi">Tiếng Việt</string>
+    <string name="example_label">Ví dụ: %1$s</string>
+    <string name="save_to_favorites">Lưu vào phần yêu thích</string>
+    <string name="action_back">Quay lại</string>
     <string name="next">Tiếp theo</string>
     <string name="instant_word_lookup">Tra từ vựng nhanh</string>
     <string name="personalized_learning_des">Tự tạo bộ từ, quản lý vốn từ vựng và theo dõi kết quả học mỗi ngày.</string>
