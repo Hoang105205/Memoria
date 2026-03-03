@@ -1,0 +1,52 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewPager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/bottomContainer" />
+
+    <LinearLayout
+        android:id="@+id/bottomContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:gravity="center">
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            app:tabBackground="@drawable/tab_indicator_selector"
+            app:tabGravity="center"
+            app:tabIndicatorHeight="0dp"
+
+            app:tabMaxWidth="16dp"
+            app:tabPaddingStart="6dp"
+            app:tabPaddingEnd="6dp"
+            app:tabRippleColor="@android:color/transparent" />
+
+        <Button
+            android:id="@+id/btnNext"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/next"
+            android:backgroundTint="#2043E5"
+            android:textColor="#FFFFFF" />
+
+        <TextView
+            android:id="@+id/tvLoginOnboarding"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/login"
+            android:textColor="#000000"
+            android:textStyle="bold" />
+    </LinearLayout>
+</RelativeLayout>

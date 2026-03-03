@@ -2,6 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+    <uses-feature android:name="android.hardware.microphone" android:required="false" />
     <application
 
         android:allowBackup="true"
@@ -18,13 +23,15 @@
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".ui.auth.LoginActivity"
-            android:exported="true"
+            android:exported="false"
             android:windowSoftInputMode="adjustResize">
-            <intent-filter>
+            <!--<intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            </intent-filter>-->
+
+
         </activity>
         <activity
             android:name=".ui.auth.ForgotPasswordActivity"
@@ -33,13 +40,16 @@
         <activity
             android:name=".MainActivity"
             android:exported="true">
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.MAIN" />-->
+          <intent-filter>
+              <action android:name="android.intent.action.MAIN" />
 
-<!--                <category android:name="android.intent.category.LAUNCHER" />-->
-<!--            </intent-filter>-->
+              <category android:name="android.intent.category.LAUNCHER" />
+          </intent-filter>
         </activity>
 
+        <activity
+            android:name=".ui.onboarding.OnboardingActivity"
+            android:exported="false" />
 <!--        Language Config-->
         <service
             android:name="androidx.appcompat.app.AppLocalesMetadataHolderService"
@@ -49,7 +59,7 @@
                 android:name="autoStoreLocales"
                 android:value="true" />
         </service>
+
     </application>
-    <uses-permission android:name="android.permission.INTERNET"/>
 
 </manifest>

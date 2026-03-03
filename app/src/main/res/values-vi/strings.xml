@@ -43,6 +43,15 @@
     <string name="sign_out">Đăng xuất</string>
     <string name="lang_en">Tiếng Anh</string>
     <string name="lang_vi">Tiếng Việt</string>
+    <string name="next">Tiếp theo</string>
+    <string name="instant_word_lookup">Tra từ vựng nhanh</string>
+    <string name="personalized_learning_des">Tự tạo bộ từ, quản lý vốn từ vựng và theo dõi kết quả học mỗi ngày.</string>
+    <string name="master_vocabulary_des">\"Ghi nhớ bền vững nhờ hệ thống Flashcard Lặp lại ngắt quãng dựa trên cơ sở khoa học.</string>
+    <string name="get_started">Bắt đầu</string>
+    <string name="later">Để sau</string>
+    <string name="instant_word_lookup_des">Truy cập bộ từ điển toàn diện với định nghĩa chính xác, phiên âm và các ví dụ thực tế.</string>
+    <string name="master_vocabulary">Làm chủ vốn từ vựng</string>
+    <string name="personalized_learning">Cá nhân hóa học tập</string>
     <string name="title_library">Thư Viện</string>
     <string name="tab_collections">Bộ Sưu Tập</string>
     <string name="tab_decks">Bộ Thẻ</string>
