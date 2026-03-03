@@ -87,12 +87,22 @@ public class SearchFragment extends Fragment {
 
         // Search on keyboard action
         edtWord.setOnEditorActionListener((v, actionId, event) -> {
+            boolean isSearch =
+                    actionId == android.view.inputmethod.EditorInfo.IME_ACTION_SEARCH
+                            || actionId == android.view.inputmethod.EditorInfo.IME_ACTION_DONE
+                            || (event != null
+                            && event.getAction() == android.view.KeyEvent.ACTION_DOWN
+                            && event.getKeyCode() == android.view.KeyEvent.KEYCODE_ENTER);
+
+            if (!isSearch) return false;
+
             String word = edtWord.getText().toString().trim();
             if (!word.isEmpty()) {
                 hideSuggestions();
                 searchWord(word);
             }
-            return false;
+
+            return true; // QUAN TRỌNG: consume để tránh hệ thống xử lý tiếp gây "đẩy lên"
         });
 
         return view;
