@@ -34,7 +34,7 @@ public class LearnFragment extends Fragment {
     private int currentIndex = 0;
 
     private float startX;
-    private static final int CLICK_THRESHOLD = 10;
+    private static final int CLICK_THRESHOLD = 15;
 
     @Nullable
     @Override
@@ -163,7 +163,7 @@ public class LearnFragment extends Fragment {
                         v.setTranslationX(deltaX);
                         v.setRotation(deltaX * 0.05f);
 
-                        float alpha = Math.min(Math.abs(deltaX) / 300f, 1f);
+                        float alpha = Math.min(Math.abs(deltaX) / 250f, 1f);
                         cardBottom.setAlpha(alpha * 0.8f);
 
                         if (deltaX > 0) {
