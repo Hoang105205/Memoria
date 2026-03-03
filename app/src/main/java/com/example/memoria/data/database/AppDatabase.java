@@ -13,6 +13,7 @@ import com.example.memoria.data.model.*;
 import com.example.memoria.data.database.dao.*;
 // Import Converters
 import com.example.memoria.utils.DateConverter;
+import com.example.memoria.utils.JSONStringConverter;
 import com.example.memoria.utils.UUIDConverter;
 
 @Database(
@@ -29,7 +30,7 @@ import com.example.memoria.utils.UUIDConverter;
         exportSchema = false
 )
 // Đăng ký Converter để hiểu kiểu Date, UUID
-@TypeConverters({DateConverter.class, UUIDConverter.class})
+@TypeConverters({DateConverter.class, UUIDConverter.class, JSONStringConverter.class})
 public abstract class AppDatabase extends RoomDatabase {
 
     // Khai báo các DAO (Interface)

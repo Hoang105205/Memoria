@@ -63,6 +63,9 @@ dependencies {
     implementation("androidx.room:room-runtime:$roomVersion")
     annotationProcessor("androidx.room:room-compiler:$roomVersion")
 
+    // GSON
+    implementation("com.google.code.gson:gson:2.10.1")
+
     // Glide
     implementation("com.github.bumptech.glide:glide:5.0.5")
 
