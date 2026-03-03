@@ -6,6 +6,7 @@ import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
 import lombok.Data;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @Entity(
@@ -33,8 +34,11 @@ public class Card {
     @ColumnInfo(name = "front_image")
     private String frontImage; // Lưu đường dẫn file ảnh
 
-    @ColumnInfo(name = "back_text")
-    private String backText;
+    @ColumnInfo(name = "back_types")
+    private List<String> backTypes;
+
+    @ColumnInfo(name = "back_meanings")
+    private List<String> backMeanings;
 
     @ColumnInfo(name = "created_at")
     private Date createdAt;
