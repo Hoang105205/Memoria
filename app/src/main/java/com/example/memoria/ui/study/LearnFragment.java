@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.example.memoria.data.model.Card;
@@ -38,7 +39,7 @@ public class LearnFragment extends Fragment {
     private List<Card> flashcardList;
 
     private int currentIndex = 0;
-
+    private boolean flipable = true;
     private float startX;
     private static final int CLICK_THRESHOLD = 15;
 
@@ -73,11 +74,44 @@ public class LearnFragment extends Fragment {
         cardTop.setCameraDistance(8000 * scale);
         cardBottom.setCameraDistance(8000 * scale);
 
+        settingScrollView(cardTop);
         initCardData();
 
         setupTouchListener();
 
         return view;
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private void settingScrollView(View cardView) {
+        ScrollView scrollView = cardView.findViewById(R.id.scroll_definition);
+        if (scrollView != null) {
+            scrollView.setOnTouchListener(new View.OnTouchListener() {
+                private float startX, startY;
+
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    switch (event.getAction()) {
+                        case MotionEvent.ACTION_DOWN:
+                            startX = event.getX();
+                            startY = event.getY();
+                            // Allow ScrollView continue operate
+                            break;
+                        case MotionEvent.ACTION_UP:
+                            float endX = event.getX();
+                            float endY = event.getY();
+                            float distance = (float) Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
+
+                            if (distance <= CLICK_THRESHOLD) {
+                                flipCard((CardView) cardView);
+                                return true;
+                            }
+                            break;
+                    }
+                    return v.onTouchEvent(event); // Give back control to ScrollView
+                }
+            });
+        }
     }
 
     private void initCardData() {
@@ -281,6 +315,7 @@ public class LearnFragment extends Fragment {
     }
 
     private void flipCard(CardView card) {
+        if (!flipable) return;
         if (card == null) return;
 
         final View front = card.findViewById(R.id.layout_front);
@@ -303,6 +338,7 @@ public class LearnFragment extends Fragment {
             public void onAnimationStart(Animator animation) {
                 card.setCardElevation(0f);
                 cardBottom.setCardElevation(0f);
+                flipable = false;
             }
 
             @Override
@@ -323,6 +359,7 @@ public class LearnFragment extends Fragment {
             public void onAnimationEnd(Animator animation) {
                 card.setCardElevation(originalElevation);
                 cardBottom.setCardElevation(originalElevation);
+                flipable = true;
                 card.setClickable(true);
             }
         });
