@@ -103,6 +103,7 @@ public class LearnFragment extends Fragment {
                             float distance = (float) Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
 
                             if (distance <= CLICK_THRESHOLD) {
+                                cardBottom.setAlpha(0f);
                                 flipCard((CardView) cardView);
                                 return true;
                             }
