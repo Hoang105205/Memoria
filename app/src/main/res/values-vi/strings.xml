@@ -56,8 +56,8 @@
     <string name="master_vocabulary">Làm chủ vốn từ vựng</string>
     <string name="personalized_learning">Cá nhân hóa học tập</string>
     <string name="title_library">Thư Viện</string>
-    <string name="tab_collections">Bộ Sưu Tập</string>
-    <string name="tab_decks">Bộ Thẻ</string>
+    <string name="tab_favfolders">Bộ yêu thích</string>
+    <string name="tab_decks">Bộ thẻ</string>
     <string name="hint_search">Tìm kiếm...</string>
     <string name="card_count">thẻ</string>
     <string name="empty_deck">Bộ thẻ trống</string>
@@ -72,4 +72,7 @@
     <string name="dialog_hint_folder_name">Nhập tên mới</string>
     <string name="dialog_title_delete_folder">Xóa bộ sưu tập?</string>
     <string name="dialog_message_delete_folder">Bạn có chắc chắn muốn xóa?</string>
+    <string name="dialog_title_add_folder">Hãy nhập tên thư mục yêu thích</string>
+    <string name="dialog_title_add_deck">Hãy nhập tên bộ thẻ</string>
+    <string name="action_create">Tạo mới</string>
 </resources>

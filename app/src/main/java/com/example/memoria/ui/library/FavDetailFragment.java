@@ -34,8 +34,9 @@ public class FavDetailFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        tvFolderName = view.findViewById(R.id.tv_detail_folder_name);
-        ImageButton btnEdit = view.findViewById(R.id.btn_edit_folder);
+        tvFolderName = view.findViewById(R.id.tv_fav_name);
+        ImageButton btnOptions = view.findViewById(R.id.btn_fav_detail_options);
+        ImageButton btnBack = view.findViewById(R.id.btn_back);
 
         viewModel = new ViewModelProvider(this).get(FavDetailViewModel.class);
 
@@ -54,7 +55,11 @@ public class FavDetailFragment extends Fragment {
         });
 
         // Bấm nút Edit -> Hiện Popup Menu
-        btnEdit.setOnClickListener(this::showPopupMenu);
+        btnOptions.setOnClickListener(this::showPopupMenu);
+
+        btnBack.setOnClickListener(v -> {
+            androidx.navigation.Navigation.findNavController(view).navigateUp();
+        });
     }
 
     // Dropdown options

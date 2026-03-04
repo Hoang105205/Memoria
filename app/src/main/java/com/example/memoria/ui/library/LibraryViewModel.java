@@ -27,17 +27,17 @@ public class LibraryViewModel extends AndroidViewModel {
         favRepository = new FavRepository(application);
 
         loadDecks();
-        loadCollections();
+        loadFavFolders();
     }
 
     public LiveData<List<Deck>> getDecks() { return decks; }
-    public LiveData<List<FavFolder>> getCollections() { return folders; }
+    public LiveData<List<FavFolder>> getFavFolders() { return folders; }
 
     public void loadDecks() {
         deckRepository.getAllDecks(decks::postValue);
     }
 
-    public void loadCollections() {
+    public void loadFavFolders() {
         favRepository.getAllFolders(folders::postValue);
     }
 
@@ -46,8 +46,8 @@ public class LibraryViewModel extends AndroidViewModel {
         loadDecks(); // gọi load lại để cập nhật lên UI
     }
 
-    public void addNewCollection(FavFolder folder) {
+    public void addNewFavFolder(FavFolder folder) {
         favRepository.insertFolder(folder);
-        loadCollections(); // gọi load lại để cập nhật lên UI
+        loadFavFolders(); // gọi load lại để cập nhật lên UI
     }
 }

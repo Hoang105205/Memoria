@@ -12,7 +12,7 @@ import com.example.memoria.data.model.FavFolder;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CollectionAdapter extends RecyclerView.Adapter<CollectionAdapter.CollectionViewHolder> {
+public class FavFolderAdapter extends RecyclerView.Adapter<FavFolderAdapter.FavFolderViewHolder> {
     private List<FavFolder> folderList = new ArrayList<>();
     private OnFolderClickListener listener;
 
@@ -20,7 +20,7 @@ public class CollectionAdapter extends RecyclerView.Adapter<CollectionAdapter.Co
         void onFolderClick(FavFolder folder);
     }
 
-    public CollectionAdapter(OnFolderClickListener listener) {
+    public FavFolderAdapter(OnFolderClickListener listener) {
         this.listener = listener;
     }
     public void setFolders(List<FavFolder> folders) {
@@ -30,14 +30,14 @@ public class CollectionAdapter extends RecyclerView.Adapter<CollectionAdapter.Co
 
     @NonNull
     @Override
-    public CollectionViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public FavFolderViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_library_collection, parent, false);
-        return new CollectionViewHolder(view);
+                .inflate(R.layout.item_library_favfolder, parent, false);
+        return new FavFolderViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull CollectionViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull FavFolderViewHolder holder, int position) {
         FavFolder folder = folderList.get(position);
         Context context = holder.itemView.getContext();
 
@@ -62,13 +62,13 @@ public class CollectionAdapter extends RecyclerView.Adapter<CollectionAdapter.Co
         return folderList == null ? 0 : folderList.size();
     }
 
-    static class CollectionViewHolder extends RecyclerView.ViewHolder {
+    static class FavFolderViewHolder extends RecyclerView.ViewHolder {
         TextView tvName, tvCount;
 
-        public CollectionViewHolder(@NonNull View itemView) {
+        public FavFolderViewHolder(@NonNull View itemView) {
             super(itemView);
-            tvName = itemView.findViewById(R.id.tv_collection_name);
-            tvCount = itemView.findViewById(R.id.tv_collection_count);
+            tvName = itemView.findViewById(R.id.tv_favfolder_name);
+            tvCount = itemView.findViewById(R.id.tv_favfolder_count);
         }
     }
 }

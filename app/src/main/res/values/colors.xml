@@ -15,5 +15,7 @@
     <color name="blue_primary">#4A90E2</color>
     <color name="progress_track">#E0E0E0</color>
     <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
     <color name="bg_detail_header">#E3F2FD</color>
+    <color name="white_translucent">#80FFFFFF</color>
 </resources>
