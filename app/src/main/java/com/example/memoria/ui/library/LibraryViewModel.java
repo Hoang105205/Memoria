@@ -23,8 +23,8 @@ public class LibraryViewModel extends AndroidViewModel {
     // Ngay khi ViewModel được khởi tạo, lấy dữ liệu từ DB
     public LibraryViewModel(@NonNull Application application) {
         super(application);
-        deckRepository = new DeckRepository(application);
-        favRepository = new FavRepository(application);
+        deckRepository = DeckRepository.getInstance(application);
+        favRepository = FavRepository.getInstance(application);
 
         loadDecks();
         loadFavFolders();

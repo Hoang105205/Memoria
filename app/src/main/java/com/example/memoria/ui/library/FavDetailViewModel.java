@@ -17,7 +17,7 @@ public class FavDetailViewModel extends AndroidViewModel {
 
     public FavDetailViewModel(@NonNull Application application) {
         super(application);
-        repository = new FavRepository(application);
+        repository = FavRepository.getInstance(application);
     }
 
     public LiveData<FavFolder> getFolder() {

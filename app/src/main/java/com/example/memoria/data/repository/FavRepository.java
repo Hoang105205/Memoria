@@ -10,13 +10,25 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class FavRepository {
+    private static volatile FavRepository INSTANCE;
     private final FavDao favDao;
     private final ExecutorService executor;
 
-    public FavRepository(Application application) {
+    private FavRepository(Application application) {
         AppDatabase db = AppDatabase.getDatabase(application);
         favDao = db.favDao();
         executor = Executors.newSingleThreadExecutor();
+    }
+
+    public static FavRepository getInstance(Application application) {
+        if (INSTANCE == null) {
+            synchronized (FavRepository.class) {
+                if (INSTANCE == null) {
+                    INSTANCE = new FavRepository(application);
+                }
+            }
+        }
+        return INSTANCE;
     }
 
     public interface DataCallback<T> {

@@ -9,13 +9,25 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class DeckRepository {
+    private static volatile DeckRepository INSTANCE;
     private final DeckDao deckDao;
     private final ExecutorService executor; // run on background
 
-    public DeckRepository(Application application) {
+    private DeckRepository(Application application) {
         AppDatabase db = AppDatabase.getDatabase(application);
         deckDao = db.deckDao();
         executor = Executors.newSingleThreadExecutor();
+    }
+
+    public static DeckRepository getInstance(Application application) {
+        if (INSTANCE == null) {
+            synchronized (DeckRepository.class) {
+                if (INSTANCE == null) {
+                    INSTANCE = new DeckRepository(application);
+                }
+            }
+        }
+        return INSTANCE;
     }
 
     // Lấy danh sách (Chạy trên main thread vì Room cho phép query trả về List trực tiếp.

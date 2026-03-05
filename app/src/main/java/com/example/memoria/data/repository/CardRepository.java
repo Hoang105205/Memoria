@@ -17,13 +17,25 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class CardRepository {
+    private static volatile CardRepository INSTANCE;
     private final CardDao cardDao;
     private final ExecutorService executor;
 
-    public CardRepository(Application application) {
+    private CardRepository(Application application) {
         AppDatabase db = AppDatabase.getDatabase(application);
         cardDao = db.cardDao();
         executor = Executors.newSingleThreadExecutor();
+    }
+
+    public static CardRepository getInstance(Application application) {
+        if (INSTANCE == null) {
+            synchronized (CardRepository.class) {
+                if (INSTANCE == null) {
+                    INSTANCE = new CardRepository(application);
+                }
+            }
+        }
+        return INSTANCE;
     }
 
     public interface DataCallback<T> {

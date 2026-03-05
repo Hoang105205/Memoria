@@ -39,7 +39,7 @@ public class LearnFragment extends Fragment {
     private List<Card> flashcardList;
 
     private int currentIndex = 0;
-    private boolean flipable = true;
+    private boolean flippable = true;
     private float startX;
     private static final int CLICK_THRESHOLD = 15;
 
@@ -52,7 +52,7 @@ public class LearnFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         if (localCardRepo == null) {
-            localCardRepo = new CardRepository(requireActivity().getApplication());
+            localCardRepo = CardRepository.getInstance(requireActivity().getApplication());
         }
     }
 
@@ -316,7 +316,7 @@ public class LearnFragment extends Fragment {
     }
 
     private void flipCard(CardView card) {
-        if (!flipable) return;
+        if (!flippable) return;
         if (card == null) return;
 
         final View front = card.findViewById(R.id.layout_front);
@@ -339,7 +339,7 @@ public class LearnFragment extends Fragment {
             public void onAnimationStart(Animator animation) {
                 card.setCardElevation(0f);
                 cardBottom.setCardElevation(0f);
-                flipable = false;
+                flippable = false;
             }
 
             @Override
@@ -360,7 +360,7 @@ public class LearnFragment extends Fragment {
             public void onAnimationEnd(Animator animation) {
                 card.setCardElevation(originalElevation);
                 cardBottom.setCardElevation(originalElevation);
-                flipable = true;
+                flippable = true;
                 card.setClickable(true);
             }
         });
