@@ -21,6 +21,9 @@ import com.example.memoria.ui.adapter.FavWordAdapter;
 
 import java.util.UUID;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class FavDetailFragment extends Fragment {
 
     private FavDetailViewModel viewModel;

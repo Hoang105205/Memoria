@@ -1,7 +1,5 @@
 package com.example.memoria.data.repository;
 
-import android.app.Application;
-import com.example.memoria.data.database.AppDatabase;
 import com.example.memoria.data.database.dao.FavDao;
 import com.example.memoria.data.model.FavFolder;
 import com.example.memoria.data.model.FavFolderWithCount;
@@ -12,13 +10,17 @@ import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+@Singleton
 public class FavRepository {
     private final FavDao favDao;
     private final ExecutorService executor;
 
-    public FavRepository(Application application) {
-        AppDatabase db = AppDatabase.getDatabase(application);
-        favDao = db.favDao();
+    @Inject
+    public FavRepository(FavDao favDao) {
+        this.favDao = favDao;
         executor = Executors.newSingleThreadExecutor();
     }
 

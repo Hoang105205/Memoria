@@ -1,8 +1,5 @@
 package com.example.memoria.ui.search;
 
-import android.app.Application;
-
-import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -13,17 +10,20 @@ import com.example.memoria.data.repository.FavRepository;
 
 import java.util.List;
 
-import lombok.NonNull;
+import javax.inject.Inject;
 
-public class SearchViewModel extends AndroidViewModel {
+import dagger.hilt.android.lifecycle.HiltViewModel;
+
+@HiltViewModel
+public class SearchViewModel extends ViewModel {
     // MutableLiveData cho phép chúng ta thay đổi giá trị bên trong (dùng trong ViewModel)
     private final MutableLiveData<DictionaryResponse> _searchResult = new MutableLiveData<>();
     private final FavRepository favRepository;
     private final MutableLiveData<List<FavFolder>> folders = new MutableLiveData<>();
 
-    public SearchViewModel(@NonNull Application application) {
-        super(application);
-        favRepository = new FavRepository(application);
+    @Inject
+    public SearchViewModel(FavRepository favRepository) {
+        this.favRepository = favRepository;
     }
     
     // LiveData chỉ cho phép đọc (expose ra bên ngoài cho Fragment quan sát)

@@ -1,20 +1,22 @@
 package com.example.memoria.data.repository;
 
-import android.app.Application;
-import com.example.memoria.data.database.AppDatabase;
 import com.example.memoria.data.database.dao.DeckDao;
 import com.example.memoria.data.model.Deck;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+@Singleton
 public class DeckRepository {
     private final DeckDao deckDao;
     private final ExecutorService executor; // run on background
 
-    public DeckRepository(Application application) {
-        AppDatabase db = AppDatabase.getDatabase(application);
-        deckDao = db.deckDao();
+    @Inject
+    public DeckRepository(DeckDao deckDao) {
+        this.deckDao = deckDao;
         executor = Executors.newSingleThreadExecutor();
     }
 

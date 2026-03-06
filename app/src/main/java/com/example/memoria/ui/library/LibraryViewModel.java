@@ -1,10 +1,8 @@
 package com.example.memoria.ui.library;
 
-import android.app.Application;
-import androidx.annotation.NonNull;
-import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
 
 import com.example.memoria.data.model.Deck;
 import com.example.memoria.data.model.FavFolder;
@@ -14,7 +12,12 @@ import com.example.memoria.data.repository.FavRepository;
 
 import java.util.List;
 
-public class LibraryViewModel extends AndroidViewModel {
+import javax.inject.Inject;
+
+import dagger.hilt.android.lifecycle.HiltViewModel;
+
+@HiltViewModel
+public class LibraryViewModel extends ViewModel {
     private final DeckRepository deckRepository;
     private final FavRepository favRepository;
 
@@ -30,10 +33,10 @@ public class LibraryViewModel extends AndroidViewModel {
     }
 
     // Ngay khi ViewModel được khởi tạo, lấy dữ liệu từ DB
-    public LibraryViewModel(@NonNull Application application) {
-        super(application);
-        deckRepository = new DeckRepository(application);
-        favRepository = new FavRepository(application);
+    @Inject
+    public LibraryViewModel(DeckRepository deckRepository, FavRepository favRepository) {
+        this.deckRepository = deckRepository;
+        this.favRepository = favRepository;
 
         loadDecks();
         loadFavFolders();
