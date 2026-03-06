@@ -21,6 +21,9 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.example.memoria.ui.study.LearnFragment;
 import com.google.firebase.auth.FirebaseAuth;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class MainActivity extends AppCompatActivity {
 
     @Override

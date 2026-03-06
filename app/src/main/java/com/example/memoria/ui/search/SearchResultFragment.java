@@ -23,6 +23,9 @@ import com.example.memoria.R;
 import java.util.ArrayList;
 import java.util.List;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class SearchResultFragment extends Fragment {
 
     private SearchViewModel viewModel;

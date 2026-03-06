@@ -1,10 +1,8 @@
 package com.example.memoria.ui.library;
 
-import android.app.Application;
-import androidx.annotation.NonNull;
-import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
 
 import com.example.memoria.data.model.FavFolder;
 import com.example.memoria.data.model.FavWord;
@@ -13,14 +11,19 @@ import com.example.memoria.data.repository.FavRepository;
 import java.util.List;
 import java.util.UUID;
 
-public class FavDetailViewModel extends AndroidViewModel {
+import javax.inject.Inject;
+
+import dagger.hilt.android.lifecycle.HiltViewModel;
+
+@HiltViewModel
+public class FavDetailViewModel extends ViewModel {
     private final FavRepository repository;
     private final MutableLiveData<FavFolder> currentFolder = new MutableLiveData<>();
     private final MutableLiveData<List<FavWord>> folderWords = new MutableLiveData<>();
 
-    public FavDetailViewModel(@NonNull Application application) {
-        super(application);
-        repository = new FavRepository(application);
+    @Inject
+    public FavDetailViewModel(FavRepository repository) {
+        this.repository = repository;
     }
 
     public LiveData<FavFolder> getFolder() {

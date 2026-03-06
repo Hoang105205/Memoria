@@ -14,6 +14,9 @@ import com.example.memoria.R;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class LibraryFragment extends Fragment {
 
     private TabLayout tlLibraryTabs;

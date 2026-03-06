@@ -23,10 +23,12 @@ import com.example.memoria.R;
 import java.util.ArrayList;
 import java.util.List;
 
+import dagger.hilt.android.AndroidEntryPoint;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+@AndroidEntryPoint
 public class SearchFragment extends Fragment {
 
     private EditText edtWord;

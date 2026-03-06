@@ -1,11 +1,8 @@
 package com.example.memoria.data.repository;
 
-import android.app.Application;
-
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.example.memoria.data.database.AppDatabase;
 import com.example.memoria.data.database.dao.CardDao;
 import com.example.memoria.data.model.Card;
 
@@ -16,13 +13,17 @@ import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+@Singleton
 public class CardRepository {
     private final CardDao cardDao;
     private final ExecutorService executor;
 
-    public CardRepository(Application application) {
-        AppDatabase db = AppDatabase.getDatabase(application);
-        cardDao = db.cardDao();
+    @Inject
+    public CardRepository(CardDao cardDao) {
+        this.cardDao = cardDao;
         executor = Executors.newSingleThreadExecutor();
     }
 

@@ -27,10 +27,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import javax.inject.Inject;
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class LearnFragment extends Fragment {
 
     private final UUID currentDeckId;
-    private static CardRepository localCardRepo;
+
+    @Inject
+    CardRepository localCardRepo;
     private CardView cardTop, cardBottom;
     private TextView tvBadgeRemember, tvBadgeForgot;
     private View vBackgroundRemember, vBackgroundForgot;
@@ -50,10 +56,6 @@ public class LearnFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        if (localCardRepo == null) {
-            localCardRepo = new CardRepository(requireActivity().getApplication());
-        }
     }
 
     @Nullable
