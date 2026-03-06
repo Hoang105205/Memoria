@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
 
     id("com.google.gms.google-services")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -69,4 +70,7 @@ dependencies {
     // Glide
     implementation("com.github.bumptech.glide:glide:5.0.5")
 
+    // Hilt
+    implementation("com.google.dagger:hilt-android:2.57.1")
+    annotationProcessor("com.google.dagger:hilt-android-compiler:2.57.1")
 }
