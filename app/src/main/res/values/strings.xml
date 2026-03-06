@@ -90,4 +90,6 @@
     <string name="dialog_title_add_folder">Please enter your favorite folder name</string>
     <string name="dialog_title_add_deck">Please enter your deck name</string>
     <string name="action_create">Create</string>
+    <string name="dialog_add_favword_to_favfolder">Add this word to folder ...</string>
+    <string name="add_new_fav_folder">Add new favorite folder</string>
 </resources>

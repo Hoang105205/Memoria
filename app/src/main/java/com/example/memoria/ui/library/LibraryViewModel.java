@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.memoria.data.model.Deck;
 import com.example.memoria.data.model.FavFolder;
+import com.example.memoria.data.model.FavFolderWithCount;
 import com.example.memoria.data.repository.DeckRepository;
 import com.example.memoria.data.repository.FavRepository;
 
@@ -18,7 +19,15 @@ public class LibraryViewModel extends AndroidViewModel {
     private final FavRepository favRepository;
 
     private final MutableLiveData<List<Deck>> decks = new MutableLiveData<>();
-    private final MutableLiveData<List<FavFolder>> folders = new MutableLiveData<>();
+    // Sửa List<FavFolder> thành List<FavFolderWithCount>
+    private final MutableLiveData<List<FavFolderWithCount>> folders = new MutableLiveData<>();
+
+    public LiveData<List<FavFolderWithCount>> getFavFolders() { return folders; }
+
+    public void loadFavFolders() {
+        // Gọi hàm có đếm số lượng thay vì hàm cũ
+        favRepository.getFoldersWithWordCount(folders::postValue);
+    }
 
     // Ngay khi ViewModel được khởi tạo, lấy dữ liệu từ DB
     public LibraryViewModel(@NonNull Application application) {
@@ -31,14 +40,9 @@ public class LibraryViewModel extends AndroidViewModel {
     }
 
     public LiveData<List<Deck>> getDecks() { return decks; }
-    public LiveData<List<FavFolder>> getFavFolders() { return folders; }
 
     public void loadDecks() {
         deckRepository.getAllDecks(decks::postValue);
-    }
-
-    public void loadFavFolders() {
-        favRepository.getAllFolders(folders::postValue);
     }
 
     public void addNewDeck(Deck deck) {

@@ -4,7 +4,11 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
+
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.util.Date;
 import java.util.UUID;
 
@@ -18,6 +22,8 @@ import java.util.UUID;
         )
 )
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class FavWord {
     @PrimaryKey
     @ColumnInfo(name = "fav_id")
@@ -29,6 +35,9 @@ public class FavWord {
 
     @ColumnInfo(name = "word_text")
     private String wordText;
+
+    @ColumnInfo(name = "part_of_speech")
+    private String partOfSpeech;
 
     @ColumnInfo(name = "short_meaning")
     private String shortMeaning;

@@ -7,13 +7,16 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.memoria.data.model.FavFolder;
+import com.example.memoria.data.model.FavWord;
 import com.example.memoria.data.repository.FavRepository;
 
+import java.util.List;
 import java.util.UUID;
 
 public class FavDetailViewModel extends AndroidViewModel {
     private final FavRepository repository;
     private final MutableLiveData<FavFolder> currentFolder = new MutableLiveData<>();
+    private final MutableLiveData<List<FavWord>> folderWords = new MutableLiveData<>();
 
     public FavDetailViewModel(@NonNull Application application) {
         super(application);
@@ -22,6 +25,21 @@ public class FavDetailViewModel extends AndroidViewModel {
 
     public LiveData<FavFolder> getFolder() {
         return currentFolder;
+    }
+
+    public LiveData<List<FavWord>> getFolderWords() {
+        return folderWords;
+    }
+
+    public void loadWords(UUID folderId) {
+        repository.getWordsByFolder(folderId, folderWords::postValue);
+    }
+
+    public void togglePinStatus(FavWord word) {
+        word.setPinStatus(!word.isPinStatus());
+        repository.updateWord(word);
+        // Load lại danh sách sau khi update để Room tự sort lại ghim lên đầu
+        loadWords(word.getFolderId());
     }
 
     // Tải dữ liệu thư mục lên
