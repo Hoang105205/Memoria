@@ -9,6 +9,7 @@ import androidx.room.Transaction;
 import androidx.room.Update;
 
 import com.example.memoria.data.model.FavFolder;
+import com.example.memoria.data.model.FavFolderWithCount;
 import com.example.memoria.data.model.FavWord;
 
 import java.util.List;
@@ -38,6 +39,9 @@ public interface FavDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertWord(FavWord word);
 
+    @Update
+    void updateWord(FavWord word);
+
     @Delete
     void deleteWord(FavWord word);
 
@@ -48,4 +52,9 @@ public interface FavDao {
     // Xóa nhanh 1 từ theo ID
     @Query("DELETE FROM fav_words WHERE fav_id = :wordId")
     void deleteWordById(UUID wordId);
+
+    // THÊM MỚI: Truy vấn danh sách thư mục kèm theo số lượng từ bên trong
+    @Query("SELECT f.*, (SELECT COUNT(fav_id) FROM fav_words WHERE folder_id = f.folder_id) AS word_count " +
+            "FROM fav_folders f ORDER BY f.created_at DESC")
+    List<FavFolderWithCount> getFoldersWithWordCount();
 }

@@ -75,4 +75,6 @@
     <string name="dialog_title_add_folder">Hãy nhập tên thư mục yêu thích</string>
     <string name="dialog_title_add_deck">Hãy nhập tên bộ thẻ</string>
     <string name="action_create">Tạo mới</string>
+    <string name="dialog_add_favword_to_favfolder">Lưu từ vựng vào...</string>
+    <string name="add_new_fav_folder">Tạo mục yêu thích mới</string>
 </resources>

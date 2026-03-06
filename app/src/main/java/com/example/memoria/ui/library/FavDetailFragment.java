@@ -14,8 +14,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.memoria.R;
+import com.example.memoria.ui.adapter.FavWordAdapter;
 
 import java.util.UUID;
 
@@ -40,17 +42,35 @@ public class FavDetailFragment extends Fragment {
 
         viewModel = new ViewModelProvider(this).get(FavDetailViewModel.class);
 
-        // nhận ID từ Bundle
+        // Khởi tạo RecyclerView và Adapter
+        RecyclerView rvCards = view.findViewById(R.id.rv_cards);
+        rvCards.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(requireContext()));
+
+        FavWordAdapter wordAdapter = new FavWordAdapter(word -> {
+            // Sự kiện khi bấm nút ghim
+            viewModel.togglePinStatus(word);
+        });
+        rvCards.setAdapter(wordAdapter);
+
+        // Nhận ID từ Bundle và load dữ liệu
         if (getArguments() != null) {
             UUID folderId = (UUID) getArguments().getSerializable("FOLDER_ID");
             if (folderId != null) {
-                viewModel.loadFolder(folderId); // Yêu cầu ViewModel lấy dữ liệu từ DB lên
+                viewModel.loadFolder(folderId);
+                viewModel.loadWords(folderId); // THÊM DÒNG NÀY: Yêu cầu lấy danh sách từ
             }
         }
 
         viewModel.getFolder().observe(getViewLifecycleOwner(), folder -> {
             if (folder != null) {
                 tvFolderName.setText(folder.getFolderName());
+            }
+        });
+
+        // THÊM BLOCK NÀY: Observe danh sách từ để cập nhật lên Adapter
+        viewModel.getFolderWords().observe(getViewLifecycleOwner(), words -> {
+            if (words != null) {
+                wordAdapter.setWords(words);
             }
         });
 

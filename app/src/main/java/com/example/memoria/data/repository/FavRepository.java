@@ -4,6 +4,9 @@ import android.app.Application;
 import com.example.memoria.data.database.AppDatabase;
 import com.example.memoria.data.database.dao.FavDao;
 import com.example.memoria.data.model.FavFolder;
+import com.example.memoria.data.model.FavFolderWithCount;
+import com.example.memoria.data.model.FavWord;
+
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
@@ -47,5 +50,27 @@ public class FavRepository {
 
     public void deleteFolder(FavFolder folder) {
         executor.execute(() -> favDao.deleteFolder(folder));
+    }
+
+    public void insertWord(FavWord word) {
+        executor.execute(() -> favDao.insertWord(word));
+    }
+
+    public void getWordsByFolder(UUID folderId, DataCallback<List<FavWord>> callback) {
+        executor.execute(() -> {
+            List<FavWord> words = favDao.getWordsByFolder(folderId);
+            callback.onDataLoaded(words);
+        });
+    }
+
+    public void updateWord(FavWord word) {
+        executor.execute(() -> favDao.updateWord(word));
+    }
+
+    public void getFoldersWithWordCount(DataCallback<List<FavFolderWithCount>> callback) {
+        executor.execute(() -> {
+            List<FavFolderWithCount> data = favDao.getFoldersWithWordCount();
+            callback.onDataLoaded(data);
+        });
     }
 }
