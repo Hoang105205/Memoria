@@ -77,4 +77,6 @@
     <string name="action_create">Tạo mới</string>
     <string name="dialog_add_favword_to_favfolder">Lưu từ vựng vào...</string>
     <string name="add_new_fav_folder">Tạo mục yêu thích mới</string>
+    <string name="msg_save_success">Lưu thành công!</string>
+    <string name="msg_word_exists">Từ này đã có trong thư mục!</string>
 </resources>

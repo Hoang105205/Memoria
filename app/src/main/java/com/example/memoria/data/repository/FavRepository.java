@@ -75,4 +75,18 @@ public class FavRepository {
             callback.onDataLoaded(data);
         });
     }
+
+    public void insertWordIfNotExists(FavWord word, DataCallback<Boolean> callback) {
+        executor.execute(() -> {
+            // Kiểm tra số lượng
+            int count = favDao.checkWordExist(word.getFolderId(), word.getWordText());
+
+            if (count == 0) {
+                favDao.insertWord(word); // Chưa có thì thêm vào
+                if (callback != null) callback.onDataLoaded(true); // Trả về true (Thành công)
+            } else {
+                if (callback != null) callback.onDataLoaded(false); // Trả về false (Đã tồn tại)
+            }
+        });
+    }
 }

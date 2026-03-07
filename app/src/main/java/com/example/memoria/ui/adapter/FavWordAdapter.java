@@ -19,7 +19,7 @@ public class FavWordAdapter extends RecyclerView.Adapter<FavWordAdapter.WordView
 
     public interface OnWordInteractionListener {
         void onPinClick(FavWord word);
-        // Có thể thêm onWordClick nếu muốn bấm vào từ để xem lại chi tiết
+        void onWordClick(FavWord word);
     }
 
     public FavWordAdapter(OnWordInteractionListener listener) {
@@ -49,16 +49,16 @@ public class FavWordAdapter extends RecyclerView.Adapter<FavWordAdapter.WordView
         String meaning = word.getShortMeaning() != null ? word.getShortMeaning() : "";
         holder.tvMeaning.setText(pos + meaning);
 
-        // Xử lý UI cho nút Pin (Ghim)
+        // UI cho nút Pin
         if (word.isPinStatus()) {
-            // Thay bằng icon ngôi sao đặc của bạn nếu có (vd: R.drawable.ic_star_filled)
             holder.btnPin.setImageResource(android.R.drawable.star_on);
         } else {
-            // Thay bằng icon ngôi sao rỗng của bạn nếu có (vd: R.drawable.ic_star_outline)
             holder.btnPin.setImageResource(android.R.drawable.star_off);
         }
 
         holder.btnPin.setOnClickListener(v -> listener.onPinClick(word));
+
+        holder.itemView.setOnClickListener(v -> listener.onWordClick(word));
     }
 
     @Override

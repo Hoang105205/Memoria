@@ -92,4 +92,6 @@
     <string name="action_create">Create</string>
     <string name="dialog_add_favword_to_favfolder">Add this word to folder ...</string>
     <string name="add_new_fav_folder">Add new favorite folder</string>
+    <string name="msg_save_success">Save successfully!</string>
+    <string name="msg_word_exists">Word already exists in this folder!</string>
 </resources>

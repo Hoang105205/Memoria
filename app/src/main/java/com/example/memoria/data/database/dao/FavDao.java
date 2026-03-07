@@ -53,8 +53,12 @@ public interface FavDao {
     @Query("DELETE FROM fav_words WHERE fav_id = :wordId")
     void deleteWordById(UUID wordId);
 
-    // THÊM MỚI: Truy vấn danh sách thư mục kèm theo số lượng từ bên trong
+    // Truy vấn danh sách thư mục kèm theo số lượng từ bên trong
     @Query("SELECT f.*, (SELECT COUNT(fav_id) FROM fav_words WHERE folder_id = f.folder_id) AS word_count " +
             "FROM fav_folders f ORDER BY f.created_at DESC")
     List<FavFolderWithCount> getFoldersWithWordCount();
+
+    // Kiểm tra xem từ vựng đã tồn tại trong thư mục chưa (Trả về số lượng)
+    @Query("SELECT COUNT(fav_id) FROM fav_words WHERE folder_id = :folderId AND word_text = :wordText")
+    int checkWordExist(UUID folderId, String wordText);
 }
