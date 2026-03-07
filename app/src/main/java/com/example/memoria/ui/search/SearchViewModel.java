@@ -8,7 +8,9 @@ import com.example.memoria.data.model.FavFolder;
 import com.example.memoria.data.model.FavWord;
 import com.example.memoria.data.repository.FavRepository;
 
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import javax.inject.Inject;
 
@@ -36,7 +38,7 @@ public class SearchViewModel extends ViewModel {
         _searchResult.setValue(result);
     }
 
-    // --- CÁC HÀM XỬ LÝ FAVORITE THÊM VÀO ---
+    // --- Các hàm xử lý sự kiện yêu cầu lưu vào thư mục favorite ---
     public LiveData<List<FavFolder>> getFavFolders() {
         return folders;
     }
@@ -50,7 +52,47 @@ public class SearchViewModel extends ViewModel {
         loadFavFolders(); // Cập nhật lại UI
     }
 
-    public void saveWordToFolder(FavWord word) {
-        favRepository.insertWord(word);
+    // Tách logic từ SelectFavFolderDialog ra để dễ quản lý
+    public void saveCurrentWordToFolder(UUID folderId, FavRepository.DataCallback<Boolean> callback) {
+        // ViewModel tự lấy dữ liệu hiện tại của nó
+        DictionaryResponse currentData = _searchResult.getValue();
+
+        if (currentData != null && currentData.word != null) {
+            String pos = "";
+            String shortMeaning = "";
+
+            // Logic bóc tách dữ liệu nay đã được mang vào ViewModel
+            if (currentData.meanings != null && !currentData.meanings.isEmpty()) {
+                Meaning firstMeaning = currentData.meanings.get(0);
+                pos = firstMeaning.partOfSpeech;
+                if (firstMeaning.definitions != null && !firstMeaning.definitions.isEmpty()) {
+                    shortMeaning = firstMeaning.definitions.get(0).definition;
+                }
+            }
+
+            // Khởi tạo Object
+            FavWord newWord = new FavWord();
+            newWord.setFavId(UUID.randomUUID());
+            newWord.setFolderId(folderId);
+            newWord.setWordText(currentData.word);
+            newWord.setPartOfSpeech(pos);
+            newWord.setShortMeaning(shortMeaning);
+            newWord.setAddedAt(new Date());
+            newWord.setPinStatus(false);
+
+            // Gọi Repository để lưu
+            favRepository.insertWordIfNotExists(newWord, callback);
+        }
+    }
+
+    // <--- Logic phuc vu goi search tu cac tab khac) --->
+    private final MutableLiveData<String> externalSearchQuery = new MutableLiveData<>();
+
+    public LiveData<String> getExternalSearchQuery() {
+        return externalSearchQuery;
+    }
+
+    public void setExternalSearchQuery(String query) {
+        externalSearchQuery.setValue(query);
     }
 }

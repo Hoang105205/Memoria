@@ -76,29 +76,14 @@ public class SearchResultFragment extends Fragment {
         });
 
         // Action listeners
-//        btnFavorite.setOnClickListener(v -> Log.d("ACTION", "Add to favorites clicked"));
-        // Action listeners
         btnFavorite.setOnClickListener(v -> {
-            DictionaryResponse currentData = viewModel.getSearchResult().getValue();
-            if (currentData != null && currentData.word != null) {
-                // Trích xuất partOfSpeech và definition đầu tiên
-                String pos = "";
-                String shortMeaning = "";
-                if (currentData.meanings != null && !currentData.meanings.isEmpty()) {
-                    Meaning firstMeaning = currentData.meanings.get(0);
-                    pos = firstMeaning.partOfSpeech;
-                    if (firstMeaning.definitions != null && !firstMeaning.definitions.isEmpty()) {
-                        shortMeaning = firstMeaning.definitions.get(0).definition;
-                    }
-                }
-
-                SelectFavFolderDialog dialog = SelectFavFolderDialog.newInstance(currentData.word, pos, shortMeaning);
-                dialog.show(getChildFragmentManager(), "SelectFavFolderDialog");
-            }
+            // Chỉ đơn giản là gọi Dialog hiện lên.
+            // Dialog không cần nhận param, ViewModel sẽ tự lo phần data.
+            SelectFavFolderDialog dialog = new SelectFavFolderDialog();
+            dialog.show(getChildFragmentManager(), "SelectFavFolderDialog");
         });
 
         btnSave.setOnClickListener(v -> Log.d("ACTION", "Create flashcard clicked"));
-
 
         btnPlay.setOnClickListener(v -> {
             playAudio();

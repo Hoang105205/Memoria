@@ -107,6 +107,17 @@ public class SearchFragment extends Fragment {
             return true; // QUAN TRỌNG: consume để tránh hệ thống xử lý tiếp gây "đẩy lên"
         });
 
+        // Su dung logic observe để lấy dữ liệu từ ViewModel
+        viewModel.getExternalSearchQuery().observe(getViewLifecycleOwner(), queryToSearch -> {
+            if (queryToSearch != null && !queryToSearch.isEmpty()) {
+                edtWord.setText(queryToSearch);
+                edtWord.setSelection(queryToSearch.length());
+                searchWord(queryToSearch);
+
+                // Xóa dữ liệu sau khi tìm xong
+                viewModel.setExternalSearchQuery(null);
+            }
+        });
         return view;
     }
 

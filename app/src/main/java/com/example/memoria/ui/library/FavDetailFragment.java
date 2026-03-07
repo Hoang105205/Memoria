@@ -17,7 +17,9 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.memoria.R;
+import com.example.memoria.data.model.FavWord;
 import com.example.memoria.ui.adapter.FavWordAdapter;
+import com.example.memoria.ui.search.SearchViewModel;
 
 import java.util.UUID;
 
@@ -49,9 +51,36 @@ public class FavDetailFragment extends Fragment {
         RecyclerView rvCards = view.findViewById(R.id.rv_cards);
         rvCards.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(requireContext()));
 
-        FavWordAdapter wordAdapter = new FavWordAdapter(word -> {
-            // Sự kiện khi bấm nút ghim
-            viewModel.togglePinStatus(word);
+        FavWordAdapter wordAdapter = new FavWordAdapter(new FavWordAdapter.OnWordInteractionListener() {
+            @Override
+            public void onPinClick(FavWord word) {
+                viewModel.togglePinStatus(word);
+            }
+
+            @Override
+            public void onWordClick(FavWord word) {
+                // Dùng Shared ViewModel để truyền chữ
+                SearchViewModel searchViewModel = new ViewModelProvider(requireActivity()).get(SearchViewModel.class);
+                searchViewModel.setExternalSearchQuery(word.getWordText());
+
+                // Tìm NavController
+                androidx.navigation.NavController navController =
+                        androidx.navigation.Navigation.findNavController(requireActivity(), R.id.fragmentContainerView);
+
+                // tạo nav options để giả lập chuyển tab
+                androidx.navigation.NavOptions navOptions = new androidx.navigation.NavOptions.Builder()
+                        .setLaunchSingleTop(true)  // Tránh việc tạo ra 2 tab Search chồng lên nhau
+                        .setRestoreState(true)     // Khôi phục lại trạng thái cũ của tab Search (nếu có)
+                        .setPopUpTo(
+                                navController.getGraph().getStartDestinationId(), // Pop về đồ thị gốc
+                                false, // Không xóa đồ thị gốc
+                                true   // saveState = true -> Lưu lại trạng thái của tab Library đang mở
+                        )
+                        .build();
+
+                // Chuyển tab (Truyền null thay vì bundle)
+                navController.navigate(R.id.search_graph, null, navOptions);
+            }
         });
         rvCards.setAdapter(wordAdapter);
 
@@ -60,7 +89,7 @@ public class FavDetailFragment extends Fragment {
             UUID folderId = (UUID) getArguments().getSerializable("FOLDER_ID");
             if (folderId != null) {
                 viewModel.loadFolder(folderId);
-                viewModel.loadWords(folderId); // THÊM DÒNG NÀY: Yêu cầu lấy danh sách từ
+                viewModel.loadWords(folderId); // Yêu cầu lấy danh sách từ
             }
         }
 
@@ -70,7 +99,7 @@ public class FavDetailFragment extends Fragment {
             }
         });
 
-        // THÊM BLOCK NÀY: Observe danh sách từ để cập nhật lên Adapter
+        // Observe danh sách từ để cập nhật lên Adapter
         viewModel.getFolderWords().observe(getViewLifecycleOwner(), words -> {
             if (words != null) {
                 wordAdapter.setWords(words);
