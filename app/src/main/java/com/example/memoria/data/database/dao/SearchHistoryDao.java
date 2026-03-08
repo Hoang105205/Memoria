@@ -29,4 +29,10 @@ public interface SearchHistoryDao {
     // Xóa toàn bộ lịch sử tìm kiếm
     @Query("DELETE FROM search_histories")
     void clearAllSearchHistory();
+
+    @Query("SELECT * FROM search_histories WHERE word_text = :word LIMIT 1")
+    SearchHistory findByWordText(String word);
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void upsert(SearchHistory item);
 }
