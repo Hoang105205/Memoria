@@ -8,10 +8,9 @@
     <fragment
         android:id="@+id/searchFragment"
         android:name="com.example.memoria.ui.search.SearchFragment"
-        android:label="fragment_search"
+        android:label="Search"
         tools:layout="@layout/fragment_search">
 
-        <!-- Đây chính là Action (mũi tên di chuyển) -->
         <action
             android:id="@+id/action_searchFragment_to_searchResultFragment"
             app:destination="@id/searchResultFragment"
@@ -19,6 +18,10 @@
             app:exitAnim="@anim/nav_default_exit_anim"
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"
             app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+
+        <action
+            android:id="@+id/action_searchFragment_to_cameraFragment"
+            app:destination="@id/cameraFragment" />
     </fragment>
 
     <fragment
@@ -26,4 +29,11 @@
         android:name="com.example.memoria.ui.search.SearchResultFragment"
         android:label="fragment_search_result"
         tools:layout="@layout/fragment_search_result" />
+
+    <fragment
+        android:id="@+id/cameraFragment"
+        android:name="com.example.memoria.ui.search.CameraFragment"
+        android:label="Camera"
+        tools:layout="@layout/fragment_camera" />
+
 </navigation>

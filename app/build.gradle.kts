@@ -73,4 +73,15 @@ dependencies {
     // Hilt
     implementation("com.google.dagger:hilt-android:2.57.1")
     annotationProcessor("com.google.dagger:hilt-android-compiler:2.57.1")
+    // FlexboxLayoutManager
+    implementation("com.google.android.flexbox:flexbox:3.0.0")
+
+    //Camera
+    val cameraxVersion = "1.3.4"
+
+    implementation("androidx.camera:camera-core:$cameraxVersion")
+    implementation("androidx.camera:camera-camera2:$cameraxVersion")
+    implementation("androidx.camera:camera-lifecycle:$cameraxVersion")
+    implementation("androidx.camera:camera-view:$cameraxVersion")
+
 }
