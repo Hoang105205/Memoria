@@ -79,4 +79,13 @@
     <string name="add_new_fav_folder">Tạo mục yêu thích mới</string>
     <string name="msg_save_success">Lưu thành công!</string>
     <string name="msg_word_exists">Từ này đã có trong thư mục!</string>
+    <string name="recent">Gần đây</string>
+    <string name="voice_prompt">Đang lắng nghe…</string>
+    <string name="mic_permission">Cần quyền Microphone</string>
+    <string name="mic_permission_message">Bạn cần cấp quyền Microphone để dùng tìm kiếm bằng giọng nói.</string>
+    <string name="mic_permission_cancel">Bạn cần cấp quyền Microphone để dùng tìm kiếm bằng giọng nói.Bạn đã tắt quyền Microphone. Vui lòng bật lại trong Cài đặt để dùng tìm kiếm bằng giọng nói.</string>
+    <string name="btn_cancel">Hủy</string>
+    <string name="btn_setting">Mở Cài đặt</string>
+    <string name="search_hint">Tra từ</string>
+    <string name="no_results">Không tìm thấy kết quả cho từ "%1$s"</string>
 </resources>

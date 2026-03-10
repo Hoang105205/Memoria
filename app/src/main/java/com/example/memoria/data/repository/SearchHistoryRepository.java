@@ -59,7 +59,7 @@ public class SearchHistoryRepository {
             SearchHistory h = new SearchHistory(existing != null ? existing.getHistoryId() : UUID.randomUUID());
             h.setWordText(word);
             h.setSearchedAt(new Date());
-            searchHistoryDao.upsert(h);
+            searchHistoryDao.upsertAndTrim(h);
         });
     }
 }

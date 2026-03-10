@@ -1,19 +1,30 @@
 package com.example.memoria.ui.search;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.speech.RecognizerIntent;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
@@ -30,9 +41,8 @@ import com.google.android.flexbox.FlexboxLayoutManager;
 import com.google.android.flexbox.JustifyContent;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.UUID;
+import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -40,9 +50,6 @@ import dagger.hilt.android.AndroidEntryPoint;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-import android.content.Context;
-import android.view.inputmethod.InputMethodManager;
 
 @AndroidEntryPoint
 public class SearchFragment extends Fragment {
@@ -66,6 +73,15 @@ public class SearchFragment extends Fragment {
     private final List<String> suggestionWords = new ArrayList<>();
     private boolean suppressSuggestionFetch = false;
 
+    // No results UI
+    private View layoutNoResults;
+    private TextView tvNoResults;
+
+    // Voice
+    private ImageView ivMic;
+    private ActivityResultLauncher<String> requestAudioPermissionLauncher;
+    private ActivityResultLauncher<Intent> speechLauncher;
+
     public SearchFragment() {}
 
     @SuppressLint("ClickableViewAccessibility")
@@ -85,8 +101,21 @@ public class SearchFragment extends Fragment {
         });
 
         edtWord = view.findViewById(R.id.edt_search_searchBar);
-
         viewModel = new ViewModelProvider(requireActivity()).get(SearchViewModel.class);
+
+        // --- No results views ---
+        layoutNoResults = view.findViewById(R.id.layout_no_results);
+        tvNoResults = view.findViewById(R.id.tv_no_results);
+        hideNoResults();
+
+        // --- Register Activity Result Launchers (permission + speech) ---
+        registerVoiceLaunchers();
+
+        // --- Mic icon ---
+        ivMic = view.findViewById(R.id.ivMic);
+        if (ivMic != null) {
+            ivMic.setOnClickListener(v -> onMicClicked());
+        }
 
         // Recent setup
         tvRecent = view.findViewById(R.id.tv_search_recent);
@@ -103,6 +132,7 @@ public class SearchFragment extends Fragment {
             edtWord.setText(word);
             edtWord.setSelection(word.length());
             hideSuggestions();
+            hideNoResults();
             searchWord(word);
         });
         rvRecent.setAdapter(recentAdapter);
@@ -116,6 +146,7 @@ public class SearchFragment extends Fragment {
             edtWord.setText(word);
             edtWord.setSelection(word.length());
             hideSuggestions();
+            hideNoResults();
             searchWord(word);
         });
         listSuggestions.setLayoutManager(new LinearLayoutManager(requireContext()));
@@ -132,10 +163,16 @@ public class SearchFragment extends Fragment {
                     suppressSuggestionFetch = false;
                     return;
                 }
+
+                hideNoResults();
+
                 if (s.length() >= 2) {
                     fetchSuggestions(s.toString());
+
+                    loadRecent();
                 } else {
                     hideSuggestions();
+                    loadRecent();
                 }
             }
 
@@ -156,6 +193,7 @@ public class SearchFragment extends Fragment {
             String word = edtWord.getText().toString().trim();
             if (!word.isEmpty()) {
                 hideSuggestions();
+                hideNoResults();
                 searchWord(word);
             }
             return true;
@@ -167,18 +205,146 @@ public class SearchFragment extends Fragment {
             navController.navigate(R.id.action_searchFragment_to_cameraFragment);
         });
 
-        // Su dung logic observe để lấy dữ liệu từ ViewModel
+        // Observe external query
         viewModel.getExternalSearchQuery().observe(getViewLifecycleOwner(), queryToSearch -> {
             if (queryToSearch != null && !queryToSearch.isEmpty()) {
+                suppressSuggestionFetch = true;
                 edtWord.setText(queryToSearch);
                 edtWord.setSelection(queryToSearch.length());
+                hideNoResults();
                 searchWord(queryToSearch);
 
-                // Xóa dữ liệu sau khi tìm xong
                 viewModel.setExternalSearchQuery(null);
             }
         });
+
         return view;
+    }
+
+    private void showNoResults(String word) {
+        if (!isAdded()) return;
+
+        String w = (word == null) ? "" : word.trim();
+
+        if (tvNoResults != null) {
+            tvNoResults.setText(getString(R.string.no_results, "\"" + w + "\""));
+        }
+
+        if (layoutNoResults != null) layoutNoResults.setVisibility(View.VISIBLE);
+
+        hideSuggestions();
+        hideKeyboardAndClearFocus();
+
+        // Ẩn recent khi not found
+        if (tvRecent != null) tvRecent.setVisibility(View.GONE);
+        if (rvRecent != null) rvRecent.setVisibility(View.GONE);
+    }
+
+    private void hideNoResults() {
+        if (layoutNoResults != null) layoutNoResults.setVisibility(View.GONE);
+    }
+
+    private void registerVoiceLaunchers() {
+        // Permission launcher
+        requestAudioPermissionLauncher =
+                registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+                    if (isGranted) {
+                        startGoogleSpeechPopup();
+                    } else {
+                        boolean canAskAgain = shouldShowRequestPermissionRationale(Manifest.permission.RECORD_AUDIO);
+                        if (!canAskAgain) {
+                            showGoToSettingsDialog();
+                        } else {
+                            showPermissionDeniedDialog();
+                        }
+                    }
+                });
+
+        // Speech launcher
+        speechLauncher =
+                registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+                    if (result.getResultCode() != android.app.Activity.RESULT_OK || result.getData() == null) {
+                        return;
+                    }
+
+                    ArrayList<String> matches =
+                            result.getData().getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+
+                    if (matches == null || matches.isEmpty()) return;
+
+                    String spokenText = matches.get(0);
+                    if (spokenText == null) return;
+
+                    spokenText = spokenText.trim();
+                    if (spokenText.isEmpty()) return;
+
+                    suppressSuggestionFetch = true;
+                    edtWord.setText(spokenText);
+                    edtWord.setSelection(spokenText.length());
+                    hideSuggestions();
+                    hideNoResults();
+                    searchWord(spokenText);
+                });
+    }
+
+    private void onMicClicked() {
+        if (!isAdded()) return;
+
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.RECORD_AUDIO)
+                == PackageManager.PERMISSION_GRANTED) {
+            startGoogleSpeechPopup();
+        } else {
+            requestAudioPermissionLauncher.launch(Manifest.permission.RECORD_AUDIO);
+        }
+    }
+
+    private void startGoogleSpeechPopup() {
+        if (!isAdded()) return;
+
+        try {
+            Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+            intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+            intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+            intent.putExtra(RecognizerIntent.EXTRA_PROMPT, getString(R.string.voice_prompt));
+
+            speechLauncher.launch(intent);
+        } catch (Exception e) {
+            Log.e("VOICE", "Cannot start speech recognizer: " + e.getMessage());
+            showSpeechNotAvailableDialog();
+        }
+    }
+
+    private void showPermissionDeniedDialog() {
+        if (!isAdded()) return;
+        new AlertDialog.Builder(requireContext())
+                .setTitle(R.string.mic_permission)
+                .setMessage(R.string.mic_permission_message)
+                .setPositiveButton("OK", (d, w) -> d.dismiss())
+                .show();
+    }
+
+    private void showGoToSettingsDialog() {
+        if (!isAdded()) return;
+        new AlertDialog.Builder(requireContext())
+                .setTitle(R.string.mic_permission)
+                .setMessage(R.string.mic_permission_cancel)
+                .setNegativeButton(R.string.btn_cancel, (d, w) -> d.dismiss())
+                .setPositiveButton(R.string.btn_setting, (d, w) -> {
+                    d.dismiss();
+                    Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                    intent.setData(android.net.Uri.fromParts("package", requireContext().getPackageName(), null));
+                    startActivity(intent);
+                })
+                .show();
+    }
+
+    private void showSpeechNotAvailableDialog() {
+        if (!isAdded()) return;
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Không thể nhận diện giọng nói")
+                .setMessage("Thiết bị không hỗ trợ hoặc thiếu Google Speech/Google app.")
+                .setPositiveButton("OK", (d, w) -> d.dismiss())
+                .show();
     }
 
     private void loadRecent() {
@@ -217,8 +383,12 @@ public class SearchFragment extends Fragment {
                     public void onResponse(Call<List<DictionaryResponse>> call,
                                            Response<List<DictionaryResponse>> response) {
 
-                        if (isAdded() && response.isSuccessful()
-                                && response.body() != null && !response.body().isEmpty()) {
+                        boolean hasData = response.isSuccessful()
+                                && response.body() != null
+                                && !response.body().isEmpty();
+
+                        if (isAdded() && hasData) {
+                            hideNoResults();
 
                             historyRepo.saveOrMoveToTop(word);
                             loadRecent();
@@ -232,12 +402,14 @@ public class SearchFragment extends Fragment {
                             }
                         } else {
                             Log.e("SEARCH", "No result or API error");
+                            showNoResults(word);
                         }
                     }
 
                     @Override
                     public void onFailure(Call<List<DictionaryResponse>> call, Throwable t) {
                         Log.e("API", t.getMessage() != null ? t.getMessage() : "API error");
+                        showNoResults(word);
                     }
                 });
     }
@@ -252,7 +424,6 @@ public class SearchFragment extends Fragment {
                         if (response.isSuccessful() && response.body() != null) {
                             suggestionWords.clear();
 
-                            // CHỈ LẤY TỐI ĐA MAX_SUGGESTIONS
                             for (Suggestion s : response.body()) {
                                 if (s == null || s.word == null) continue;
 
@@ -278,11 +449,9 @@ public class SearchFragment extends Fragment {
     private void hideKeyboardAndClearFocus() {
         if (!isAdded()) return;
 
-        View view = requireView();
         View focused = requireActivity().getCurrentFocus();
         if (focused == null) focused = edtWord;
 
-        // clear focus trước để cursor biến mất
         edtWord.clearFocus();
 
         InputMethodManager imm =
