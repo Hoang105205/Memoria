@@ -16,6 +16,16 @@ import java.util.List;
 public class DeckAdapter extends RecyclerView.Adapter<DeckAdapter.DeckViewHolder> {
 
     private List<Deck> deckList = new ArrayList<>();
+    private OnDeckClickListener listener;
+
+    public interface OnDeckClickListener {
+        void onDeckClick(Deck deck);
+    }
+
+    public DeckAdapter(OnDeckClickListener listener) {
+        this.listener = listener;
+    }
+
 
     public void setDecks(List<Deck> decks) {
         this.deckList = decks;
@@ -53,6 +63,12 @@ public class DeckAdapter extends RecyclerView.Adapter<DeckAdapter.DeckViewHolder
 
             holder.tvCount.setText(context.getString(R.string.deck_progress, learnedCards, totalCards));
         }
+
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onDeckClick(deck);
+            }
+        });
     }
 
     @Override

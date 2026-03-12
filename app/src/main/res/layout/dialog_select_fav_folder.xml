@@ -30,7 +30,7 @@
         <ImageView
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:src="@android:drawable/ic_menu_add" />
+            android:src="@drawable/ic_add" />
 
         <TextView
             android:layout_width="match_parent"

@@ -47,7 +47,13 @@ public class DeckListFragment extends Fragment {
         FloatingActionButton btnAdd = view.findViewById(R.id.btn_deck_add);
 
         rvDeckList.setLayoutManager(new LinearLayoutManager(getContext()));
-        deckAdapter = new DeckAdapter();
+
+        deckAdapter = new DeckAdapter(deck -> {
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("DECK_ID", deck.getDeckId());
+            androidx.navigation.Navigation.findNavController(requireView())
+                    .navigate(R.id.deckDetailFragment, bundle);
+        });
         rvDeckList.setAdapter(deckAdapter);
 
         // Lắng nghe dữ liệu
