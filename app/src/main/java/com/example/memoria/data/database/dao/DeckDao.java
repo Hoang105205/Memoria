@@ -8,6 +8,7 @@ import androidx.room.Query;
 import androidx.room.Update;
 
 import com.example.memoria.data.model.Deck;
+import com.example.memoria.data.model.DeckWithCount;
 
 import java.util.List;
 import java.util.UUID;
@@ -37,4 +38,7 @@ public interface DeckDao {
     // Tìm kiếm bộ thẻ theo tên
     @Query("SELECT * FROM decks WHERE deck_name LIKE '%' || :keyword || '%'")
     List<Deck> searchDecks(String keyword);
+
+    @Query("SELECT d.*, COUNT(c.card_id) AS total_cards FROM decks d LEFT JOIN cards c ON d.deck_id = c.deck_id GROUP BY d.deck_id")
+    List<DeckWithCount> getAllDecksWithCount();
 }

@@ -22,4 +22,16 @@
         android:name="com.example.memoria.ui.library.DeckDetailFragment"
         android:label="DeckDetailFragment"
         tools:layout="@layout/fragment_deck_detail" />
+
+    <fragment
+        android:id="@+id/createNewCardFragment"
+        android:name="com.example.memoria.ui.library.CreateNewCardFragment"
+        android:label="CreateNewCardFragment"
+        tools:layout="@layout/fragment_create_new_card" />
+
+    <fragment
+        android:id="@+id/cardDetailFragment"
+        android:name="com.example.memoria.ui.library.CardDetailFragment"
+        android:label="CardDetailFragment"
+        tools:layout="@layout/fragment_card_detail_container" />
 </navigation>

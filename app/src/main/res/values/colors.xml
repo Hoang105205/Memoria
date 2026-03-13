@@ -18,4 +18,5 @@
     <color name="black">#000000</color>
     <color name="bg_detail_header">#E3F2FD</color>
     <color name="white_translucent">#80FFFFFF</color>
+    <color name="purple_500">#6200EE</color>
 </resources>
