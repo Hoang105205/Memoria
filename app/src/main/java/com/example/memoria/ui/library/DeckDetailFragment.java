@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.memoria.R;
+import com.example.memoria.ui.adapter.DeckCardAdapter;
 
 import java.util.UUID;
 
@@ -47,28 +48,43 @@ public class DeckDetailFragment extends Fragment {
         RecyclerView rvCards = view.findViewById(R.id.rv_deck_cards);
 
         viewModel = new ViewModelProvider(this).get(DeckDetailViewModel.class);
+        CardViewModel cardViewModel = new ViewModelProvider(this).get(CardViewModel.class);
 
-        // Khởi tạo RecyclerView (Adapter sẽ được thêm sau khi bạn làm CardAdapter)
+        // 1. Cấu hình layout cho RecyclerView
         rvCards.setLayoutManager(new LinearLayoutManager(requireContext()));
 
-        // Nhận ID từ Bundle và load dữ liệu (Tương tự FavFolder)
+        // 2. Khởi tạo DeckCardAdapter và gắn vào RecyclerView
+        DeckCardAdapter cardAdapter = new DeckCardAdapter((card, position) -> {
+            // Khi bấm vào 1 thẻ trong danh sách -> Mở CardDetailFragment
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("DECK_ID", card.getDeckId());
+            bundle.putInt("SELECTED_POSITION", position);
+            androidx.navigation.Navigation.findNavController(view)
+                    .navigate(R.id.cardDetailFragment, bundle);
+        });
+        rvCards.setAdapter(cardAdapter);
+
+        // 3. Nhận ID từ Bundle và load dữ liệu
         if (getArguments() != null) {
             UUID deckId = (UUID) getArguments().getSerializable("DECK_ID");
             if (deckId != null) {
-                 viewModel.loadDeck(deckId);
-                // viewModel.loadCards(deckId);
+                viewModel.loadDeck(deckId); // Load tên Deck
+
+                // Lắng nghe danh sách Card trả về và gán vào Adapter
+                cardViewModel.getCardsByDeckId(deckId).observe(getViewLifecycleOwner(), cards -> {
+                    cardAdapter.setCards(cards);
+                });
             }
         }
 
-        // Lắng nghe dữ liệu từ ViewModel để set tên (Mở comment khi có ViewModel)
+        // Lắng nghe dữ liệu từ ViewModel để set tên
         viewModel.getDeck().observe(getViewLifecycleOwner(), deck -> {
             if (deck != null) {
                 tvDeckName.setText(deck.getDeckName());
             }
         });
 
-
-        // Bấm nút 3 chấm -> Hiện Popup Menu 5 lựa chọn
+        // Hiện Popup Menu 5 lựa chọn
         btnOptions.setOnClickListener(this::showPopupMenu);
 
         // Nút Back
@@ -100,10 +116,18 @@ public class DeckDetailFragment extends Fragment {
                     Toast.makeText(requireContext(), "Edit card theme clicked", Toast.LENGTH_SHORT).show();
                     return true;
                 case 4:
-                    // TODO: Xử lý Add new card
-                    Toast.makeText(requireContext(), "Add new card clicked", Toast.LENGTH_SHORT).show();
+                    // Chuyển sang trang CreateNewCardFragment
+                    UUID currentDeckId = viewModel.getDeck().getValue() != null ?
+                            viewModel.getDeck().getValue().getDeckId() : null;
+                    if (currentDeckId != null) {
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable("DECK_ID", currentDeckId);
+                        androidx.navigation.Navigation.findNavController(requireView())
+                                .navigate(R.id.createNewCardFragment, bundle);
+                    }
                     return true;
                 case 5:
+                    // Hiển thị Dialog xác nhận xóa
                     showDeleteConfirmDialog();
                     return true;
                 default:

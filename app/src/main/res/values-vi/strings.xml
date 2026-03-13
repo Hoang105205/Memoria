@@ -97,4 +97,16 @@
     <string name="btn_setting">Mở Cài đặt</string>
     <string name="search_hint">Tra từ</string>
     <string name="no_results">Không tìm thấy kết quả cho từ "%1$s"</string>
+    <string name="create_new_card">Tạo thẻ mới</string>
+    <string name="edit_card">Chỉnh sửa thẻ</string>
+    <string name="front_text_hint">Nhập mặt trước thẻ</string>
+    <string name="meaning_label">Nghĩa %1$d</string>
+    <string name="meaning_hint">Nhập nghĩa...</string>
+    <string name="error_empty_card">Hãy nhập nội dung mặt trước và tối thiểu 1 nghĩa!</string>
+    <string name="action_add_meaning">+ Thêm nghĩa</string>
+    <string name="card_update_success">Thẻ đã được cập nhật thành công!</string>
+    <string name="card_add_success">Thẻ mới đã được thêm thành công!</string>
+    <string name="action_delete_card">Xóa thẻ</string>
+    <string name="dialog_title_delete_card">Xóa thẻ</string>
+    <string name="dialog_message_delete_card">Bạn có chắc muốn xóa thẻ này?</string>
 </resources>

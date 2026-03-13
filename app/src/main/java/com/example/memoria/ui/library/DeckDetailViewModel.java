@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.memoria.data.model.Card; // Cập nhật theo Model của bạn
+import com.example.memoria.data.model.Card;
 import com.example.memoria.data.model.Deck;
 import com.example.memoria.data.repository.DeckRepository;
 
@@ -19,7 +19,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
 public class DeckDetailViewModel extends ViewModel {
     private final DeckRepository repository;
     private final MutableLiveData<Deck> currentDeck = new MutableLiveData<>();
-    private final MutableLiveData<List<Card>> deckCards = new MutableLiveData<>();
 
     @Inject
     public DeckDetailViewModel(DeckRepository repository) {
@@ -30,19 +29,10 @@ public class DeckDetailViewModel extends ViewModel {
         return currentDeck;
     }
 
-    public LiveData<List<Card>> getDeckCards() {
-        return deckCards;
-    }
-
     // Tải thông tin của Deck
     public void loadDeck(UUID deckId) {
         repository.getDeckById(deckId, currentDeck::postValue);
     }
-
-    // Tải danh sách thẻ từ vựng trong Deck
-//    public void loadCards(UUID deckId) {
-//        repository.getCardsByDeck(deckId, deckCards::postValue);
-//    }
 
     // Đổi tên Deck
     public void updateDeckName(String newName) {

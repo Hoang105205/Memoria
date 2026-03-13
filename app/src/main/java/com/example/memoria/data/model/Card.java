@@ -5,6 +5,8 @@ import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
 import lombok.Data;
+
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -19,7 +21,7 @@ import java.util.UUID;
         )
 )
 @Data
-public class Card {
+public class Card implements Serializable {
     @PrimaryKey
     @ColumnInfo(name = "card_id")
     @androidx.annotation.NonNull
