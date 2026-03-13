@@ -103,4 +103,16 @@
     <string name="add_new_fav_folder">Add new favorite folder</string>
     <string name="msg_save_success">Save successfully!</string>
     <string name="msg_word_exists">Word already exists in this folder!</string>
+
+    <string name="action_edit_deck_name">Edit deck name</string>
+    <string name="action_share_deck">Share deck</string>
+    <string name="action_edit_card_theme">Edit card theme</string>
+    <string name="action_add_new_card">Add new card</string>
+    <string name="action_delete_deck">Delete deck</string>
+
+    <string name="dialog_title_edit_deck_name">Edit Deck Name</string>
+    <string name="dialog_hint_deck_name">Enter new deck name</string>
+
+    <string name="dialog_title_delete_deck">Delete Deck?</string>
+    <string name="dialog_message_delete_deck">Are you sure you want to delete this deck? All cards inside will be permanently removed.</string>
 </resources>

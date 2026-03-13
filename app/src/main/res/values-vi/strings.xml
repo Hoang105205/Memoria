@@ -79,6 +79,15 @@
     <string name="add_new_fav_folder">Tạo mục yêu thích mới</string>
     <string name="msg_save_success">Lưu thành công!</string>
     <string name="msg_word_exists">Từ này đã có trong thư mục!</string>
+    <string name="action_edit_deck_name">Sửa tên</string>
+    <string name="action_share_deck">Chia sẻ bộ thẻ</string>
+    <string name="action_edit_card_theme">Chỉnh nền bộ thẻ</string>
+    <string name="action_add_new_card">Thêm thẻ mới</string>
+    <string name="action_delete_deck">Xóa bộ thẻ</string>
+    <string name="dialog_title_edit_deck_name">Sửa tên bộ thẻ</string>
+    <string name="dialog_hint_deck_name">Nhập tên mới của bộ thẻ</string>
+    <string name="dialog_title_delete_deck">Xóa bộ thẻ?</string>
+    <string name="dialog_message_delete_deck">Bạn chắc chắn muốn xóa bộ thẻ này? Toàn bộ thẻ trong bộ cũng sẽ bị xóa.</string>
     <string name="recent">Gần đây</string>
     <string name="voice_prompt">Đang lắng nghe…</string>
     <string name="mic_permission">Cần quyền Microphone</string>

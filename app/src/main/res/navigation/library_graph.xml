@@ -16,4 +16,10 @@
         android:name="com.example.memoria.ui.library.FavDetailFragment"
         android:label="FavDetailFragment"
         tools:layout="@layout/fragment_fav_detail" />
+
+    <fragment
+        android:id="@+id/deckDetailFragment"
+        android:name="com.example.memoria.ui.library.DeckDetailFragment"
+        android:label="DeckDetailFragment"
+        tools:layout="@layout/fragment_deck_detail" />
 </navigation>

@@ -3,6 +3,7 @@ package com.example.memoria.data.repository;
 import com.example.memoria.data.database.dao.DeckDao;
 import com.example.memoria.data.model.Deck;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -38,5 +39,20 @@ public class DeckRepository {
 
     public void insertDeck(Deck deck) {
         executor.execute(() -> deckDao.insertDeck(deck));
+    }
+
+    public void getDeckById(UUID deckId, DataCallback<Deck> callback) {
+        executor.execute(() -> {
+            Deck data = deckDao.getDeckById(deckId);
+            callback.onDataLoaded(data);
+        });
+    }
+
+    public void updateDeck(Deck deck) {
+        executor.execute(() -> deckDao.updateDeck(deck));
+    }
+
+    public void deleteDeck(Deck deck) {
+        executor.execute(() -> deckDao.deleteDeck(deck));
     }
 }
