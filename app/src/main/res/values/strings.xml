@@ -68,6 +68,15 @@
     <string name="master_vocabulary_des">Retain words longer using our scientific Spaced Repetition flashcard system.</string>
     <string name="get_started">Get Started</string>
     <string name="later">Later</string>
+    <string name="recent">Recent</string>
+    <string name="voice_prompt">Listening…</string>
+    <string name="mic_permission">Microphone Permission</string>
+    <string name="mic_permission_message">You need to grant Microphone permission to use voice search.</string>
+    <string name="mic_permission_cancel">You need to grant Microphone permission to use voice search. You have turned off Microphone permission. Please turn it back on in Settings to use voice search.</string>
+    <string name="btn_cancel">Cancel</string>
+    <string name="btn_setting">Setting</string>
+    <string name="search_hint">Search</string>
+    <string name="no_results">No results found for "%1$s"</string>
 
     <!-- Library -->
     <string name="title_library">Library</string>
