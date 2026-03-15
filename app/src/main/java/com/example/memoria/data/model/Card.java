@@ -49,7 +49,7 @@ public class Card implements Serializable {
     private Date updatedAt;
 
     @ColumnInfo(name = "ease_factor")
-    private float easeFactor;
+    private double easeFactor;
 
     @ColumnInfo(name = "interval_days")
     private int intervalDays;
@@ -59,6 +59,9 @@ public class Card implements Serializable {
 
     @ColumnInfo(name = "last_review_at")
     private Date lastReviewAt;
+
+    @ColumnInfo(name = "next_review_date")
+    private Date nextReviewDate;
 
     @ColumnInfo(name = "review_count")
     private int reviewCount;
