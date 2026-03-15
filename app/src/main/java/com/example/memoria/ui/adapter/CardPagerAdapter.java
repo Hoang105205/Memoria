@@ -1,19 +1,26 @@
 package com.example.memoria.ui.adapter;
 
+import static com.example.memoria.ui.study.LearnFragment.CLICK_THRESHOLD;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
+import android.annotation.SuppressLint;
+import android.net.Uri;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.memoria.R;
 import com.example.memoria.data.model.Card;
 
@@ -32,7 +39,7 @@ public class CardPagerAdapter extends RecyclerView.Adapter<CardPagerAdapter.Card
     @NonNull
     @Override
     public CardViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_pager_card, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_flashcard, parent, false);
         return new CardViewHolder(view);
     }
 
@@ -59,7 +66,7 @@ public class CardPagerAdapter extends RecyclerView.Adapter<CardPagerAdapter.Card
         CardView cardContainer;
         View layoutFront, layoutBack;
         ImageButton btnFlip;
-        TextView tvFrontText, tvMeanings;
+        TextView tvFrontText, tvBackText, tvMeanings;
         ImageView imgFront;
 
         boolean isFront = true;
@@ -67,13 +74,13 @@ public class CardPagerAdapter extends RecyclerView.Adapter<CardPagerAdapter.Card
 
         public CardViewHolder(@NonNull View itemView) {
             super(itemView);
-            cardContainer = itemView.findViewById(R.id.card_container);
+            cardContainer = itemView.findViewById(R.id.card_flash_card);
             layoutFront = itemView.findViewById(R.id.layout_front);
             layoutBack = itemView.findViewById(R.id.layout_back);
-            btnFlip = itemView.findViewById(R.id.btn_flip_card);
-            tvFrontText = itemView.findViewById(R.id.tv_front_text);
-            tvMeanings = itemView.findViewById(R.id.tv_meanings);
-            imgFront = itemView.findViewById(R.id.img_front);
+            tvFrontText = itemView.findViewById(R.id.tv_word_front);
+            tvBackText = itemView.findViewById(R.id.tv_word_back);
+            tvMeanings = itemView.findViewById(R.id.tv_definition);
+            imgFront = itemView.findViewById(R.id.img_flash_card);
 
             setupFlipAnimation();
         }
@@ -88,6 +95,25 @@ public class CardPagerAdapter extends RecyclerView.Adapter<CardPagerAdapter.Card
             // Gán dữ liệu
             if (card.getFrontText() != null) {
                 tvFrontText.setText(card.getFrontText());
+                tvBackText.setText(card.getFrontText());
+            }
+
+            String imageUriString = card.getFrontImage();
+            if (imageUriString != null && !imageUriString.isEmpty()) {
+
+                Uri imageUri = Uri.parse(imageUriString);
+
+                Glide.with(itemView.getContext())
+                        .load(imageUri)
+                        .fitCenter()
+                        // .placeholder(R.drawable.ic_loading) // (Tùy chọn) Ảnh hiển thị trong lúc chờ load
+                        // .error(R.drawable.ic_error_image)   // (Tùy chọn) Ảnh hiển thị nếu load lỗi/mất file
+                        .into(imgFront);
+
+            } else {
+                // No image
+                imgFront.setVisibility(View.GONE);
+                Glide.with(itemView.getContext()).clear(imgFront);
             }
 
             if (card.getBackMeanings() != null) {
@@ -99,40 +125,125 @@ public class CardPagerAdapter extends RecyclerView.Adapter<CardPagerAdapter.Card
             }
         }
 
+        @SuppressLint("ClickableViewAccessibility")
         private void setupFlipAnimation() {
-            btnFlip.setOnClickListener(v -> {
-                if (!flipable) return;
-                flipable = false;
+//            btnFlip.setOnClickListener(v -> {
+//                if (!flipable) return;
+//                flipable = false;
+//
+//                ObjectAnimator flipOut = ObjectAnimator.ofFloat(cardContainer, "rotationY", 0f, -90f);
+//                flipOut.setDuration(150);
+//                ObjectAnimator flipIn = ObjectAnimator.ofFloat(cardContainer, "rotationY", 90f, 0f);
+//                flipIn.setDuration(150);
+//
+//                flipOut.addListener(new AnimatorListenerAdapter() {
+//                    @Override
+//                    public void onAnimationEnd(Animator animation) {
+//                        if (isFront) {
+//                            layoutFront.setVisibility(View.GONE);
+//                            layoutBack.setVisibility(View.VISIBLE);
+//                        } else {
+//                            layoutFront.setVisibility(View.VISIBLE);
+//                            layoutBack.setVisibility(View.GONE);
+//                        }
+//                        isFront = !isFront;
+//                        flipIn.start();
+//                    }
+//                });
+//
+//                flipIn.addListener(new AnimatorListenerAdapter() {
+//                    @Override
+//                    public void onAnimationEnd(Animator animation) {
+//                        flipable = true;
+//                    }
+//                });
+//
+//                flipOut.start();
+//            });
 
-                ObjectAnimator flipOut = ObjectAnimator.ofFloat(cardContainer, "rotationY", 0f, -90f);
-                flipOut.setDuration(150);
-                ObjectAnimator flipIn = ObjectAnimator.ofFloat(cardContainer, "rotationY", 90f, 0f);
-                flipIn.setDuration(150);
+            ScrollView scrollView = itemView.findViewById(R.id.scroll_definition);
+            if (scrollView != null) {
+                scrollView.setOnTouchListener(new View.OnTouchListener() {
+                    private float startX, startY;
 
-                flipOut.addListener(new AnimatorListenerAdapter() {
                     @Override
-                    public void onAnimationEnd(Animator animation) {
-                        if (isFront) {
-                            layoutFront.setVisibility(View.GONE);
-                            layoutBack.setVisibility(View.VISIBLE);
-                        } else {
-                            layoutFront.setVisibility(View.VISIBLE);
-                            layoutBack.setVisibility(View.GONE);
+                    public boolean onTouch(View v, MotionEvent event) {
+                        switch (event.getAction()) {
+                            case MotionEvent.ACTION_DOWN:
+                                startX = event.getX();
+                                startY = event.getY();
+                                // Allow ScrollView continue operate
+                                break;
+                            case MotionEvent.ACTION_UP:
+                                float endX = event.getX();
+                                float endY = event.getY();
+                                float distance = (float) Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
+
+                                if (distance <= CLICK_THRESHOLD) {
+                                    flipCard((CardView) itemView);
+                                    return true;
+                                }
+                                break;
                         }
-                        isFront = !isFront;
-                        flipIn.start();
+                        return v.onTouchEvent(event); // Give back control to ScrollView
                     }
                 });
+            }
 
-                flipIn.addListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        flipable = true;
-                    }
-                });
-
-                flipOut.start();
+            itemView.setOnClickListener(v -> {
+                flipCard((CardView) v);
             });
+        }
+
+        private void flipCard(CardView card) {
+            if (!flipable) return;
+            if (card == null) return;
+
+            final View front = card.findViewById(R.id.layout_front);
+            final View back = card.findViewById(R.id.layout_back);
+
+            if (front == null || back == null) return;
+
+            card.setClickable(false);
+
+            final float originalElevation = card.getCardElevation();
+
+            ObjectAnimator flipOut = ObjectAnimator.ofFloat(card, "rotationY", 0f, -90f);
+            flipOut.setDuration(150);
+
+            ObjectAnimator flipIn = ObjectAnimator.ofFloat(card, "rotationY", 90f, 0f);
+            flipIn.setDuration(150);
+
+            flipOut.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationStart(Animator animation) {
+                    card.setCardElevation(0f);
+                    flipable = false;
+                }
+
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    if (front.getVisibility() == View.VISIBLE) {
+                        front.setVisibility(View.GONE);
+                        back.setVisibility(View.VISIBLE);
+                    } else {
+                        front.setVisibility(View.VISIBLE);
+                        back.setVisibility(View.GONE);
+                    }
+                    flipIn.start();
+                }
+            });
+
+            flipIn.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    card.setCardElevation(originalElevation);
+                    flipable = true;
+                    card.setClickable(true);
+                }
+            });
+
+            flipOut.start();
         }
     }
 }
