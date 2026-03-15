@@ -129,4 +129,26 @@
     <string name="action_delete_card">Delete card</string>
     <string name="dialog_title_delete_card">Delete Card</string>
     <string name="dialog_message_delete_card">Are you sure you want to delete this card?</string>
+
+    <plurals name="time_days">
+        <item quantity="one">%d day</item>
+        <item quantity="other">%d days</item>
+    </plurals>
+
+    <plurals name="time_hours">
+        <item quantity="one">%d hour</item>
+        <item quantity="other">%d hours</item>
+    </plurals>
+
+    <plurals name="time_minutes">
+        <item quantity="one">%d minute</item>
+        <item quantity="other">%d minutes</item>
+    </plurals>
+
+    <string name="time_few_seconds">a few seconds</string>
+
+    <string name="time_hours_and_minutes">%1$s %2$s</string>
+    <string name="empty_deck_message">Current deck is empty.\nPlease add a new card!</string>
+    <string name="next_flashcard_message">Next flashcard will be opened in\n%1$s.</string>
+    <string name="done_deck_message">You\'ve memorized all\nthe cards in this set!</string>
 </resources>

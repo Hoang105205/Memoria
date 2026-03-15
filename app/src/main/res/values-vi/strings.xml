@@ -109,4 +109,23 @@
     <string name="action_delete_card">Xóa thẻ</string>
     <string name="dialog_title_delete_card">Xóa thẻ</string>
     <string name="dialog_message_delete_card">Bạn có chắc muốn xóa thẻ này?</string>
+
+    <plurals name="time_days">
+        <item quantity="other">%d ngày</item>
+    </plurals>
+
+    <plurals name="time_hours">
+        <item quantity="other">%d giờ</item>
+    </plurals>
+
+    <plurals name="time_minutes">
+        <item quantity="other">%d phút</item>
+    </plurals>
+
+    <string name="time_few_seconds">Một vài giây</string>
+
+    <string name="time_hours_and_minutes">%1$s %2$s</string>
+    <string name="empty_deck_message">Bộ thẻ hiện đang trống.\nXin hãy thêm thẻ mới!</string>
+    <string name="next_flashcard_message">Thẻ tiếp theo sẽ mở sau\n%1$s.</string>
+    <string name="done_deck_message">Bạn đã học thuộc hết\ncác thẻ trong bộ này!</string>
 </resources>
