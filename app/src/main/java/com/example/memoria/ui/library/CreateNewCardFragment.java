@@ -22,6 +22,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
+import com.bumptech.glide.Glide;
 import com.example.memoria.R;
 import com.example.memoria.data.model.Card;
 
@@ -43,6 +44,7 @@ public class CreateNewCardFragment extends Fragment {
     private CardViewModel viewModel;
 
     private UUID deckId;
+    private String deckName;
 
     // Xử lý Edit và Image
     private Card cardToEdit = null;
@@ -63,14 +65,22 @@ public class CreateNewCardFragment extends Fragment {
     private Button btnAddMeaning;
 
     // --- Khai báo bộ ảnh chọn từ thư viện ---
-    private final ActivityResultLauncher<String> pickImageLauncher = registerForActivityResult(
-            new ActivityResultContracts.GetContent(),
-            uri -> {
-                if (uri != null) {
-                    imgFront.setImageURI(uri);
-                    selectedImageUri = uri.toString(); // Lưu lại đường dẫn ảnh
-                }
+    private final ActivityResultLauncher<String[]> pickImageLauncher = registerForActivityResult(
+        new ActivityResultContracts.OpenDocument(),
+        uri -> {
+            if (uri != null) {
+                requireActivity().getContentResolver().takePersistableUriPermission(
+                        uri,
+                        android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
+                );
+
+                selectedImageUri = uri.toString();
+                Glide.with(requireContext())
+                        .load(Uri.parse(selectedImageUri))
+                        .fitCenter()
+                        .into(imgFront);
             }
+        }
     );
 
     @Nullable
@@ -87,6 +97,7 @@ public class CreateNewCardFragment extends Fragment {
         // xác định xem đang là mode edit hay create
         if (getArguments() != null) {
             deckId = (UUID) getArguments().getSerializable("DECK_ID");
+            deckName = getArguments().getString("DECK_NAME");
             if (getArguments().containsKey("EDIT_CARD")) {
                 cardToEdit = (Card) getArguments().getSerializable("EDIT_CARD");
             }
@@ -105,10 +116,13 @@ public class CreateNewCardFragment extends Fragment {
         Button btnCreate = view.findViewById(R.id.btn_create_card);
         btnCreate.setOnClickListener(v -> saveCard());
 
+        TextView tvDeckName = view.findViewById(R.id.tv_deck_name_header);
+        tvDeckName.setText(deckName);
+
         view.findViewById(R.id.btn_back).setOnClickListener(v -> Navigation.findNavController(v).navigateUp());
 
         // Bấm vào icon ảnh để mở thư viện
-        imgFront.setOnClickListener(v -> pickImageLauncher.launch("image/*"));
+        imgFront.setOnClickListener(v -> pickImageLauncher.launch(new String[]{"image/*"}));
     }
 
     private void initViews(View view) {
@@ -135,7 +149,10 @@ public class CreateNewCardFragment extends Fragment {
             etFrontText.setText(cardToEdit.getFrontText());
             if (cardToEdit.getFrontImage() != null) {
                 selectedImageUri = cardToEdit.getFrontImage();
-                imgFront.setImageURI(Uri.parse(selectedImageUri));
+                Glide.with(requireContext())
+                        .load(Uri.parse(selectedImageUri))
+                        .fitCenter() // Tự động cắt ảnh cho đẹp mắt
+                        .into(imgFront);
             }
 
             // Điền mặt sau (Meanings)
