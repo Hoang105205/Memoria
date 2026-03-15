@@ -27,9 +27,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
 public class DeckDetailFragment extends Fragment {
-
-     private DeckDetailViewModel viewModel;
-
+    private DeckDetailViewModel viewModel;
     private TextView tvDeckName;
 
     @Nullable
@@ -53,12 +51,26 @@ public class DeckDetailFragment extends Fragment {
         // 1. Cấu hình layout cho RecyclerView
         rvCards.setLayoutManager(new LinearLayoutManager(requireContext()));
 
+        // Lắng nghe dữ liệu từ ViewModel để set tên
+        viewModel.getDeck().observe(getViewLifecycleOwner(), deck -> {
+            if (deck != null) {
+                tvDeckName.setText(deck.getDeckName());
+            }
+        });
+
         // 2. Khởi tạo DeckCardAdapter và gắn vào RecyclerView
         DeckCardAdapter cardAdapter = new DeckCardAdapter((card, position) -> {
             // Khi bấm vào 1 thẻ trong danh sách -> Mở CardDetailFragment
             Bundle bundle = new Bundle();
             bundle.putSerializable("DECK_ID", card.getDeckId());
             bundle.putInt("SELECTED_POSITION", position);
+
+            String currentDeckName = "";
+            if (viewModel.getDeck().getValue() != null) {
+                currentDeckName = viewModel.getDeck().getValue().getDeckName();
+            }
+            bundle.putString("DECK_NAME", currentDeckName);
+
             androidx.navigation.Navigation.findNavController(view)
                     .navigate(R.id.cardDetailFragment, bundle);
         });
@@ -77,13 +89,6 @@ public class DeckDetailFragment extends Fragment {
             }
         }
 
-        // Lắng nghe dữ liệu từ ViewModel để set tên
-        viewModel.getDeck().observe(getViewLifecycleOwner(), deck -> {
-            if (deck != null) {
-                tvDeckName.setText(deck.getDeckName());
-            }
-        });
-
         // Hiện Popup Menu 5 lựa chọn
         btnOptions.setOnClickListener(this::showPopupMenu);
 
@@ -101,7 +106,11 @@ public class DeckDetailFragment extends Fragment {
         popupMenu.getMenu().add(0, 3, 2, R.string.action_edit_card_theme);
         popupMenu.getMenu().add(0, 4, 3, R.string.action_add_new_card);
         popupMenu.getMenu().add(0, 5, 4, R.string.action_delete_deck);
+        popupMenu.getMenu().add(0, 6, 5, "Enter learn mode");
+        popupMenu.getMenu().add(0, 7, 6, "Enter quiz mode");
 
+        UUID currentDeckId = viewModel.getDeck().getValue() != null ?
+                viewModel.getDeck().getValue().getDeckId() : null;
         popupMenu.setOnMenuItemClickListener(item -> {
             switch (item.getItemId()) {
                 case 1:
@@ -117,8 +126,6 @@ public class DeckDetailFragment extends Fragment {
                     return true;
                 case 4:
                     // Chuyển sang trang CreateNewCardFragment
-                    UUID currentDeckId = viewModel.getDeck().getValue() != null ?
-                            viewModel.getDeck().getValue().getDeckId() : null;
                     if (currentDeckId != null) {
                         Bundle bundle = new Bundle();
                         bundle.putSerializable("DECK_ID", currentDeckId);
@@ -129,6 +136,24 @@ public class DeckDetailFragment extends Fragment {
                 case 5:
                     // Hiển thị Dialog xác nhận xóa
                     showDeleteConfirmDialog();
+                    return true;
+                case 6:
+                    if (currentDeckId != null) {
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable("DECK_ID", currentDeckId);
+                        String currentDeckName = "";
+                        if (viewModel.getDeck().getValue() != null) {
+                            currentDeckName = viewModel.getDeck().getValue().getDeckName();
+                        }
+                        bundle.putString("DECK_NAME", currentDeckName);
+
+                        androidx.navigation.Navigation.findNavController(requireView())
+                                .navigate(R.id.cardLearnModeFragment, bundle);
+                    }
+                    return true;
+                case 7:
+                    // TODO: Xử lý Quiz mode
+                    Toast.makeText(requireContext(), "Quiz mode clicked", Toast.LENGTH_SHORT).show();
                     return true;
                 default:
                     return false;

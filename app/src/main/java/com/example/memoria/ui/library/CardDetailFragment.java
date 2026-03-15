@@ -29,6 +29,7 @@ public class CardDetailFragment extends Fragment {
     private ViewPager2 viewPager;
     private CardPagerAdapter pagerAdapter;
     private UUID deckId;
+    private String deckName;
     private int startPosition;
 
     @Nullable
@@ -43,6 +44,7 @@ public class CardDetailFragment extends Fragment {
 
         if (getArguments() != null) {
             deckId = (UUID) getArguments().getSerializable("DECK_ID");
+            deckName = getArguments().getString("DECK_NAME");
             startPosition = getArguments().getInt("SELECTED_POSITION", 0);
         }
 
@@ -59,9 +61,6 @@ public class CardDetailFragment extends Fragment {
 
         viewModel = new ViewModelProvider(this).get(CardViewModel.class);
 
-        pagerAdapter = new CardPagerAdapter();
-        viewPager.setAdapter(pagerAdapter);
-
         if (deckId != null) {
             // Lắng nghe dữ liệu Card trả về từ DB
             viewModel.getCardsByDeckId(deckId).observe(getViewLifecycleOwner(), cards -> {
@@ -72,6 +71,9 @@ public class CardDetailFragment extends Fragment {
                 }
             });
         }
+
+        TextView tvDeckName = view.findViewById(R.id.tv_deck_name_header);
+        tvDeckName.setText(deckName);
 
         btnOptions.setOnClickListener(this::showPopupMenu);
     }
@@ -89,6 +91,7 @@ public class CardDetailFragment extends Fragment {
                 // open edit mode
                     Bundle bundle = new Bundle();
                     bundle.putSerializable("DECK_ID", deckId);
+                    bundle.putString("DECK_NAME", deckName);
                     bundle.putSerializable("EDIT_CARD", currentCard); // Truyền thẻ cần edit sang
                     androidx.navigation.Navigation.findNavController(view)
                             .navigate(R.id.createNewCardFragment, bundle);

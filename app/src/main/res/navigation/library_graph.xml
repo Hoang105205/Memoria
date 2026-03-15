@@ -34,4 +34,10 @@
         android:name="com.example.memoria.ui.library.CardDetailFragment"
         android:label="CardDetailFragment"
         tools:layout="@layout/fragment_card_detail_container" />
+
+    <fragment
+        android:id="@+id/cardLearnModeFragment"
+        android:name="com.example.memoria.ui.study.LearnFragment"
+        android:label="cardLearnModeFragment"
+        tools:layout="@layout/fragment_learn" />
 </navigation>
