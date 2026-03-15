@@ -4,6 +4,34 @@
     android:layout_height="match_parent"
     android:background="#F5F5F5">
 
+    <LinearLayout
+        android:id="@+id/ll_header_detail"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@android:color/white"
+        android:elevation="4dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="16dp">
+
+        <ImageButton
+            android:id="@+id/btn_back"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_arrow_back" />
+
+        <TextView
+            android:id="@+id/tv_deck_name_header"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_weight="1"
+            android:textColor="@android:color/black"
+            android:textSize="20sp"
+            android:textStyle="bold"/>
+    </LinearLayout>
+
     <View
         android:id="@+id/v_background_gradient_remember"
         android:layout_width="match_parent"
@@ -27,7 +55,7 @@
 
     <include
         android:id="@+id/card_bottom"
-        layout="@layout/activity_study_item_flashcard"
+        layout="@layout/item_flashcard"
         android:layout_width="match_parent"
         android:layout_height="450dp"
         android:layout_margin="16dp"
@@ -38,7 +66,7 @@
 
     <include
         android:id="@+id/card_top"
-        layout="@layout/activity_study_item_flashcard"
+        layout="@layout/item_flashcard"
         android:layout_width="match_parent"
         android:layout_height="450dp"
         android:layout_margin="16dp"
@@ -48,7 +76,6 @@
         android:id="@+id/tv_empty"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/mockup_flashcard"
         android:textColor="#000000"
         android:textSize="20sp"
         android:visibility="gone"
