@@ -22,6 +22,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 
 import com.example.memoria.R;
+import com.example.memoria.utils.SpacedRepetitionAlgo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -124,11 +125,9 @@ public class LearnFragment extends Fragment {
 
             flashcardList = new ArrayList<>();
             long currentTime = System.currentTimeMillis();
-            long oneDayMillis = 24 * 60 * 60 * 1000L;
 
             for (Card card : cardsFromDB) {
-                long lastReviewTime = card.getLastReviewAt() != null ? card.getLastReviewAt().getTime() : 0;
-                long nextReviewTime = lastReviewTime + ((long) card.getIntervalDays() * oneDayMillis);
+                long nextReviewTime = card.getNextReviewDate() != null ? card.getNextReviewDate().getTime() : 0;
 
                 if (nextReviewTime <= currentTime) {
                     flashcardList.add(card);
@@ -294,9 +293,8 @@ public class LearnFragment extends Fragment {
                         Card currentCard = flashcardList.get(currentIndex);
 
                         // targetX > 0: Right (Remember)
-                        int quality = (targetX > 0) ? 4 : 1;
-
-                        processCardReview(currentCard, quality);
+                        boolean isRemember = targetX > 0;
+                        processCardReview(currentCard, isRemember);
 
                         currentIndex++;
                         loadCards();
@@ -305,16 +303,14 @@ public class LearnFragment extends Fragment {
                 .start();
     }
 
-    private void processCardReview(Card card, int quality) {
-        String word = card.getFrontText();
+    private void processCardReview(Card card, boolean isRemember) {
+        SpacedRepetitionAlgo.SRSResult result = SpacedRepetitionAlgo.SRSResult.calculateNextReview(isRemember, card.getIntervalDays(), card.getEaseFactor(), card.getReviewCount());
+        card.setEaseFactor(result.newEaseFactor);
+        card.setIntervalDays(result.newInterval);
+        card.setReviewCount(result.newRepetitions);
+        card.setNextReviewDate(result.nextReviewDate);
 
-        if (quality == 4) {
-            // TODO: Mô phỏng: Set next_review_date lên 3 ngày sau
-        } else {
-            // TODO: Mô phỏng: Set next_review_date về 1 phút sau để học lại ngay
-        }
-
-        // TODO: GỌI DAO LƯU DATABASE
+        localCardRepo.updateCard(card);
     }
 
     private void flipCard(CardView card) {
