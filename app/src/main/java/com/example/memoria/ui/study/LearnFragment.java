@@ -3,16 +3,20 @@ package com.example.memoria.ui.study;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
+import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.example.memoria.data.model.Card;
-import com.example.memoria.data.repository.CardRepository;
 
 import android.annotation.SuppressLint;
 import androidx.annotation.NonNull;
@@ -20,24 +24,25 @@ import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.memoria.R;
+import com.example.memoria.ui.library.CardViewModel;
 import com.example.memoria.utils.SpacedRepetitionAlgo;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import javax.inject.Inject;
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
 public class LearnFragment extends Fragment {
+    private UUID deckId;
+    private String deckName;
 
-    private final UUID currentDeckId;
+    private CardViewModel viewModel;
 
-    @Inject
-    CardRepository localCardRepo;
     private CardView cardTop, cardBottom;
     private TextView tvBadgeRemember, tvBadgeForgot;
     private View vBackgroundRemember, vBackgroundForgot;
@@ -48,11 +53,7 @@ public class LearnFragment extends Fragment {
     private int currentIndex = 0;
     private boolean flipable = true;
     private float startX;
-    private static final int CLICK_THRESHOLD = 15;
-
-    public LearnFragment(UUID currentDeckId) {
-        this.currentDeckId = currentDeckId;
-    }
+    public static final int CLICK_THRESHOLD = 15;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -62,7 +63,7 @@ public class LearnFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.activity_study_fragment_learn, container, false);
+        View view = inflater.inflate(R.layout.fragment_learn, container, false);
 
         cardTop = view.findViewById(R.id.card_top);
         cardBottom = view.findViewById(R.id.card_bottom);
@@ -77,12 +78,32 @@ public class LearnFragment extends Fragment {
         cardTop.setCameraDistance(8000 * scale);
         cardBottom.setCameraDistance(8000 * scale);
 
+        ImageButton btnBack = view.findViewById(R.id.btn_back);
+        if (btnBack != null) {
+            btnBack.setOnClickListener(v -> androidx.navigation.Navigation.findNavController(v).navigateUp());
+        }
+
         settingScrollView(cardTop);
-        initCardData();
 
         setupTouchListener();
 
         return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        if (getArguments() != null) {
+            deckId = (UUID) getArguments().getSerializable("DECK_ID");
+            deckName = getArguments().getString("DECK_NAME");
+        }
+
+        viewModel = new ViewModelProvider(this).get(CardViewModel.class);
+        TextView tvDeckName = view.findViewById(R.id.tv_deck_name_header);
+        tvDeckName.setText(deckName);
+
+        initCardData();
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -118,20 +139,71 @@ public class LearnFragment extends Fragment {
         }
     }
 
+    // Bổ sung tham số Context vào hàm
+    private String formatTimeRemaining(Context context, long currentTime, long futureTime) {
+        long diffInMillis = futureTime - currentTime;
+
+        long diffInMinutes = diffInMillis / (60 * 1000);
+        long diffInHours = diffInMillis / (60 * 60 * 1000);
+        long diffInDays = diffInMillis / (24 * 60 * 60 * 1000);
+
+        Log.e("hour", String.format("%d", diffInHours));
+
+
+        android.content.res.Resources res = context.getResources();
+
+        if (diffInDays > 0) {
+            return res.getQuantityString(R.plurals.time_days, (int) diffInDays, (int) diffInDays);
+        } else if (diffInHours > 0) {
+            long remainingMinutes = diffInMinutes % 60;
+            String hoursString = res.getQuantityString(R.plurals.time_hours, (int) diffInHours, (int) diffInHours);
+
+            if (remainingMinutes > 0) {
+                String minutesString = res.getQuantityString(R.plurals.time_minutes, (int) remainingMinutes, (int) remainingMinutes);
+                return context.getString(R.string.time_hours_and_minutes, hoursString, minutesString);
+            }
+
+            return hoursString;
+        } else if (diffInMinutes > 0) {
+            return res.getQuantityString(R.plurals.time_minutes, (int) diffInMinutes, (int) diffInMinutes);
+        } else {
+            return context.getString(R.string.time_few_seconds);
+        }
+    }
+
     private void initCardData() {
-        LiveData<List<Card>> liveData = localCardRepo.getCardsByDeckId(currentDeckId);
+        LiveData<List<Card>> liveData = viewModel.getCardsByDeckId(deckId);
         liveData.observe(getViewLifecycleOwner(), cardsFromDB -> {
             if (cardsFromDB == null) return;
 
             flashcardList = new ArrayList<>();
             long currentTime = System.currentTimeMillis();
+            long closestFutureTime = Long.MAX_VALUE;
 
             for (Card card : cardsFromDB) {
                 long nextReviewTime = card.getNextReviewDate() != null ? card.getNextReviewDate().getTime() : 0;
 
                 if (nextReviewTime <= currentTime) {
                     flashcardList.add(card);
+                } else {
+                    if (nextReviewTime < closestFutureTime) {
+                        closestFutureTime = nextReviewTime;
+                    }
                 }
+            }
+
+            if (flashcardList.isEmpty()) {
+                if (cardsFromDB.isEmpty()) {
+                    tvEmpty.setText(R.string.empty_deck_message);
+                } else if (closestFutureTime != Long.MAX_VALUE) {
+                    String timeRemaining = formatTimeRemaining(requireContext(), currentTime, closestFutureTime);
+                    String finalMessage = getString(R.string.next_flashcard_message, timeRemaining);
+                    tvEmpty.setText(finalMessage);
+                } else {
+                    tvEmpty.setText(R.string.done_deck_message);
+                }
+            } else {
+                tvEmpty.setText(R.string.done_deck_message);
             }
 
             loadCards();
@@ -192,8 +264,20 @@ public class LearnFragment extends Fragment {
 
         View front = cardView.findViewById(R.id.layout_front);
         View back = cardView.findViewById(R.id.layout_back);
-        if(front != null) front.setVisibility(View.VISIBLE);
-        if(back != null) back.setVisibility(View.GONE);
+        if (front != null) front.setVisibility(View.VISIBLE);
+        if (back != null) back.setVisibility(View.GONE);
+
+        ImageView imgFront = cardView.findViewById(R.id.img_flash_card);
+        String imageString = data.getFrontImage();
+        Log.d("imgFront", imageString);
+        if (imageString != null && !imageString.isEmpty()) {
+            Glide.with(requireContext())
+                    .load(imageString)
+                    .centerCrop()
+                    .into(imgFront);
+        } else {
+            Glide.with(requireContext()).clear(imgFront);
+        }
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -310,7 +394,7 @@ public class LearnFragment extends Fragment {
         card.setReviewCount(result.newRepetitions);
         card.setNextReviewDate(result.nextReviewDate);
 
-        localCardRepo.updateCard(card);
+        viewModel.updateCard(card);
     }
 
     private void flipCard(CardView card) {
