@@ -1,3 +1,12 @@
+import java.util.Properties
+
+// Đọc file local.properties
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localProperties.load(localPropertiesFile.inputStream())
+}
+
 plugins {
     alias(libs.plugins.android.application)
 
@@ -11,6 +20,10 @@ android {
         version = release(36)
     }
 
+    buildFeatures {
+        buildConfig = true
+    }
+
     defaultConfig {
         applicationId = "com.example.memoria"
         minSdk = 29
@@ -19,6 +32,10 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "CLOUD_NAME", "\"${localProperties.getProperty("CLOUDINARY_CLOUD_NAME", "")}\"")
+        buildConfigField("String", "API_KEY", "\"${localProperties.getProperty("CLOUDINARY_API_KEY", "")}\"")
+        buildConfigField("String", "API_SECRET", "\"${localProperties.getProperty("CLOUDINARY_API_SECRET", "")}\"")
     }
 
     buildTypes {
@@ -50,6 +67,7 @@ dependencies {
     // Firebase
     implementation(platform("com.google.firebase:firebase-bom:34.9.0"))
     implementation("com.google.firebase:firebase-auth")
+    implementation("com.cloudinary:cloudinary-android:2.5.0")
 
     //Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
