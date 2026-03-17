@@ -50,6 +50,8 @@ dependencies {
     // Firebase
     implementation(platform("com.google.firebase:firebase-bom:34.9.0"))
     implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.firebase:firebase-storage")
+    implementation("com.google.firebase:firebase-firestore")
 
     //Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
@@ -84,4 +86,9 @@ dependencies {
     implementation("androidx.camera:camera-lifecycle:$cameraxVersion")
     implementation("androidx.camera:camera-view:$cameraxVersion")
 
+    // WorkManager & Hilt Work
+    val workVersion = "2.9.0"
+    implementation("androidx.work:work-runtime:$workVersion")
+    implementation("androidx.hilt:hilt-work:1.2.0")
+    annotationProcessor("androidx.hilt:hilt-compiler:1.2.0")
 }
