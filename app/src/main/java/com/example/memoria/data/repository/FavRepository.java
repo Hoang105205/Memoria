@@ -41,10 +41,12 @@ public class FavRepository {
         });
     }
 
-    public void insertFolder(FavFolder folder) {
+    public void insertFolder(FavFolder folder, Runnable onComplete) {
         executor.execute(() -> {
             folder.setSyncStatus(0);
             favDao.insertFolder(folder);
+
+            if (onComplete != null) onComplete.run();
         });
     }
 
@@ -55,24 +57,32 @@ public class FavRepository {
         });
     }
 
-    public void updateFolder(FavFolder folder) {
+    public void updateFolder(FavFolder folder, Runnable onComplete) {
         executor.execute(() -> {
             folder.setSyncStatus(0);
             favDao.updateFolder(folder);
+
+            // Báo cáo đã ghi DB Local xong
+            if (onComplete != null) onComplete.run();
         }); // name only
     }
 
-    public void deleteFolder(FavFolder folder) {
+    public void deleteFolder(FavFolder folder, Runnable onComplete) {
         executor.execute(() -> {
             folder.setSyncStatus(2); // Chuyển thành trạng thái Chờ xóa
             favDao.updateFolder(folder);
+
+            // Báo cáo đã ghi DB Local xong
+            if (onComplete != null) onComplete.run();
         });
     }
 
-    public void insertWord(FavWord word) {
+    public void insertWord(FavWord word, Runnable onComplete) {
         executor.execute(() -> {
             word.setSyncStatus(0);
             favDao.insertWord(word);
+
+            if (onComplete != null) onComplete.run();
         });
     }
 
@@ -83,17 +93,21 @@ public class FavRepository {
         });
     }
 
-    public void updateWord(FavWord word) {
+    public void updateWord(FavWord word, Runnable onComplete) {
         executor.execute(() -> {
             word.setSyncStatus(0);
             favDao.updateWord(word);
+
+            if (onComplete != null) onComplete.run();
         });
     }
 
-    public void deleteWord(FavWord word) {
+    public void deleteWord(FavWord word, Runnable onComplete) {
         executor.execute(() -> {
             word.setSyncStatus(2);
             favDao.updateWord(word);
+
+            if (onComplete != null) onComplete.run();
         });
     }
 

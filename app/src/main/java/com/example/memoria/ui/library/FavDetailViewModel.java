@@ -48,12 +48,11 @@ public class FavDetailViewModel extends ViewModel {
 
     public void togglePinStatus(FavWord word) {
         word.setPinStatus(!word.isPinStatus());
-        repository.updateWord(word);
-        // Load lại danh sách sau khi update để Room tự sort lại ghim lên đầu
-        loadWords(word.getFolderId());
-
-        // Gọi sync để cập nhật dữ liệu lên FireStore
-        triggerSync();
+        repository.updateWord(word, () -> {
+            // Chỉ khi ghi SQLite xong, mới làm 2 việc này:
+            loadWords(word.getFolderId());
+            triggerSync();
+        });
     }
 
     // Tải dữ liệu thư mục lên
@@ -66,11 +65,11 @@ public class FavDetailViewModel extends ViewModel {
         FavFolder folder = currentFolder.getValue();
         if (folder != null) {
             folder.setFolderName(newName);
-            repository.updateFolder(folder);
-            currentFolder.setValue(folder); // Cập nhật ngay lên UI
 
-            // Gọi sync để cập nhật dữ liệu lên FireStore
-            triggerSync();
+            repository.updateFolder(folder, () -> {
+                currentFolder.postValue(folder); // Dùng postValue vì đang ở luồng phụ
+                triggerSync();
+            });
         }
     }
 
@@ -78,10 +77,9 @@ public class FavDetailViewModel extends ViewModel {
     public void deleteCurrentFolder() {
         FavFolder folder = currentFolder.getValue();
         if (folder != null) {
-            repository.deleteFolder(folder);
-
-            // Gọi sync để cập nhật dữ liệu lên FireStore
-            triggerSync();
+            repository.deleteFolder(folder, () -> {
+                triggerSync();
+            });
         }
     }
 
