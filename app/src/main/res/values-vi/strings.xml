@@ -36,6 +36,9 @@
     <string name="forgot_flashcard">QUÊN</string>
     <string name="mockup_flashcard">Chúc mừng! Bạn đã học hết bài.</string>
     <string name="edit_profile">Chỉnh sửa</string>
+    <string name="username_input">Điền tên của bạn</string>
+    <string name="saving">Đang lưu</string>
+    <string name="successfully_edit_your_profile">Thành công chỉnh sửa tài khoản của bạn</string>
     <string name="progress">Tiến trình</string>
     <string name="words_learn_today">từ đã học hôm nay</string>
     <string name="days_streak">ngày chuỗi</string>
@@ -128,4 +131,5 @@
     <string name="empty_deck_message">Bộ thẻ hiện đang trống.\nXin hãy thêm thẻ mới!</string>
     <string name="next_flashcard_message">Thẻ tiếp theo sẽ mở sau\n%1$s.</string>
     <string name="done_deck_message">Bạn đã học thuộc hết\ncác thẻ trong bộ này!</string>
+    <string name="username">Tên tài khoản</string>
 </resources>

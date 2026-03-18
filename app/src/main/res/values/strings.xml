@@ -44,6 +44,10 @@
     <string name="forgot_flashcard">FORGOT</string>
     <string name="mockup_flashcard">Congratulation! You have done the quiz.</string>
     <string name="edit_profile">Edit profile</string>
+    <string name="username">Username</string>
+    <string name="username_input">Enter your name</string>
+    <string name="saving">Saving</string>
+    <string name="successfully_edit_your_profile">Successfully edit your profile</string>
     <string name="progress">Progress</string>
     <string name="words_learn_today">words learn today</string>
     <string name="days_streak">days streak</string>
