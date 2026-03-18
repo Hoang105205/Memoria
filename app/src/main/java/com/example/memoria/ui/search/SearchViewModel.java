@@ -8,6 +8,12 @@ import com.example.memoria.data.model.FavFolder;
 import com.example.memoria.data.model.FavWord;
 import com.example.memoria.data.repository.FavRepository;
 
+import android.content.Context;
+import dagger.hilt.android.qualifiers.ApplicationContext;
+import com.example.memoria.utils.SyncHelper;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -21,11 +27,13 @@ public class SearchViewModel extends ViewModel {
     // MutableLiveData cho phép chúng ta thay đổi giá trị bên trong (dùng trong ViewModel)
     private final MutableLiveData<DictionaryResponse> _searchResult = new MutableLiveData<>();
     private final FavRepository favRepository;
+    private final Context context;
     private final MutableLiveData<List<FavFolder>> folders = new MutableLiveData<>();
 
     @Inject
-    public SearchViewModel(FavRepository favRepository) {
+    public SearchViewModel(FavRepository favRepository, @ApplicationContext Context context) {
         this.favRepository = favRepository;
+        this.context = context;
     }
     
     // LiveData chỉ cho phép đọc (expose ra bên ngoài cho Fragment quan sát)
@@ -48,8 +56,10 @@ public class SearchViewModel extends ViewModel {
     }
 
     public void addNewFavFolder(FavFolder folder) {
-        favRepository.insertFolder(folder);
-        loadFavFolders(); // Cập nhật lại UI
+        favRepository.insertFolder(folder, () -> {
+            loadFavFolders(); // Chỉ gọi load lại UI KHI ĐÃ GHI XONG vào SQLite
+            triggerSync();
+        });
     }
 
     // Tách logic từ SelectFavFolderDialog ra để dễ quản lý
@@ -94,5 +104,12 @@ public class SearchViewModel extends ViewModel {
 
     public void setExternalSearchQuery(String query) {
         externalSearchQuery.setValue(query);
+    }
+
+    private void triggerSync() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            SyncHelper.triggerImmediateSync(context, user.getUid());
+        }
     }
 }

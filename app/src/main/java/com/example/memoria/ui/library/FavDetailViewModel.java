@@ -1,5 +1,11 @@
 package com.example.memoria.ui.library;
 
+import android.content.Context;
+import com.example.memoria.utils.SyncHelper;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import dagger.hilt.android.qualifiers.ApplicationContext;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -17,12 +23,14 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
 
 @HiltViewModel
 public class FavDetailViewModel extends ViewModel {
+    private final Context context;
     private final FavRepository repository;
     private final MutableLiveData<FavFolder> currentFolder = new MutableLiveData<>();
     private final MutableLiveData<List<FavWord>> folderWords = new MutableLiveData<>();
 
     @Inject
-    public FavDetailViewModel(FavRepository repository) {
+    public FavDetailViewModel(FavRepository repository, @ApplicationContext Context context) {
+        this.context = context;
         this.repository = repository;
     }
 
@@ -40,9 +48,11 @@ public class FavDetailViewModel extends ViewModel {
 
     public void togglePinStatus(FavWord word) {
         word.setPinStatus(!word.isPinStatus());
-        repository.updateWord(word);
-        // Load lại danh sách sau khi update để Room tự sort lại ghim lên đầu
-        loadWords(word.getFolderId());
+        repository.updateWord(word, () -> {
+            // Chỉ khi ghi SQLite xong, mới làm 2 việc này:
+            loadWords(word.getFolderId());
+            triggerSync();
+        });
     }
 
     // Tải dữ liệu thư mục lên
@@ -55,8 +65,11 @@ public class FavDetailViewModel extends ViewModel {
         FavFolder folder = currentFolder.getValue();
         if (folder != null) {
             folder.setFolderName(newName);
-            repository.updateFolder(folder);
-            currentFolder.setValue(folder); // Cập nhật ngay lên UI
+
+            repository.updateFolder(folder, () -> {
+                currentFolder.postValue(folder); // Dùng postValue vì đang ở luồng phụ
+                triggerSync();
+            });
         }
     }
 
@@ -64,7 +77,18 @@ public class FavDetailViewModel extends ViewModel {
     public void deleteCurrentFolder() {
         FavFolder folder = currentFolder.getValue();
         if (folder != null) {
-            repository.deleteFolder(folder);
+            repository.deleteFolder(folder, () -> {
+                triggerSync();
+            });
+        }
+    }
+
+    // hàm helper dùng chung cho ViewModel này
+    private void triggerSync() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            // Chỉ cần user đang đăng nhập, tự động kích hoạt tiến trình sync và delete
+            SyncHelper.triggerImmediateSync(context, user.getUid());
         }
     }
 }

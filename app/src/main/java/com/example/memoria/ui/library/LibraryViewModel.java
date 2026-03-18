@@ -11,6 +11,12 @@ import com.example.memoria.data.model.FavFolderWithCount;
 import com.example.memoria.data.repository.DeckRepository;
 import com.example.memoria.data.repository.FavRepository;
 
+import android.content.Context;
+import dagger.hilt.android.qualifiers.ApplicationContext;
+import com.example.memoria.utils.SyncHelper;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 import java.util.List;
 
 import javax.inject.Inject;
@@ -21,6 +27,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
 public class LibraryViewModel extends ViewModel {
     private final DeckRepository deckRepository;
     private final FavRepository favRepository;
+    private final Context context;
 
     private final MutableLiveData<List<DeckWithCount>> decks = new MutableLiveData<>();
     private final MutableLiveData<List<FavFolderWithCount>> folders = new MutableLiveData<>();
@@ -38,9 +45,10 @@ public class LibraryViewModel extends ViewModel {
 
     // Ngay khi ViewModel được khởi tạo, lấy dữ liệu từ DB
     @Inject
-    public LibraryViewModel(DeckRepository deckRepository, FavRepository favRepository) {
+    public LibraryViewModel(DeckRepository deckRepository, FavRepository favRepository, @ApplicationContext Context context) {
         this.deckRepository = deckRepository;
         this.favRepository = favRepository;
+        this.context = context;
 
         loadDecks();
         loadFavFolders();
@@ -57,7 +65,16 @@ public class LibraryViewModel extends ViewModel {
     }
 
     public void addNewFavFolder(FavFolder folder) {
-        favRepository.insertFolder(folder);
-        loadFavFolders(); // gọi load lại để cập nhật lên UI
+        favRepository.insertFolder(folder, () -> {
+            loadFavFolders(); // Chỉ gọi load lại UI KHI ĐÃ GHI XONG vào SQLite
+            triggerSync();
+        });
+    }
+
+    private void triggerSync() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            SyncHelper.triggerImmediateSync(context, user.getUid());
+        }
     }
 }
