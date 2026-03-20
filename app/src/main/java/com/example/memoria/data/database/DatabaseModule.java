@@ -57,4 +57,10 @@ public class DatabaseModule {
     public static SearchHistoryDao provideSearchHistoryDao(AppDatabase db) {
         return db.searchDao();
     }
+
+    @Provides
+    @Singleton
+    public static com.google.firebase.firestore.FirebaseFirestore provideFirestore() {
+        return com.google.firebase.firestore.FirebaseFirestore.getInstance();
+    }
 }

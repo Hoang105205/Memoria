@@ -67,6 +67,8 @@ dependencies {
     // Firebase
     implementation(platform("com.google.firebase:firebase-bom:34.9.0"))
     implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.firebase:firebase-storage")
+    implementation("com.google.firebase:firebase-firestore")
     implementation("com.cloudinary:cloudinary-android:2.5.0")
 
     //Retrofit
@@ -108,4 +110,10 @@ dependencies {
 
     //Chart
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+    
+    // WorkManager & Hilt Work
+    val workVersion = "2.9.0"
+    implementation("androidx.work:work-runtime:$workVersion")
+    implementation("androidx.hilt:hilt-work:1.2.0")
+    annotationProcessor("androidx.hilt:hilt-compiler:1.2.0")
 }
