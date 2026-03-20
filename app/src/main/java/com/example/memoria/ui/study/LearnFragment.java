@@ -31,6 +31,7 @@ import com.example.memoria.ui.library.CardViewModel;
 import com.example.memoria.utils.SpacedRepetitionAlgo;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -389,10 +390,14 @@ public class LearnFragment extends Fragment {
 
     private void processCardReview(Card card, boolean isRemember) {
         SpacedRepetitionAlgo.SRSResult result = SpacedRepetitionAlgo.SRSResult.calculateNextReview(isRemember, card.getIntervalDays(), card.getEaseFactor(), card.getReviewCount());
+        Date today = new Date();
+
         card.setEaseFactor(result.newEaseFactor);
         card.setIntervalDays(result.newInterval);
         card.setReviewCount(result.newRepetitions);
         card.setNextReviewDate(result.nextReviewDate);
+        card.setUpdatedAt(today);
+        card.setLastReviewAt(today);
 
         viewModel.updateCard(card);
     }
