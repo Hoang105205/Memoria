@@ -155,4 +155,6 @@
     <string name="empty_deck_message">Current deck is empty.\nPlease add a new card!</string>
     <string name="next_flashcard_message">Next flashcard will be opened in\n%1$s.</string>
     <string name="done_deck_message">You\'ve memorized all\nthe cards in this set!</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

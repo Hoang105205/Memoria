@@ -15,6 +15,7 @@ public class MemoriaApp extends Application {
         super.onCreate();
 
         setUpCloudinary();
+        com.jakewharton.threetenabp.AndroidThreeTen.init(this);
     }
 
     private void setUpCloudinary() {
