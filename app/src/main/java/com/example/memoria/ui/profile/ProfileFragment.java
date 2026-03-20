@@ -77,6 +77,9 @@ public class ProfileFragment extends Fragment {
         btnSignOut.setOnClickListener(v -> {
             viewModel.signOut();
         });
+        view.findViewById(R.id.profile_cv_progress).setOnClickListener(v -> {
+            Navigation.findNavController(v).navigate(R.id.action_profileFragment_to_progressFragment);
+        });
     }
 
     private void setupObservers() {
@@ -102,6 +105,21 @@ public class ProfileFragment extends Fragment {
                 Intent intent = new Intent(getActivity(), LoginActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
+            }
+        });
+        viewModel.getLearnedToday().observe(getViewLifecycleOwner(), count -> {
+            // Thay 'view.findViewById' bằng 'getView().findViewById'
+            if (getView() != null) {
+                TextView tvLearned = getView().findViewById(R.id.profile_tv_words_count);
+                if (tvLearned != null) tvLearned.setText(String.valueOf(count));
+            }
+        });
+
+        viewModel.getStreakLiveData().observe(getViewLifecycleOwner(), streak -> {
+            // Thay 'view.findViewById' bằng 'getView().findViewById'
+            if (getView() != null) {
+                TextView tvStreak = getView().findViewById(R.id.profile_tv_streak_count);
+                if (tvStreak != null) tvStreak.setText(String.valueOf(streak));
             }
         });
     }

@@ -46,4 +46,11 @@ public interface CardDao {
     // Lấy các thẻ mới chưa học bao giờ (last_review_at là null)
     @Query("SELECT * FROM cards WHERE last_review_at IS NULL AND deck_id = :deckId LIMIT :limit")
     List<Card> getNewCards(UUID deckId, int limit);
+
+    //Tổng số từ đã học trong hôm nay
+    //Thời gian review cuối cùng lớn hơn 0h ngày hôm nay
+    @Query("SELECT COUNT(*) FROM cards WHERE last_review_at >= :startOfDay")
+    int countCardsReviewedToday(long startOfDay);
+
+
 }

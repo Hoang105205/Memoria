@@ -48,4 +48,21 @@ public class CardRepository {
     public void deleteCard(Card card) {
         executor.execute(() -> cardDao.deleteCard(card));
     }
+
+    // Lấy số từ đã học hôm nay
+    public void getWordsLearnedToday(DataCallback<Integer> callback) {
+        executor.execute(() -> {
+            java.util.Calendar calendar = java.util.Calendar.getInstance();
+            calendar.set(java.util.Calendar.HOUR_OF_DAY, 0);
+            calendar.set(java.util.Calendar.MINUTE, 0);
+            calendar.set(java.util.Calendar.SECOND, 0);
+            calendar.set(java.util.Calendar.MILLISECOND, 0);
+
+            long startOfToday = calendar.getTimeInMillis();
+
+            int count = cardDao.countCardsReviewedToday(startOfToday);
+
+            callback.onDataLoaded(count);
+        });
+    }
 }

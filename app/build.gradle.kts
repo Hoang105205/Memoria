@@ -104,6 +104,13 @@ dependencies {
     implementation("androidx.camera:camera-lifecycle:$cameraxVersion")
     implementation("androidx.camera:camera-view:$cameraxVersion")
 
+    //Calendar
+    implementation("com.github.prolificinteractive:material-calendarview:2.0.1")
+    implementation("com.jakewharton.threetenabp:threetenabp:1.2.1")
+
+    //Chart
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+    
     // WorkManager & Hilt Work
     val workVersion = "2.9.0"
     implementation("androidx.work:work-runtime:$workVersion")
