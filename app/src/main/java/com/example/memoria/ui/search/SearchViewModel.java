@@ -91,7 +91,16 @@ public class SearchViewModel extends ViewModel {
             newWord.setPinStatus(false);
 
             // Gọi Repository để lưu
-            favRepository.insertWordIfNotExists(newWord, callback);
+            favRepository.insertWordIfNotExists(newWord, isSuccess -> {
+                if (isSuccess) {
+                    triggerSync();
+                }
+
+                // Trả kết quả về lại cho UI
+                if (callback != null) {
+                    callback.onDataLoaded(isSuccess);
+                }
+            });
         }
     }
 

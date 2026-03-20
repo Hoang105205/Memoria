@@ -22,6 +22,8 @@ public class QuizRepository {
     }
 
     public void getCurrentStreak(CardRepository.DataCallback<Integer> callback) {
+        // Nhớ query trên table Card nhé
+
         executor.execute(() -> {
 
             List<Long> dates = quizDao.getDistinctStudyDays();
