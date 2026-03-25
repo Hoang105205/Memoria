@@ -9,6 +9,7 @@ import androidx.room.Update;
 
 import com.example.memoria.data.model.Deck;
 import com.example.memoria.data.model.DeckWithCount;
+import com.example.memoria.data.model.FavFolder;
 
 import java.util.List;
 import java.util.UUID;
@@ -41,4 +42,8 @@ public interface DeckDao {
 
     @Query("SELECT d.*, COUNT(c.card_id) AS total_cards FROM decks d LEFT JOIN cards c ON d.deck_id = c.deck_id GROUP BY d.deck_id")
     List<DeckWithCount> getAllDecksWithCount();
+
+    // Lấy danh sách Deck chưa đồng bộ
+    @Query("SELECT * FROM decks WHERE sync_status NOT IN (1)")
+    List<Deck> getUnsyncedDecks();
 }

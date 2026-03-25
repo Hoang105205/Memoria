@@ -60,7 +60,10 @@ public class LibraryViewModel extends ViewModel {
     }
 
     public void addNewDeck(Deck deck) {
-        deckRepository.insertDeck(deck);
+        deckRepository.insertDeck(deck, () -> {
+            loadDecks(); // Chỉ gọi load lại UI KHI ĐÃ GHI XONG vào SQLite
+            triggerSync();
+        });
         loadDecks(); // gọi load lại để cập nhật lên UI
     }
 
