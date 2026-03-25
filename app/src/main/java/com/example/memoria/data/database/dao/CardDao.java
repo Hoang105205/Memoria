@@ -8,6 +8,7 @@ import androidx.room.Query;
 import androidx.room.Update;
 
 import com.example.memoria.data.model.Card;
+import com.example.memoria.data.model.Deck;
 
 import java.util.List;
 import java.util.UUID;
@@ -52,5 +53,7 @@ public interface CardDao {
     @Query("SELECT COUNT(*) FROM cards WHERE last_review_at >= :startOfDay")
     int countCardsReviewedToday(long startOfDay);
 
-
+    // Lấy danh sách Card chưa đồng bộ
+    @Query("SELECT * FROM cards WHERE sync_status NOT IN (1)")
+    List<Card> getUnsyncedCards();
 }
