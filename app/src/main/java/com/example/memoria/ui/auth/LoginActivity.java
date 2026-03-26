@@ -15,12 +15,20 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import com.example.memoria.data.repository.SyncRepository;
+import javax.inject.Inject;
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class LoginActivity extends AppCompatActivity {
 
     private EditText etEmail, etPassword;
     private FirebaseAuth mAuth;
     private Button btnLogin;
     private ProgressBar progressBar;
+
+    @Inject
+    SyncRepository syncRepository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,12 +106,25 @@ public class LoginActivity extends AppCompatActivity {
 
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, task -> {
-                    setLoading(false);
-
                     if (task.isSuccessful()) {
                         showSnackbar(getString(R.string.success_login));
-                        goToMainActivity();
+
+                        // Pull data về trước khi chuyển màn hình
+                        FirebaseUser user = mAuth.getCurrentUser();
+                        if (user != null) {
+                            syncRepository.pullAllDataFromCloud(user.getUid(), isSuccess -> {
+                                // Luôn tắt loading ở callback dù thành công hay thất bại
+                                runOnUiThread(() -> {
+                                    setLoading(false);
+                                    if (!isSuccess) {
+                                        showSnackbar(getString(R.string.err_get_data_from_firestore));
+                                    }
+                                    goToMainActivity(); // Kéo xong mới cho vào App
+                                });
+                            });
+                        }
                     } else {
+                        setLoading(false);
                         showSnackbar(getString(R.string.err_login));
                     }
                 });

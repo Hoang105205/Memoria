@@ -17,18 +17,20 @@ import com.google.firebase.auth.FirebaseUser;
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
+import com.example.memoria.data.database.AppDatabase;
 import com.example.memoria.data.repository.CardRepository;
 import com.example.memoria.data.repository.QuizRepository;
 import com.example.memoria.data.repository.CardRepository.DataCallback;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
 
 @HiltViewModel
 public class UserProfileViewModel extends ViewModel {
     private final UserRepository userRepository;
     private final FirebaseAuth mAuth;
-
+    private final AppDatabase appDatabase;
     private final CardRepository cardRepository;
     private final QuizRepository quizRepository;
     // Biến LiveData để báo cho UI biết lúc nào đang up ảnh (hiện vòng xoay)
@@ -47,9 +49,10 @@ public class UserProfileViewModel extends ViewModel {
     private Uri newSelectedAvatarUri = null;
 
     @Inject
-    public UserProfileViewModel(UserRepository userRepository, CardRepository cardRepository, QuizRepository quizRepository) {
+    public UserProfileViewModel(UserRepository userRepository, CardRepository cardRepository, QuizRepository quizRepository, AppDatabase appDatabase) {
         this.cardRepository = cardRepository;
         this.quizRepository = quizRepository;
+        this.appDatabase = appDatabase;
         mAuth = FirebaseAuth.getInstance();
         this.userRepository = userRepository;
         loadUserInfo();
@@ -103,6 +106,11 @@ public class UserProfileViewModel extends ViewModel {
 
     // Xử lý đăng xuất
     public void signOut() {
+        // Chạy ngầm việc xóa Database để không block UI
+        Executors.newSingleThreadExecutor().execute(() -> {
+            appDatabase.clearAllTables();
+            // Sau khi xóa xong mới chuyển về LoginActivity
+        });
         mAuth.signOut();
         navigateBack.postValue(true);
     }
