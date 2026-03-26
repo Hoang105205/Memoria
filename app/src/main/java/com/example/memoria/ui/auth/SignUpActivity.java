@@ -13,8 +13,17 @@ import com.example.memoria.R;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 
+import com.example.memoria.data.repository.SyncRepository;
+import com.google.firebase.auth.FirebaseUser;
+
+import javax.inject.Inject;
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class SignUpActivity extends AppCompatActivity {
 
+    @Inject
+    SyncRepository syncRepository;
     private EditText etEmail, etPassword, etConfirmPassword;
     private FirebaseAuth mAuth;
     private Button btnSignUp;
@@ -83,17 +92,26 @@ public class SignUpActivity extends AppCompatActivity {
 
         return true;
     }
-
     private void registerUser(String email, String password) {
         setLoading(true);
 
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, task -> {
-                    setLoading(false);
                     if (task.isSuccessful()) {
                         showSnackbar(getString(R.string.success_signup));
-                        goToMainActivity();
+
+                        FirebaseUser user = mAuth.getCurrentUser();
+                        if (user != null) {
+                            // Tạo account xong, chạy pull data (sẽ rỗng) cho chắc cú
+                            syncRepository.pullAllDataFromCloud(user.getUid(), isSuccess -> {
+                                runOnUiThread(() -> {
+                                    setLoading(false);
+                                    goToMainActivity();
+                                });
+                            });
+                        }
                     } else {
+                        setLoading(false);
                         showSnackbar(task.getException() != null ? task.getException().getMessage() : getString(R.string.err_signup));
                     }
                 });

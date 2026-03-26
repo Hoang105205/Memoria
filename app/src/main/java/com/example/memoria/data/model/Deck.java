@@ -9,6 +9,8 @@ import lombok.AllArgsConstructor;
 import java.util.Date;
 import java.util.UUID;
 
+import com.google.firebase.firestore.Exclude;
+
 @Entity(tableName = "decks")
 @Data
 @NoArgsConstructor
@@ -17,6 +19,7 @@ public class Deck {
     @PrimaryKey
     @ColumnInfo(name = "deck_id")
     @androidx.annotation.NonNull
+    @Exclude
     private UUID deckId;
 
     @ColumnInfo(name = "deck_name")
@@ -36,4 +39,14 @@ public class Deck {
 
     @ColumnInfo(name = "sync_status")
     private int syncStatus;
+
+    @Exclude
+    public UUID getDeckId() {
+        return deckId;
+    }
+
+    @Exclude
+    public void setDeckId(UUID deckId) {
+        this.deckId = deckId;
+    }
 }

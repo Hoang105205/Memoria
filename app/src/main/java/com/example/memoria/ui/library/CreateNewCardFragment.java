@@ -213,7 +213,8 @@ public class CreateNewCardFragment extends Fragment {
             newCard = cardToEdit; // Dùng lại ID cũ để Update
             newCard.setUpdatedAt(new Date());
         } else {
-            newCard = new Card(UUID.randomUUID()); // ID mới để Insert
+            newCard = new Card();
+            newCard.setCardId(UUID.randomUUID()); // ID mới để Insert
             newCard.setDeckId(deckId);
             newCard.setCreatedAt(new Date());
         }
