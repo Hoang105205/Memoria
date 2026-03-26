@@ -1,13 +1,13 @@
 package com.example.memoria.ui.auth;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.*;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.memoria.MainActivity;
 import com.example.memoria.R;
@@ -15,27 +15,21 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import com.example.memoria.data.repository.SyncRepository;
-import javax.inject.Inject;
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
 public class LoginActivity extends AppCompatActivity {
-
+    private AuthViewModel viewModel;
     private EditText etEmail, etPassword;
-    private FirebaseAuth mAuth;
     private Button btnLogin;
     private ProgressBar progressBar;
-
-    @Inject
-    SyncRepository syncRepository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auth_login);
 
-        mAuth = FirebaseAuth.getInstance();
+        viewModel = new ViewModelProvider(this).get(AuthViewModel.class);
 
         etEmail = findViewById(R.id.auth_login_et_email);
         etPassword = findViewById(R.id.auth_login_et_password);
@@ -44,12 +38,14 @@ public class LoginActivity extends AppCompatActivity {
         TextView tvForgotPassword = findViewById(R.id.auth_login_tv_forgot_password);
         progressBar = findViewById(R.id.auth_login_progressBar);
 
+        setupObservers();
+
         btnLogin.setOnClickListener(v -> {
             String email = etEmail.getText().toString().trim();
             String pass = etPassword.getText().toString().trim();
 
             if (checkValidInput(email, pass)) {
-                login(email, pass);
+                viewModel.login(email, pass);
             }
         });
 
@@ -67,10 +63,25 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
-        FirebaseUser currentUser = mAuth.getCurrentUser();
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser != null) {
             goToMainActivity();
         }
+    }
+
+    private void setupObservers() {
+        viewModel.getIsLoading().observe(this, this::setLoading);
+
+        viewModel.getSnackbarMessage().observe(this, message -> {
+            if (message != null) showSnackbar(message);
+        });
+
+        viewModel.getNavigateToMain().observe(this, shouldNavigate -> {
+            if (shouldNavigate) {
+                viewModel.resetNavigation();
+                goToMainActivity();
+            }
+        });
     }
 
     private boolean checkValidInput(String email, String password) {
@@ -101,35 +112,6 @@ public class LoginActivity extends AppCompatActivity {
         return true;
     }
 
-    private void login(String email, String password) {
-        setLoading(true);
-
-        mAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, task -> {
-                    if (task.isSuccessful()) {
-                        showSnackbar(getString(R.string.success_login));
-
-                        // Pull data về trước khi chuyển màn hình
-                        FirebaseUser user = mAuth.getCurrentUser();
-                        if (user != null) {
-                            syncRepository.pullAllDataFromCloud(user.getUid(), isSuccess -> {
-                                // Luôn tắt loading ở callback dù thành công hay thất bại
-                                runOnUiThread(() -> {
-                                    setLoading(false);
-                                    if (!isSuccess) {
-                                        showSnackbar(getString(R.string.err_get_data_from_firestore));
-                                    }
-                                    goToMainActivity(); // Kéo xong mới cho vào App
-                                });
-                            });
-                        }
-                    } else {
-                        setLoading(false);
-                        showSnackbar(getString(R.string.err_login));
-                    }
-                });
-    }
-
     private void showSnackbar(String message) {
         Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_SHORT).show();
     }
@@ -137,16 +119,11 @@ public class LoginActivity extends AppCompatActivity {
     private void goToMainActivity() {
         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
         startActivity(intent);
-        finish(); // Đóng LoginActivity để không quay lại được bằng nút Back
+        finish();
     }
 
     private void setLoading(boolean isLoading) {
-        if (isLoading) {
-            progressBar.setVisibility(View.VISIBLE);
-            btnLogin.setEnabled(false);
-        } else {
-            progressBar.setVisibility(View.GONE);
-            btnLogin.setEnabled(true);
-        }
+        progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+        btnLogin.setEnabled(!isLoading);
     }
 }
