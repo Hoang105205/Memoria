@@ -5,6 +5,7 @@ import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
 import lombok.Data;
+
 import java.util.Date;
 import java.util.UUID;
 
@@ -38,6 +39,9 @@ public class QuizHistory {
 
     @ColumnInfo(name = "expire_at")
     private Date expireAt;
+
+    @ColumnInfo(name = "time_taken")
+    private int timeTaken;
 
     @ColumnInfo(name = "firestore_id")
     private String firestoreId;
