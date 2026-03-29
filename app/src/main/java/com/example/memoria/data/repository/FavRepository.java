@@ -134,79 +134,79 @@ public class FavRepository {
     }
 
     // Hàm thực hiện đồng bộ (Chạy trên Background Thread của Executor)
-    public void syncDataToCloud(String userId, DataCallback<Boolean> callback) {
-        executor.execute(() -> {
-            List<FavFolder> unsyncedFolders = favDao.getUnsyncedFolders();
-            List<FavWord> unsyncedWords = favDao.getUnsyncedWords();
-
-            if (unsyncedFolders.isEmpty() && unsyncedWords.isEmpty()) {
-                if (callback != null) callback.onDataLoaded(true);
-                return;
-            }
-
-            WriteBatch batch = firestore.batch();
-
-            // 1. Chuẩn bị dữ liệu Folder: users/{userId}/fav_folders/{folderId}
-            for (FavFolder folder : unsyncedFolders) {
-                String folderIdStr = folder.getFolderId().toString();
-
-                DocumentReference folderRef = firestore
-                        .collection("users").document(userId)
-                        .collection("fav_folders").document(folderIdStr);
-
-                if (folder.getSyncStatus() == 2) {
-                    batch.delete(folderRef); // Ra lệnh xóa trên Firestore
-                } else {
-                    folder.setSyncStatus(1);
-                    folder.setFirestoreId(folderIdStr);
-                    batch.set(folderRef, folder); // Ra lệnh thêm/sửa
-                }
-            }
-
-            // 2. Chuẩn bị dữ liệu Word: users/{userId}/fav_folders/{folderId}/fav_words/{wordId}
-            for (FavWord word : unsyncedWords) {
-                String folderIdStr = word.getFolderId().toString(); // Lấy ID của thư mục chứa từ này
-                String wordIdStr = word.getFavId().toString();
-
-                DocumentReference wordRef = firestore
-                        .collection("users").document(userId)
-                        .collection("fav_folders").document(folderIdStr) // Lồng vào trong fav_folders
-                        .collection("fav_words").document(wordIdStr);    // Collection con: fav_words
-
-                if (word.getSyncStatus() == 2) {
-                    batch.delete(wordRef);
-                } else {
-                    word.setSyncStatus(1);
-                    word.setFirestoreId(wordIdStr);
-                    batch.set(wordRef, word);
-                }
-            }
-
-            // 3. Thực thi Batch
-            batch.commit()
-                    .addOnSuccessListener(aVoid -> {
-                        executor.execute(() -> {
-                            for (FavFolder folder : unsyncedFolders) {
-                                if (folder.getSyncStatus() == 2) {
-                                    favDao.deleteFolder(folder); // Xóa thật dưới Room
-                                } else {
-                                    favDao.updateFolder(folder); // Lưu lại trạng thái 1
-                                }
-                            }
-                            for (FavWord word : unsyncedWords) {
-                                if (word.getSyncStatus() == 2) {
-                                    favDao.deleteWord(word); // Xóa thật dưới Room
-                                } else {
-                                    favDao.updateWord(word); // Lưu lại trạng thái 1
-                                }
-                            }
-                            if (callback != null) callback.onDataLoaded(true);
-                        });
-                    })
-                    .addOnFailureListener(e -> {
-                        e.printStackTrace();
-                        if (callback != null) callback.onDataLoaded(false);
-                    });
-        });
-    }
+//    public void syncDataToCloud(String userId, DataCallback<Boolean> callback) {
+//        executor.execute(() -> {
+//            List<FavFolder> unsyncedFolders = favDao.getUnsyncedFolders();
+//            List<FavWord> unsyncedWords = favDao.getUnsyncedWords();
+//
+//            if (unsyncedFolders.isEmpty() && unsyncedWords.isEmpty()) {
+//                if (callback != null) callback.onDataLoaded(true);
+//                return;
+//            }
+//
+//            WriteBatch batch = firestore.batch();
+//
+//            // 1. Chuẩn bị dữ liệu Folder: users/{userId}/fav_folders/{folderId}
+//            for (FavFolder folder : unsyncedFolders) {
+//                String folderIdStr = folder.getFolderId().toString();
+//
+//                DocumentReference folderRef = firestore
+//                        .collection("users").document(userId)
+//                        .collection("fav_folders").document(folderIdStr);
+//
+//                if (folder.getSyncStatus() == 2) {
+//                    batch.delete(folderRef); // Ra lệnh xóa trên Firestore
+//                } else {
+//                    folder.setSyncStatus(1);
+//                    folder.setFirestoreId(folderIdStr);
+//                    batch.set(folderRef, folder); // Ra lệnh thêm/sửa
+//                }
+//            }
+//
+//            // 2. Chuẩn bị dữ liệu Word: users/{userId}/fav_folders/{folderId}/fav_words/{wordId}
+//            for (FavWord word : unsyncedWords) {
+//                String folderIdStr = word.getFolderId().toString(); // Lấy ID của thư mục chứa từ này
+//                String wordIdStr = word.getFavId().toString();
+//
+//                DocumentReference wordRef = firestore
+//                        .collection("users").document(userId)
+//                        .collection("fav_folders").document(folderIdStr) // Lồng vào trong fav_folders
+//                        .collection("fav_words").document(wordIdStr);    // Collection con: fav_words
+//
+//                if (word.getSyncStatus() == 2) {
+//                    batch.delete(wordRef);
+//                } else {
+//                    word.setSyncStatus(1);
+//                    word.setFirestoreId(wordIdStr);
+//                    batch.set(wordRef, word);
+//                }
+//            }
+//
+//            // 3. Thực thi Batch
+//            batch.commit()
+//                    .addOnSuccessListener(aVoid -> {
+//                        executor.execute(() -> {
+//                            for (FavFolder folder : unsyncedFolders) {
+//                                if (folder.getSyncStatus() == 2) {
+//                                    favDao.deleteFolder(folder); // Xóa thật dưới Room
+//                                } else {
+//                                    favDao.updateFolder(folder); // Lưu lại trạng thái 1
+//                                }
+//                            }
+//                            for (FavWord word : unsyncedWords) {
+//                                if (word.getSyncStatus() == 2) {
+//                                    favDao.deleteWord(word); // Xóa thật dưới Room
+//                                } else {
+//                                    favDao.updateWord(word); // Lưu lại trạng thái 1
+//                                }
+//                            }
+//                            if (callback != null) callback.onDataLoaded(true);
+//                        });
+//                    })
+//                    .addOnFailureListener(e -> {
+//                        e.printStackTrace();
+//                        if (callback != null) callback.onDataLoaded(false);
+//                    });
+//        });
+//    }
 }

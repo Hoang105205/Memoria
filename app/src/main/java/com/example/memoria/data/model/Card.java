@@ -4,12 +4,17 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
+
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+
+import com.google.firebase.firestore.Exclude;
 
 @Entity(
         tableName = "cards",
@@ -21,13 +26,17 @@ import java.util.UUID;
         )
 )
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Card implements Serializable {
     @PrimaryKey
     @ColumnInfo(name = "card_id")
     @androidx.annotation.NonNull
+    @Exclude
     private UUID cardId;
 
     @ColumnInfo(name = "deck_id", index = true) // index cho khóa ngoại để truy vấn nhanh
+    @Exclude
     private UUID deckId;
 
     @ColumnInfo(name = "front_text")
@@ -71,4 +80,24 @@ public class Card implements Serializable {
 
     @ColumnInfo(name = "sync_status")
     private int syncStatus;
+
+    @Exclude
+    public UUID getCardId() {
+        return cardId;
+    }
+
+    @Exclude
+    public void setCardId(UUID cardId) {
+        this.cardId = cardId;
+    }
+
+    @Exclude
+    public UUID getDeckId() {
+        return deckId;
+    }
+
+    @Exclude
+    public void setDeckId(UUID deckId) {
+        this.deckId = deckId;
+    }
 }

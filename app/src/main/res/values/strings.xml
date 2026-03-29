@@ -154,7 +154,7 @@
     <string name="time_hours_and_minutes">%1$s %2$s</string>
     <string name="empty_deck_message">Current deck is empty.\nPlease add a new card!</string>
     <string name="next_flashcard_message">Next flashcard will be opened in\n%1$s.</string>
-    <string name="done_deck_message">You\'ve memorized all\nthe cards in this set!</string>
+    <string name="done_deck_message">You\'ve memorized all the cards in this set!</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="monthly_progress">Monthly Progress</string>
     <string name="today">Today</string>
@@ -164,4 +164,6 @@
     <string name="time_for_reviewing">It\'s time for reviewing</string>
     <string name="noti_note">due card. Don\'t miss out!</string>
     <string name="study_reminder">Study reminder</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="err_get_data_from_firestore">Unable to download all data. Please check your network.</string>
 </resources>

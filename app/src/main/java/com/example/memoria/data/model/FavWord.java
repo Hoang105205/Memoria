@@ -12,6 +12,8 @@ import lombok.NoArgsConstructor;
 import java.util.Date;
 import java.util.UUID;
 
+import com.google.firebase.firestore.Exclude;
+
 @Entity(
         tableName = "fav_words",
         foreignKeys = @ForeignKey(
@@ -28,9 +30,11 @@ public class FavWord {
     @PrimaryKey
     @ColumnInfo(name = "fav_id")
     @androidx.annotation.NonNull
+    @Exclude
     private UUID favId;
 
     @ColumnInfo(name = "folder_id", index = true)
+    @Exclude
     private UUID folderId;
 
     @ColumnInfo(name = "word_text")
@@ -56,4 +60,24 @@ public class FavWord {
 
     @ColumnInfo(name = "sync_status")
     private int syncStatus;
+
+    @Exclude
+    public UUID getFavId() {
+        return favId;
+    }
+
+    @Exclude
+    public void setFavId(UUID favId) {
+        this.favId = favId;
+    }
+
+    @Exclude
+    public UUID getFolderId() {
+        return folderId;
+    }
+
+    @Exclude
+    public void setFolderId(UUID folderId) {
+        this.folderId = folderId;
+    }
 }

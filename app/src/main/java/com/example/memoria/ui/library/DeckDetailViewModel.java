@@ -4,9 +4,14 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import android.content.Context;
+
 import com.example.memoria.data.model.Card;
 import com.example.memoria.data.model.Deck;
 import com.example.memoria.data.repository.DeckRepository;
+import com.example.memoria.utils.SyncHelper;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.List;
 import java.util.UUID;
@@ -14,15 +19,18 @@ import java.util.UUID;
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
+import dagger.hilt.android.qualifiers.ApplicationContext;
 
 @HiltViewModel
 public class DeckDetailViewModel extends ViewModel {
     private final DeckRepository repository;
     private final MutableLiveData<Deck> currentDeck = new MutableLiveData<>();
+    private final Context context;
 
     @Inject
-    public DeckDetailViewModel(DeckRepository repository) {
+    public DeckDetailViewModel(DeckRepository repository, @ApplicationContext Context context) {
         this.repository = repository;
+        this.context = context;
     }
 
     public LiveData<Deck> getDeck() {
@@ -39,8 +47,10 @@ public class DeckDetailViewModel extends ViewModel {
         Deck deck = currentDeck.getValue();
         if (deck != null) {
             deck.setDeckName(newName);
-            repository.updateDeck(deck);
-            currentDeck.setValue(deck); // Cập nhật ngay lên UI
+            repository.updateDeck(deck, () -> {
+                currentDeck.postValue(deck);
+                triggerSync();
+            });
         }
     }
 
@@ -48,7 +58,17 @@ public class DeckDetailViewModel extends ViewModel {
     public void deleteCurrentDeck() {
         Deck deck = currentDeck.getValue();
         if (deck != null) {
-            repository.deleteDeck(deck);
+            repository.deleteDeck(deck, () -> {
+                triggerSync();
+            });
+        }
+    }
+
+    private void triggerSync() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            // Chỉ cần user đang đăng nhập, tự động kích hoạt tiến trình sync và delete
+            SyncHelper.triggerImmediateSync(context, user.getUid());
         }
     }
 }

@@ -46,8 +46,12 @@ public class DeckRepository {
         });
     }
 
-    public void insertDeck(Deck deck) {
-        executor.execute(() -> deckDao.insertDeck(deck));
+    public void insertDeck(Deck deck, Runnable onComplete) {
+        executor.execute(() -> {
+            deck.setSyncStatus(0); // Đánh dấu là chưa đồng bộ (thêm mới)
+            deckDao.insertDeck(deck);
+            if (onComplete != null) onComplete.run();
+        });
     }
 
     public void getDeckById(UUID deckId, DataCallback<Deck> callback) {
@@ -57,11 +61,19 @@ public class DeckRepository {
         });
     }
 
-    public void updateDeck(Deck deck) {
-        executor.execute(() -> deckDao.updateDeck(deck));
+    public void updateDeck(Deck deck, Runnable onComplete) {
+        executor.execute(() -> {
+            deck.setSyncStatus(0); // Đánh dấu là chưa đồng bộ (cập nhật)
+            deckDao.updateDeck(deck);
+            if (onComplete != null) onComplete.run();
+        });
     }
 
-    public void deleteDeck(Deck deck) {
-        executor.execute(() -> deckDao.deleteDeck(deck));
+    public void deleteDeck(Deck deck, Runnable onComplete) {
+        executor.execute(() -> {
+            deck.setSyncStatus(2); // Chuyển thành trạng thái Chờ xóa (Xóa mềm)
+            deckDao.updateDeck(deck); // Dùng update thay vì delete để giữ data lại cho lúc Sync
+            if (onComplete != null) onComplete.run();
+        });
     }
 }

@@ -6,10 +6,7 @@ import androidx.hilt.work.HiltWorker;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
-import com.example.memoria.data.repository.FavRepository;
-// import com.example.memoria.data.repository.CardRepository;
-// import com.example.memoria.data.repository.DeckRepository;
-// import com.example.memoria.data.repository.QuizRepository;
+import com.example.memoria.data.repository.SyncRepository;
 
 import java.util.concurrent.CountDownLatch;
 
@@ -19,24 +16,14 @@ import dagger.assisted.AssistedInject;
 @HiltWorker
 public class SyncWorker extends Worker {
 
-    private final FavRepository favRepository;
-    // private final CardRepository cardRepository;
-    // private final DeckRepository deckRepository;
-    // private final QuizRepository quizRepository;
+    private final SyncRepository syncRepository;
 
     @AssistedInject
     public SyncWorker(@Assisted @NonNull Context context,
                       @Assisted @NonNull WorkerParameters workerParams,
-                      FavRepository favRepository
-                      // , CardRepository cardRepository
-                      // , DeckRepository deckRepository
-                      // , QuizRepository quizRepository
-                      ) {
+                      SyncRepository syncRepository) {
         super(context, workerParams);
-        this.favRepository = favRepository;
-        // this.cardRepository = cardRepository;
-        // this.deckRepository = deckRepository;
-        // this.quizRepository = quizRepository;
+        this.syncRepository = syncRepository;
     }
 
     @NonNull
@@ -48,43 +35,40 @@ public class SyncWorker extends Worker {
             return Result.failure();
         }
 
-        // ToDo: Sau này sẽ phải tiêm thêm các repository khác lên, thay CountDownLatch thành số repo cần đẩy và thực hiện
-        CountDownLatch latch = new CountDownLatch(1); // Thay bằng dòng này CountDownLatch latch = new CountDownLatch(4);
+        // Nào làm tới Quiz thì thay thành 3
+        int SYNC_TASKS_COUNT = 2;
+        CountDownLatch latch = new CountDownLatch(SYNC_TASKS_COUNT);
 
-        final boolean[] isSuccess = {false}; // Thay bằng dòng này final boolean[] isSuccess = {true};
+        // Mặc định là true, nếu có bất kỳ luồng nào thất bại thì chuyển thành false
+        final boolean[] isSuccess = {true};
 
-        // Gọi hàm đồng bộ từ Repository
-        favRepository.syncDataToCloud(userId, success -> {
-            isSuccess[0] = success; // Thay dòng này thành if (!success) isSuccess[0] = false;
-            latch.countDown(); // Nhả khóa khi Firebase chạy xong (Dù thành công hay thất bại)
+        // Gọi hàm đồng bộ Favorite
+        syncRepository.syncFavorites(userId, success -> {
+            if (!success) isSuccess[0] = false;
+            latch.countDown(); // Xong 1 task, giảm khóa đi 1
         });
 
-        // 2. Gọi hàm đồng bộ từ CardRepository
-        // cardRepository.syncDataToCloud(userId, success -> {
-        //     if (!success) isSuccess[0] = false;
-        //     latch.countDown(); // Nhả khóa 2
-        // });
+         // Gọi hàm đồng bộ DeckCard
+        syncRepository.syncDecksAndCards(userId, success -> {
+            if (!success) isSuccess[0] = false;
+            latch.countDown(); // Xong 1 task, giảm khóa đi 1
+        });
 
-        // 3. Gọi hàm đồng bộ từ DeckRepository
-        // deckRepository.syncDataToCloud(userId, success -> {
+        // Gọi hàm đồng bộ Quiz
+        // syncRepository.syncQuizData(userId, success -> {
         //     if (!success) isSuccess[0] = false;
-        //     latch.countDown(); // Nhả khóa 3
-        // });
-
-        // 4. Gọi hàm đồng bộ từ QuizRepository
-        // quizRepository.syncDataToCloud(userId, success -> {
-        //     if (!success) isSuccess[0] = false;
-        //     latch.countDown(); // Nhả khóa 4
+        //     latch.countDown();
         // });
 
         try {
-            // Bắt buộc hệ thống chờ ở đây cho đến khi 4 thằng Firebase phản hồi hết
+            // Hệ thống sẽ đứng chờ ở đây cho đến khi biến latch giảm về 0
+            // (Tức là tất cả các callback trên Firebase đều đã trả về kết quả)
             latch.await();
         } catch (InterruptedException e) {
             return Result.retry(); // Nếu bị lỗi hệ thống ngắt giữa chừng, yêu cầu chạy lại sau
         }
 
-        // Trả về kết quả cho Android OS biết
+        // Nếu tất cả đều true -> success. Nếu có 1 cái false -> retry (chạy lại)
         return isSuccess[0] ? Result.success() : Result.retry();
     }
 }

@@ -11,6 +11,8 @@ import lombok.NoArgsConstructor;
 import java.util.Date;
 import java.util.UUID;
 
+import com.google.firebase.firestore.Exclude;
+
 @Entity(tableName = "fav_folders")
 @Data
 @NoArgsConstructor
@@ -19,6 +21,7 @@ public class FavFolder {
     @PrimaryKey
     @ColumnInfo(name = "folder_id")
     @androidx.annotation.NonNull
+    @Exclude
     private UUID folderId;
 
     @ColumnInfo(name = "folder_name")
@@ -35,4 +38,14 @@ public class FavFolder {
 
     @ColumnInfo(name = "sync_status")
     private int syncStatus;
+
+    @Exclude
+    public UUID getFolderId() {
+        return folderId;
+    }
+
+    @Exclude
+    public void setFolderId(UUID folderId) {
+        this.folderId = folderId;
+    }
 }

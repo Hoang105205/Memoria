@@ -9,6 +9,7 @@ import androidx.room.Query;
 import androidx.room.Update;
 
 import com.example.memoria.data.model.Card;
+import com.example.memoria.data.model.Deck;
 
 import java.util.List;
 import java.util.UUID;
@@ -69,4 +70,7 @@ public interface CardDao {
 
     @Query("SELECT DISTINCT (last_review_at / 86400000) * 86400000 AS study_date FROM cards WHERE last_review_at IS NOT NULL ORDER BY study_date DESC")
     List<Long> getDistinctStudyDaysSync(); // Bản không có LiveData
+    // Lấy danh sách Card chưa đồng bộ
+    @Query("SELECT * FROM cards WHERE sync_status NOT IN (1)")
+    List<Card> getUnsyncedCards();
 }

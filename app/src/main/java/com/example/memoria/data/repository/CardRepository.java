@@ -37,16 +37,28 @@ public class CardRepository {
     }
 
     // Cập nhật thẻ sau khi học xong (Nhớ/Quên)
-    public void updateCard(Card card) {
-        executor.execute(() -> cardDao.updateCard(card));
+    public void updateCard(Card card, Runnable onComplete) {
+        executor.execute(() -> {
+            card.setSyncStatus(0);
+            cardDao.updateCard(card);
+            if (onComplete != null) onComplete.run();
+        });
     }
 
-    public void insertCard(Card card) {
-        executor.execute(() -> cardDao.insertCard(card));
+    public void insertCard(Card card, Runnable onComplete) {
+        executor.execute(() -> {
+            card.setSyncStatus(0);
+            cardDao.insertCard(card);
+            if (onComplete != null) onComplete.run();
+        });
     }
 
-    public void deleteCard(Card card) {
-        executor.execute(() -> cardDao.deleteCard(card));
+    public void deleteCard(Card card, Runnable onComplete) {
+        executor.execute(() -> {
+            card.setSyncStatus(2); // Đánh dấu chờ xóa
+            cardDao.updateCard(card); // Update để trigger lấy list unsynced
+            if (onComplete != null) onComplete.run();
+        });
     }
 
     // Lấy số từ đã học hôm nay

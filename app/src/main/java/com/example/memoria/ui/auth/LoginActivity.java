@@ -1,13 +1,13 @@
 package com.example.memoria.ui.auth;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.*;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.memoria.MainActivity;
 import com.example.memoria.R;
@@ -15,10 +15,12 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-public class LoginActivity extends AppCompatActivity {
+import dagger.hilt.android.AndroidEntryPoint;
 
+@AndroidEntryPoint
+public class LoginActivity extends AppCompatActivity {
+    private AuthViewModel viewModel;
     private EditText etEmail, etPassword;
-    private FirebaseAuth mAuth;
     private Button btnLogin;
     private ProgressBar progressBar;
 
@@ -27,7 +29,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auth_login);
 
-        mAuth = FirebaseAuth.getInstance();
+        viewModel = new ViewModelProvider(this).get(AuthViewModel.class);
 
         etEmail = findViewById(R.id.auth_login_et_email);
         etPassword = findViewById(R.id.auth_login_et_password);
@@ -36,12 +38,14 @@ public class LoginActivity extends AppCompatActivity {
         TextView tvForgotPassword = findViewById(R.id.auth_login_tv_forgot_password);
         progressBar = findViewById(R.id.auth_login_progressBar);
 
+        setupObservers();
+
         btnLogin.setOnClickListener(v -> {
             String email = etEmail.getText().toString().trim();
             String pass = etPassword.getText().toString().trim();
 
             if (checkValidInput(email, pass)) {
-                login(email, pass);
+                viewModel.login(email, pass);
             }
         });
 
@@ -59,10 +63,25 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
-        FirebaseUser currentUser = mAuth.getCurrentUser();
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser != null) {
             goToMainActivity();
         }
+    }
+
+    private void setupObservers() {
+        viewModel.getIsLoading().observe(this, this::setLoading);
+
+        viewModel.getSnackbarMessage().observe(this, message -> {
+            if (message != null) showSnackbar(message);
+        });
+
+        viewModel.getNavigateToMain().observe(this, shouldNavigate -> {
+            if (shouldNavigate) {
+                viewModel.resetNavigation();
+                goToMainActivity();
+            }
+        });
     }
 
     private boolean checkValidInput(String email, String password) {
@@ -93,22 +112,6 @@ public class LoginActivity extends AppCompatActivity {
         return true;
     }
 
-    private void login(String email, String password) {
-        setLoading(true);
-
-        mAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, task -> {
-                    setLoading(false);
-
-                    if (task.isSuccessful()) {
-                        showSnackbar(getString(R.string.success_login));
-                        goToMainActivity();
-                    } else {
-                        showSnackbar(getString(R.string.err_login));
-                    }
-                });
-    }
-
     private void showSnackbar(String message) {
         Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_SHORT).show();
     }
@@ -116,16 +119,11 @@ public class LoginActivity extends AppCompatActivity {
     private void goToMainActivity() {
         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
         startActivity(intent);
-        finish(); // Đóng LoginActivity để không quay lại được bằng nút Back
+        finish();
     }
 
     private void setLoading(boolean isLoading) {
-        if (isLoading) {
-            progressBar.setVisibility(View.VISIBLE);
-            btnLogin.setEnabled(false);
-        } else {
-            progressBar.setVisibility(View.GONE);
-            btnLogin.setEnabled(true);
-        }
+        progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+        btnLogin.setEnabled(!isLoading);
     }
 }
