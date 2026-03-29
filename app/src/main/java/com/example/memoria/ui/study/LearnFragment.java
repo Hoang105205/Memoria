@@ -270,7 +270,6 @@ public class LearnFragment extends Fragment {
 
         ImageView imgFront = cardView.findViewById(R.id.img_flash_card);
         String imageString = data.getFrontImage();
-        Log.d("imgFront", imageString);
         if (imageString != null && !imageString.isEmpty()) {
             Glide.with(requireContext())
                     .load(imageString)

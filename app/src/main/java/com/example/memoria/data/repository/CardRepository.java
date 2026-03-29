@@ -50,19 +50,17 @@ public class CardRepository {
     }
 
     // Lấy số từ đã học hôm nay
-    public void getWordsLearnedToday(DataCallback<Integer> callback) {
-        executor.execute(() -> {
-            java.util.Calendar calendar = java.util.Calendar.getInstance();
-            calendar.set(java.util.Calendar.HOUR_OF_DAY, 0);
-            calendar.set(java.util.Calendar.MINUTE, 0);
-            calendar.set(java.util.Calendar.SECOND, 0);
-            calendar.set(java.util.Calendar.MILLISECOND, 0);
 
-            long startOfToday = calendar.getTimeInMillis();
-
-            int count = cardDao.countCardsReviewedToday(startOfToday);
-
-            callback.onDataLoaded(count);
-        });
+    public LiveData<Integer> getWordsLearnedTodayLiveData(long startOfToday) {
+        return cardDao.countCardsReviewedToday(startOfToday);
     }
+
+    public LiveData<List<Long>> getAllReviewDaysLiveData() {
+        return cardDao.getDistinctStudyDays();
+    }
+    public int getDueCardsCountSync(long currentTime) {
+        return cardDao.countDueCards(currentTime);
+    }
+
+
 }

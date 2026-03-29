@@ -1,5 +1,6 @@
 package com.example.memoria.data.database.dao;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -50,7 +51,22 @@ public interface CardDao {
     //Tổng số từ đã học trong hôm nay
     //Thời gian review cuối cùng lớn hơn 0h ngày hôm nay
     @Query("SELECT COUNT(*) FROM cards WHERE last_review_at >= :startOfDay")
-    int countCardsReviewedToday(long startOfDay);
+    LiveData<Integer> countCardsReviewedToday(long startOfDay);
+
+    @Query("SELECT DISTINCT (last_review_at / 86400000) * 86400000 AS study_date " +
+            "FROM cards " +
+            "WHERE last_review_at IS NOT NULL " +
+            "ORDER BY study_date DESC")
+    LiveData<List<Long>> getDistinctStudyDays();
 
 
+    //Card den han
+    @Query("SELECT COUNT(*) FROM cards WHERE next_review_date <= :currentTime")
+    int countDueCards(long currentTime);
+
+    @Query("SELECT COUNT(*) FROM cards WHERE last_review_at >= :startOfDay")
+    int countCardsReviewedTodaySync(long startOfDay); // Bản không có LiveData
+
+    @Query("SELECT DISTINCT (last_review_at / 86400000) * 86400000 AS study_date FROM cards WHERE last_review_at IS NOT NULL ORDER BY study_date DESC")
+    List<Long> getDistinctStudyDaysSync(); // Bản không có LiveData
 }
