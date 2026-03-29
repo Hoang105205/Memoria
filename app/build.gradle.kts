@@ -116,4 +116,18 @@ dependencies {
     implementation("androidx.work:work-runtime:$workVersion")
     implementation("androidx.hilt:hilt-work:1.2.0")
     annotationProcessor("androidx.hilt:hilt-compiler:1.2.0")
+
+    // Firebase AI - Gemini API
+    // Import the BoM for the Firebase platform
+    implementation(platform("com.google.firebase:firebase-bom:34.11.0"))
+
+    // Add the dependency for the Firebase AI Logic library
+    // When using the BoM, you don't specify versions in Firebase library dependencies
+    implementation("com.google.firebase:firebase-ai")
+
+    // Required for one-shot operations (to use `ListenableFuture` from Guava Android)
+    implementation("com.google.guava:guava:31.0.1-android")
+
+    // Required for streaming operations (to use `Publisher` from Reactive Streams)
+    implementation("org.reactivestreams:reactive-streams:1.0.4")
 }
