@@ -7,9 +7,8 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
-import com.example.memoria.data.model.Deck;
-import com.example.memoria.data.model.DeckWithCount;
-import com.example.memoria.data.model.FavFolder;
+import com.example.memoria.data.model.entity.Deck;
+import com.example.memoria.data.model.entity.DeckWithCount;
 
 import java.util.List;
 import java.util.UUID;

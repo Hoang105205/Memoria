@@ -5,12 +5,11 @@ import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
-import androidx.room.Transaction;
 import androidx.room.Update;
 
-import com.example.memoria.data.model.FavFolder;
-import com.example.memoria.data.model.FavFolderWithCount;
-import com.example.memoria.data.model.FavWord;
+import com.example.memoria.data.model.entity.FavFolder;
+import com.example.memoria.data.model.entity.FavFolderWithCount;
+import com.example.memoria.data.model.entity.FavWord;
 
 import java.util.List;
 import java.util.UUID;

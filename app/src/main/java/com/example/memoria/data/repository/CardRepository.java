@@ -1,13 +1,10 @@
 package com.example.memoria.data.repository;
 
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 
 import com.example.memoria.data.database.dao.CardDao;
-import com.example.memoria.data.model.Card;
+import com.example.memoria.data.model.entity.Card;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;

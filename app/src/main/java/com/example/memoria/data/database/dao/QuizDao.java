@@ -5,8 +5,8 @@ import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
-import com.example.memoria.data.model.QuizHistory;
-import com.example.memoria.data.model.QuizStat;
+import com.example.memoria.data.model.entity.QuizHistory;
+import com.example.memoria.data.model.entity.QuizStat;
 
 import java.util.List;
 import java.util.UUID;

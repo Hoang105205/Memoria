@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.memoria.R;
-import com.example.memoria.data.model.OnboardingItem;
+import com.example.memoria.data.model.entity.OnboardingItem;
 
 import java.util.List;
 

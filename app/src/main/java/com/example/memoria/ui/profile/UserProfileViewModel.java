@@ -2,6 +2,7 @@ package com.example.memoria.ui.profile;
 
 import static android.provider.Settings.System.getString;
 
+import android.content.Context;
 import android.net.Uri;
 
 import androidx.lifecycle.LiveData;
@@ -11,12 +12,15 @@ import androidx.lifecycle.ViewModel;
 import com.example.memoria.R;
 import com.example.memoria.data.database.dao.QuizDao;
 import com.example.memoria.data.repository.UserRepository;
+import com.example.memoria.service.MemoriaWidgetProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
+import dagger.hilt.android.qualifiers.ApplicationContext;
+
 import com.example.memoria.data.database.AppDatabase;
 import com.example.memoria.data.repository.CardRepository;
 import com.example.memoria.data.repository.QuizRepository;
@@ -49,13 +53,16 @@ public class UserProfileViewModel extends ViewModel {
     public LiveData<List<float[]>> getWeeklyChartData() { return weeklyChartData; }
     private Uri newSelectedAvatarUri = null;
 
+    private final Context context;
+
     @Inject
-    public UserProfileViewModel(UserRepository userRepository, CardRepository cardRepository, QuizRepository quizRepository, AppDatabase appDatabase) {
+    public UserProfileViewModel(UserRepository userRepository, CardRepository cardRepository, QuizRepository quizRepository, AppDatabase appDatabase, @ApplicationContext Context context) {
         this.userRepository = userRepository;
         this.cardRepository = cardRepository;
         this.quizRepository = quizRepository;
         this.appDatabase = appDatabase;
         this.mAuth = FirebaseAuth.getInstance();
+        this.context = context;
 
         // Lấy mốc 0h hôm nay
         long startOfToday = getStartOfToday();
@@ -144,8 +151,9 @@ public class UserProfileViewModel extends ViewModel {
     public void signOut() {
         // Chạy ngầm việc xóa Database để không block UI
         Executors.newSingleThreadExecutor().execute(() -> {
-            appDatabase.clearAllTables();
             // Sau khi xóa xong mới chuyển về LoginActivity
+            appDatabase.clearAllTables();
+            MemoriaWidgetProvider.forceUpdateWidget(context);
         });
         mAuth.signOut();
         navigateBack.postValue(true);

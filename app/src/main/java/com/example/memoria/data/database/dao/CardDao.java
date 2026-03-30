@@ -8,8 +8,7 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
-import com.example.memoria.data.model.Card;
-import com.example.memoria.data.model.Deck;
+import com.example.memoria.data.model.entity.Card;
 
 import java.util.List;
 import java.util.UUID;

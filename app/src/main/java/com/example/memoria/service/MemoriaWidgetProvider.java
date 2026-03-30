@@ -41,9 +41,7 @@ public class MemoriaWidgetProvider extends AppWidgetProvider {
             context.startActivity(activityIntent);
 
             // 2. Ép Widget cập nhật lại dữ liệu mới nhất
-            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-            int[] ids = appWidgetManager.getAppWidgetIds(new android.content.ComponentName(context, MemoriaWidgetProvider.class));
-            onUpdate(context, appWidgetManager, ids);
+            forceUpdateWidget(context);
         }
     }
 
@@ -114,5 +112,16 @@ public class MemoriaWidgetProvider extends AppWidgetProvider {
             } else { break; }
         }
         return currentStreak;
+    }
+
+    public static void forceUpdateWidget(Context context) {
+        Intent intent = new Intent(context, MemoriaWidgetProvider.class);
+        intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+        int[] ids = appWidgetManager.getAppWidgetIds(new android.content.ComponentName(context, MemoriaWidgetProvider.class));
+
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
+        context.sendBroadcast(intent);
     }
 }

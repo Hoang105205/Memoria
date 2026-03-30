@@ -3,7 +3,7 @@ package com.example.memoria.ui.library;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.memoria.data.model.Card;
+import com.example.memoria.data.model.entity.Card;
 import com.example.memoria.data.repository.CardRepository;
 import com.example.memoria.utils.SyncHelper;
 import com.google.firebase.auth.FirebaseAuth;

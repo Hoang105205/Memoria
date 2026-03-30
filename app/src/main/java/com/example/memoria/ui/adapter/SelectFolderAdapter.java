@@ -7,7 +7,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.memoria.R;
-import com.example.memoria.data.model.FavFolder;
+import com.example.memoria.data.model.entity.FavFolder;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -1,10 +1,7 @@
 package com.example.memoria.data.repository;
 
-import android.app.Application;
-
-import com.example.memoria.data.database.AppDatabase;
 import com.example.memoria.data.database.dao.SearchHistoryDao;
-import com.example.memoria.data.model.SearchHistory;
+import com.example.memoria.data.model.entity.SearchHistory;
 
 import java.util.Date;
 import java.util.List;

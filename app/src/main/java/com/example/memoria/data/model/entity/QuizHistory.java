@@ -1,4 +1,4 @@
-package com.example.memoria.data.model;
+package com.example.memoria.data.model.entity;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;

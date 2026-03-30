@@ -22,7 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.memoria.R;
-import com.example.memoria.data.model.Card;
+import com.example.memoria.data.model.entity.Card;
 
 import java.util.ArrayList;
 import java.util.List;

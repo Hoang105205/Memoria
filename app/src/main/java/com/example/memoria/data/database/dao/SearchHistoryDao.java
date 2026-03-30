@@ -7,7 +7,7 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Transaction;
 
-import com.example.memoria.data.model.SearchHistory;
+import com.example.memoria.data.model.entity.SearchHistory;
 
 import java.util.List;
 

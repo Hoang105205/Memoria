@@ -1,8 +1,8 @@
 package com.example.memoria.data.repository;
 
 import com.example.memoria.data.database.dao.DeckDao;
-import com.example.memoria.data.model.Deck;
-import com.example.memoria.data.model.DeckWithCount;
+import com.example.memoria.data.model.entity.Deck;
+import com.example.memoria.data.model.entity.DeckWithCount;
 
 import java.util.List;
 import java.util.UUID;
