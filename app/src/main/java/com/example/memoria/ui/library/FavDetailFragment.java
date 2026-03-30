@@ -81,6 +81,12 @@ public class FavDetailFragment extends Fragment {
                 // Chuyển tab (Truyền null thay vì bundle)
                 navController.navigate(R.id.search_graph, null, navOptions);
             }
+
+            @Override
+            public void onWordLongClick(FavWord word) {
+                // Gọi hàm hiển thị Dialog xóa khi ấn giữ
+                showDeleteWordDialog(word);
+            }
         });
         rvCards.setAdapter(wordAdapter);
 
@@ -167,6 +173,18 @@ public class FavDetailFragment extends Fragment {
                     androidx.navigation.Navigation.findNavController(requireView()).navigateUp();
                 })
                 .setNegativeButton(R.string.action_cancel, null)
+                .show();
+    }
+
+    private void showDeleteWordDialog(FavWord word) {
+        new android.app.AlertDialog.Builder(requireContext())
+                .setTitle("Xóa từ vựng")
+                .setMessage("Bạn có chắc muốn xóa từ '" + word.getWordText() + "' khỏi thư mục này không?")
+                .setPositiveButton("Xóa", (dialog, which) -> {
+                    // Gọi ViewModel để thực hiện xóa dưới Database
+                    viewModel.deleteWord(word);
+                })
+                .setNegativeButton("Hủy", null)
                 .show();
     }
 }

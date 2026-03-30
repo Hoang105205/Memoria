@@ -83,6 +83,16 @@ public class FavDetailViewModel extends ViewModel {
         }
     }
 
+    public void deleteWord(FavWord wordToDelete) {
+        if (wordToDelete != null) {
+            repository.deleteWord(wordToDelete, () -> {
+                // Xóa xong thì load lại danh sách từ vựng của folder hiện tại
+                loadWords(wordToDelete.getFolderId());
+                triggerSync();
+            });
+        }
+    }
+
     // hàm helper dùng chung cho ViewModel này
     private void triggerSync() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();

@@ -20,6 +20,7 @@ public class FavWordAdapter extends RecyclerView.Adapter<FavWordAdapter.WordView
     public interface OnWordInteractionListener {
         void onPinClick(FavWord word);
         void onWordClick(FavWord word);
+        void onWordLongClick(FavWord word);
     }
 
     public FavWordAdapter(OnWordInteractionListener listener) {
@@ -59,6 +60,12 @@ public class FavWordAdapter extends RecyclerView.Adapter<FavWordAdapter.WordView
         holder.btnPin.setOnClickListener(v -> listener.onPinClick(word));
 
         holder.itemView.setOnClickListener(v -> listener.onWordClick(word));
+
+        // Lắng nghe sự kiện ấn giữ và truyền về Fragment
+        holder.itemView.setOnLongClickListener(v -> {
+            listener.onWordLongClick(word);
+            return true; // Trả về true để pass sự kiện, không trigger thêm onClick
+        });
     }
 
     @Override
