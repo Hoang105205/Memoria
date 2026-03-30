@@ -104,6 +104,11 @@ dependencies {
     implementation("androidx.camera:camera-lifecycle:$cameraxVersion")
     implementation("androidx.camera:camera-view:$cameraxVersion")
 
+    // ML Kit - Text Recognition (Latin)
+    implementation("com.google.mlkit:text-recognition:16.0.1")
+    implementation("com.google.android.material:material:1.12.0")
+    implementation("androidx.exifinterface:exifinterface:1.3.7")
+
     //Calendar
     implementation("com.github.prolificinteractive:material-calendarview:2.0.1")
     implementation("com.jakewharton.threetenabp:threetenabp:1.2.1")

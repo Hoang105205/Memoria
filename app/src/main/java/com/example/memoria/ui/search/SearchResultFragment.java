@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.memoria.R;
+import com.example.memoria.ui.adapter.SearchWordResultAdapter;
 import com.example.memoria.utils.PronunciationManager;
 
 import java.util.ArrayList;

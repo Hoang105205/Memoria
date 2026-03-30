@@ -1,4 +1,4 @@
-package com.example.memoria.ui.search;
+package com.example.memoria.service.search;
 
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
