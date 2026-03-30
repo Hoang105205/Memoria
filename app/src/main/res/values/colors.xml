@@ -19,4 +19,12 @@
     <color name="bg_detail_header">#E3F2FD</color>
     <color name="white_translucent">#80FFFFFF</color>
     <color name="purple_500">#6200EE</color>
+
+    <!-- Quiz -->
+    <color name="primary_blue">#4A90E2</color>
+    <color name="light_gray">#EAECEF</color>
+    <color name="text_primary_quiz">#424242</color>
+    <color name="text_secondary_quiz">#555555</color>
+    <color name="correct_status">#5ACE5F</color>
+    <color name="incorrect_choice">#F64F43</color>
 </resources>

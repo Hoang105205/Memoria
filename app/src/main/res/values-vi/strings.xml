@@ -133,4 +133,22 @@
     <string name="done_deck_message">Bạn đã học thuộc hết\ncác thẻ trong bộ này!</string>
     <string name="username">Tên tài khoản</string>
     <string name="err_get_data_from_firestore">Không thể tải toàn bộ dữ liệu. Vui lòng kiểm tra mạng.</string>
+    <string name="action_enter_learn_mode">Bắt đầu học</string>
+    <string name="action_enter_quiz_mode">Làm trắc nghiệm</string>
+    <string name="quiz_word_instruction">Chọn nghĩa đúng của từ sau</string>
+    <string name="quiz_audio_instruction">Nghe và chọn từ chính xác</string>
+    <string name="quiz_synonym_instruction">Chọn từ đồng nghĩa với từ sau</string>
+    <string name="quiz_btn_check">KIỂM TRA</string>
+    <string name="quiz_tv_loading">Đang chuẩn bị câu hỏi...</string>
+    <string name="quiz_null_deck">Không tìm thấy bộ thẻ</string>
+    <string name="quiz_empty_deck">Bộ thẻ đang trống</string>
+    <string name="quiz_null_selected">Vui lòng chọn 1 đáp án!</string>
+    <string name="quiz_load_error">Không thể tải câu hỏi, vui lòng thử lại</string>
+    <string name="quiz_save_error">Lỗi khi lưu kết quả</string>
+    <string name="quiz_result_tv_overall_score">Điểm Số</string>
+    <string name="quiz_result_tv_review">Từ cần luyện tập</string>
+    <string name="quiz_result_btn_retake">KIỂM TRA LẠI</string>
+    <string name="quiz_result_btn_return">QUAY VỀ</string>
+    <string name="quiz_return_content_desc">Quay về</string>
+    <string name="quiz_result_tv_congratulate">Tuyệt vời! Bạn không làm sai câu nào</string>
 </resources>
