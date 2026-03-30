@@ -34,11 +34,7 @@ public interface QuizDao {
     @Query("SELECT * FROM quiz_his ORDER BY taken_at DESC")
     List<QuizHistory> getAllHistory();
 
-    //Lấy danh sách ngày học (format bỏ qua giờ phút giây)
-    @Query("SELECT DISTINCT (taken_at / 86400000) * 86400000 AS study_date " +
-            "FROM quiz_his " +
-            "ORDER BY study_date DESC")
-    List<Long> getDistinctStudyDays();
+
 
     @Query("SELECT DISTINCT (taken_at / 86400000) * 86400000 FROM quiz_his " +
             "WHERE taken_at >= :startOfMonth AND taken_at <= :endOfMonth")

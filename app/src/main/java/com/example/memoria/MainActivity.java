@@ -14,6 +14,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.example.memoria.service.ReminderManager;
 import com.example.memoria.ui.auth.LoginActivity;
 import com.example.memoria.ui.onboarding.OnboardingActivity;
 import com.example.memoria.utils.SyncHelper;
@@ -65,5 +66,10 @@ public class MainActivity extends AppCompatActivity {
             NavController navController = navHostFragment.getNavController();
             NavigationUI.setupWithNavController(bottomNavigationView, navController);
         }
+
+        ReminderManager.scheduleDailyReminder(this);
+
+
+
     }
 }

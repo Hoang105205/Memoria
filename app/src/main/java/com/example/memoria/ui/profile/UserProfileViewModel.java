@@ -40,9 +40,10 @@ public class UserProfileViewModel extends ViewModel {
 
     private final MutableLiveData<String> userName = new MutableLiveData<>();
     private final MutableLiveData<Uri> userAvatar = new MutableLiveData<>();
-    // Khai báo biến để chứa dữ liệu
-    private final MutableLiveData<Integer> learnedTodayLiveData = new MutableLiveData<>(0);
-    private final MutableLiveData<Integer> streakLiveData = new MutableLiveData<>(0);
+
+
+    private final LiveData<Integer> learnedToday;
+    private final LiveData<Integer> streak;
     private MutableLiveData<List<Long>> monthlyStudyDays = new MutableLiveData<>();
     private final MutableLiveData<List<float[]>> weeklyChartData = new MutableLiveData<>();
     public LiveData<List<float[]>> getWeeklyChartData() { return weeklyChartData; }
@@ -50,14 +51,30 @@ public class UserProfileViewModel extends ViewModel {
 
     @Inject
     public UserProfileViewModel(UserRepository userRepository, CardRepository cardRepository, QuizRepository quizRepository, AppDatabase appDatabase) {
+        this.userRepository = userRepository;
         this.cardRepository = cardRepository;
         this.quizRepository = quizRepository;
         this.appDatabase = appDatabase;
-        mAuth = FirebaseAuth.getInstance();
-        this.userRepository = userRepository;
+        this.mAuth = FirebaseAuth.getInstance();
+
+        // Lấy mốc 0h hôm nay
+        long startOfToday = getStartOfToday();
+
+        // 1. Kết nối "sống" với DB để lấy số từ học hôm nay
+        this.learnedToday = cardRepository.getWordsLearnedTodayLiveData(startOfToday);
+
+        // 2. Kết nối "sống" với DB để tính Streak tự động
+        // Chúng ta quan sát danh sách ngày học từ CardRepository
+        this.streak = androidx.lifecycle.Transformations.map(
+                cardRepository.getAllReviewDaysLiveData(),
+                this::calculateStreak
+        );
+
         loadUserInfo();
-        loadUserStats();
     }
+
+
+    // --- GETTERS CHO FRAGMENT ---
 
     private void loadUserInfo() {
         FirebaseUser user = mAuth.getCurrentUser();
@@ -67,26 +84,16 @@ public class UserProfileViewModel extends ViewModel {
             userAvatar.setValue(user.getPhotoUrl());
         }
     }
-    // Trong UserProfileViewModel.java
-    public void loadUserStats() {
-        // Lấy số từ học hôm nay
-        cardRepository.getWordsLearnedToday(count -> {
-            learnedTodayLiveData.postValue(count);
-        });
 
-        // Lấy Streak
-        quizRepository.getCurrentStreak(streak -> {
-            streakLiveData.postValue(streak);
-        });
-    }
     // Các hàm Getter để Fragment đọc dữ liệu
+    public LiveData<Integer> getLearnedToday() { return learnedToday; }
+    public LiveData<Integer> getStreakLiveData() { return streak; }
     public LiveData<String> getUserName() { return userName; }
     public LiveData<Uri> getUserAvatar() { return userAvatar; }
     public LiveData<Boolean> getIsLoading() { return isLoading; }
     public LiveData<String> getToastMessage() { return toastMessage; }
     public LiveData<Boolean> getNavigateBack() { return navigateBack; }
-    public LiveData<Integer> getLearnedToday() { return learnedTodayLiveData; }
-    public LiveData<Integer> getStreakLiveData() { return streakLiveData; }
+
 
     public LiveData<List<Long>> getMonthlyStudyDays() {
         return monthlyStudyDays;
@@ -104,6 +111,35 @@ public class UserProfileViewModel extends ViewModel {
         navigateBack.setValue(false);
     }
 
+    private long getStartOfToday() {
+        java.util.Calendar cal = java.util.Calendar.getInstance();
+        cal.set(java.util.Calendar.HOUR_OF_DAY, 0);
+        cal.set(java.util.Calendar.MINUTE, 0);
+        cal.set(java.util.Calendar.SECOND, 0);
+        cal.set(java.util.Calendar.MILLISECOND, 0);
+        return cal.getTimeInMillis();
+    }
+
+    private int calculateStreak(List<Long> dates) {
+        if (dates == null || dates.isEmpty()) return 0;
+        int currentStreak = 0;
+        long oneDay = 86400000L;
+        long today = (System.currentTimeMillis() / oneDay) * oneDay;
+        long yesterday = today - oneDay;
+
+        if (dates.get(0) < yesterday) return 0;
+
+        long expectedDate = dates.get(0);
+        for (Long date : dates) {
+            if (date.equals(expectedDate)) {
+                currentStreak++;
+                expectedDate -= oneDay;
+            } else {
+                break;
+            }
+        }
+        return currentStreak;
+    }
     // Xử lý đăng xuất
     public void signOut() {
         // Chạy ngầm việc xóa Database để không block UI

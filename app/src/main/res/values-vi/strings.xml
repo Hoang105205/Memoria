@@ -132,5 +132,13 @@
     <string name="next_flashcard_message">Thẻ tiếp theo sẽ mở sau\n%1$s.</string>
     <string name="done_deck_message">Bạn đã học thuộc hết\ncác thẻ trong bộ này!</string>
     <string name="username">Tên tài khoản</string>
+    <string name="monthly_progress">Thành tích tháng</string>
+    <string name="weekly_retention_rate">Tỷ lệ ghi nhớ hàng tuần</string>
+    <string name="today">Hôm nay</string>
+    <string name="word_learned">Từ đã học</string>
+    <string name="streak">Streak</string>
+    <string name="time_for_reviewing">Đã đến giờ ôn tập</string>
+    <string name="noti_note">thẻ cần hoàn thành. Đừng bỏ lỡ nhé!</string>
+    <string name="study_reminder">Nhắc nhở học tập</string>
     <string name="err_get_data_from_firestore">Không thể tải toàn bộ dữ liệu. Vui lòng kiểm tra mạng.</string>
 </resources>

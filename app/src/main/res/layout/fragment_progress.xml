@@ -172,7 +172,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="16dp"
-                android:text="Monthly Progress"
+                android:text="@string/monthly_progress"
                 android:textColor="#666666"
                 android:textSize="14sp" />
 
@@ -237,7 +237,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginTop="8dp"
-                    android:text="Weekly Retention Rate"
+                    android:text="@string/weekly_retention_rate"
                     android:textColor="#666666"
                     android:textSize="14sp" />
 
