@@ -50,10 +50,11 @@ public class UserProfileViewModel extends ViewModel {
     private Uri newSelectedAvatarUri = null;
 
     @Inject
-    public UserProfileViewModel(UserRepository userRepository, CardRepository cardRepository, QuizRepository quizRepository) {
+    public UserProfileViewModel(UserRepository userRepository, CardRepository cardRepository, QuizRepository quizRepository, AppDatabase appDatabase) {
         this.userRepository = userRepository;
         this.cardRepository = cardRepository;
         this.quizRepository = quizRepository;
+        this.appDatabase = appDatabase;
         this.mAuth = FirebaseAuth.getInstance();
 
         // Lấy mốc 0h hôm nay
