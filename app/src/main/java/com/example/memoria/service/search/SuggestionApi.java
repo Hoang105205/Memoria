@@ -1,4 +1,6 @@
-package com.example.memoria.ui.search;
+package com.example.memoria.service.search;
+
+import com.example.memoria.ui.search.Suggestion;
 
 import java.util.List;
 
