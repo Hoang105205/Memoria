@@ -10,6 +10,10 @@ import com.example.memoria.data.model.QuizHistory;
 import com.example.memoria.data.repository.CardRepository;
 import com.example.memoria.data.repository.QuizRepository;
 
+import com.example.memoria.utils.SyncHelper;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -40,7 +44,7 @@ public class QuizViewModel extends ViewModel {
     public void saveQuizHistory(QuizHistory history, CardRepository.DataCallback<Boolean> callback) {
         quizRepository.addQuizResult(history, isSuccess -> {
             if (isSuccess) {
-                // TODO: Sync trên Firestore
+                triggerSync();
             }
             if (callback != null) {
                 callback.onDataLoaded(isSuccess);
@@ -51,11 +55,18 @@ public class QuizViewModel extends ViewModel {
     public void updateQuizHistory(QuizHistory history, CardRepository.DataCallback<Boolean> callback) {
         quizRepository.updateQuizResult(history, isSuccess -> {
             if (isSuccess) {
-                // TODO: Sync trên Firestore
+                triggerSync();
             }
             if (callback != null) {
                 callback.onDataLoaded(isSuccess);
             }
         });
+    }
+
+    private void triggerSync() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            SyncHelper.triggerImmediateSync(context, user.getUid());
+        }
     }
 }

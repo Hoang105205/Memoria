@@ -118,6 +118,7 @@ public class QuizRepository {
     public void addQuizResult(QuizHistory history, CardRepository.DataCallback<Boolean> callback) {
         executor.execute(() -> {
             try {
+                history.setSyncStatus(0);
                 quizDao.insertQuizHistory(history);
 
                 new android.os.Handler(android.os.Looper.getMainLooper()).post(() ->
@@ -135,6 +136,7 @@ public class QuizRepository {
     public void updateQuizResult(QuizHistory history, CardRepository.DataCallback<Boolean> callback) {
         executor.execute(() -> {
             try {
+                history.setSyncStatus(0);
                 quizDao.updateQuizHistory(history);
                 new android.os.Handler(android.os.Looper.getMainLooper()).post(() ->
                         callback.onDataLoaded(true)

@@ -45,4 +45,7 @@ public class QuizHistory {
 
     @ColumnInfo(name = "firestore_id")
     private String firestoreId;
+
+    @ColumnInfo(name = "sync_status")
+    private int syncStatus;
 }
