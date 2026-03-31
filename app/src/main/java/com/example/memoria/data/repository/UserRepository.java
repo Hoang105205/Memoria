@@ -5,6 +5,8 @@ import android.net.Uri;
 import com.cloudinary.android.MediaManager;
 import com.cloudinary.android.callback.ErrorInfo;
 import com.cloudinary.android.callback.UploadCallback;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
@@ -96,5 +98,33 @@ public class UserRepository {
                         callback.onError("Lỗi cập nhật hồ sơ Firebase!");
                     }
                 });
+    }
+
+    public void changePasswordWithReauth(String currentPassword, String newPassword, UpdateCallback callback) {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (user != null && user.getEmail() != null) {
+            // 1. Tạo "thẻ từ" bằng Email của user và Mật khẩu cũ
+            AuthCredential credential = EmailAuthProvider.getCredential(user.getEmail(), currentPassword);
+
+            // 2. Yêu cầu Firebase xác thực lại
+            user.reauthenticate(credential).addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    // 3. Nếu mật khẩu cũ ĐÚNG -> Tiến hành cập nhật mật khẩu mới
+                    user.updatePassword(newPassword).addOnCompleteListener(updateTask -> {
+                        if (updateTask.isSuccessful()) {
+                            callback.onSuccess();
+                        } else {
+                            String err = updateTask.getException() != null ? updateTask.getException().getMessage() : "Lỗi khi cập nhật mật khẩu mới";
+                            callback.onError(err);
+                        }
+                    });
+                } else {
+                    callback.onError("Mật khẩu hiện tại không chính xác!");
+                }
+            });
+        } else {
+            callback.onError("Lỗi: Người dùng chưa đăng nhập.");
+        }
     }
 }

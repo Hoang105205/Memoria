@@ -225,6 +225,31 @@
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
+            <!-- Change Password Button Card -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="4dp"
+                app:cardUseCompatPadding="true">
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/profile_btn_change_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="64dp"
+                    android:background="@android:color/white"
+                    android:drawableStart="@drawable/ic_change_password"
+                    android:drawablePadding="16dp"
+                    android:paddingStart="24dp"
+                    android:paddingEnd="24dp"
+                    android:text="@string/title_change_password"
+                    android:textAllCaps="false"
+                    android:textColor="#666666"
+                    android:textSize="18sp"
+                    android:gravity="start|center_vertical" />
+            </androidx.cardview.widget.CardView>
+
             <!-- Sign out Button Card -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"

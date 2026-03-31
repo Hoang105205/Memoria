@@ -35,7 +35,7 @@ public class ProfileFragment extends Fragment {
     private UserProfileViewModel viewModel;
     private ShapeableImageView ivAvatar;
     private TextView tvUsername;
-    private Button btnSignOut;
+    private Button btnSignOut, btnChangePassword;
     private TextView tvEditProfile;
     private MaterialAutoCompleteTextView actvLanguage;
 
@@ -63,6 +63,7 @@ public class ProfileFragment extends Fragment {
         ivAvatar = view.findViewById(R.id.profile_iv_avatar);
         tvUsername = view.findViewById(R.id.profile_tv_username);
         btnSignOut = view.findViewById(R.id.profile_btn_signout);
+        btnChangePassword = view.findViewById(R.id.profile_btn_change_password);
         tvEditProfile = view.findViewById(R.id.profile_tv_edit); // Đã kết nối đúng ID
         actvLanguage = view.findViewById(R.id.profile_actv_language);
 
@@ -74,9 +75,15 @@ public class ProfileFragment extends Fragment {
             Navigation.findNavController(v).navigate(R.id.action_profileFragment_to_editProfileFragment);
         });
 
+        // Gắn sự kiện Click cho nút "Change Password"
+        btnChangePassword.setOnClickListener(v -> {
+            Navigation.findNavController(v).navigate(R.id.action_profileFragment_to_changePasswordFragment);
+        });
+
         btnSignOut.setOnClickListener(v -> {
             viewModel.signOut();
         });
+        
         view.findViewById(R.id.profile_cv_progress).setOnClickListener(v -> {
             Navigation.findNavController(v).navigate(R.id.action_profileFragment_to_progressFragment);
         });
@@ -107,8 +114,8 @@ public class ProfileFragment extends Fragment {
                 startActivity(intent);
             }
         });
+        
         viewModel.getLearnedToday().observe(getViewLifecycleOwner(), count -> {
-            // Thay 'view.findViewById' bằng 'getView().findViewById'
             if (getView() != null) {
                 TextView tvLearned = getView().findViewById(R.id.profile_tv_words_count);
                 if (tvLearned != null) tvLearned.setText(String.valueOf(count));
@@ -116,7 +123,6 @@ public class ProfileFragment extends Fragment {
         });
 
         viewModel.getStreakLiveData().observe(getViewLifecycleOwner(), streak -> {
-            // Thay 'view.findViewById' bằng 'getView().findViewById'
             if (getView() != null) {
                 TextView tvStreak = getView().findViewById(R.id.profile_tv_streak_count);
                 if (tvStreak != null) tvStreak.setText(String.valueOf(streak));

@@ -14,6 +14,7 @@
     <string name="back_to_login">Quay lại đăng nhập</string>
     <string name="copyright">© Team 08</string>
     <string name="msg_reset_password">Một đường link đã được gửi tới email của bạn! Vui lòng kiểm tra thư mục rác</string>
+    <string name="action_change">Thay đổi</string>
     <string name="err_email_empty">Vui lòng nhập email</string>
     <string name="err_email_invalid">Email không hợp lệ</string>
     <string name="err_password_empty">Vui lòng nhập mật khẩu</string>
@@ -22,12 +23,14 @@
     <string name="success_signup">Đăng kí thành công</string>
     <string name="err_signup">Đăng kí thất bại</string>
     <string name="err_forgot_password">Yêu cầu đặt lại mật khẩu thật bại</string>
+    <string name="err_wrong_current_password">Mật khẩu hiện tại không chính xác</string>
     <string name="success_login">Đăng nhập thành công</string>
     <string name="err_login">Đăng nhập thất bại</string>
     <string name="forgot_password">Quên mật khẩu?</string>
     <string name="reset_password">Thiết lập lại mật khẩu</string>
     <string name="success_forgot_password">Đã gửi email đặt lại! Hãy kiểm tra email của bạn</string>
     <string name="title_reset_password">Yêu cầu đặt lại mật khẩu</string>
+    <string name="success_change_password">Thay đổi mật khẩu thành công</string>
     <string name="home">Trang chủ</string>
     <string name="search">Tra cứu</string>
     <string name="library">Thư viện</string>
@@ -159,4 +162,7 @@
     <string name="quiz_result_btn_return">QUAY VỀ</string>
     <string name="quiz_return_content_desc">Quay về</string>
     <string name="quiz_result_tv_congratulate">Tuyệt vời! Bạn không làm sai câu nào</string>
+    <string name="title_change_password">Thay đổi mật khẩu</string>
+    <string name="current_password">Mật khẩu hiện tại</string>
+    <string name="new_password">Mật khẩu mới</string>
 </resources>
