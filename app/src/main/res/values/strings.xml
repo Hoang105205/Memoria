@@ -19,6 +19,12 @@
     <string name="title_reset_password">Reset Password</string>
     <string name="msg_reset_password">A reset link has been sent to your email address.</string>
 
+    <!-- Change Password -->
+    <string name="title_change_password">Change Password</string>
+    <string name="current_password">Current Password</string>
+    <string name="new_password">New Password</string>
+    <string name="action_change">Change</string>
+
     <!-- Error messages -->
     <string name="err_email_empty">Email cannot be empty</string>
     <string name="err_email_invalid">Invalid email format</string>
@@ -28,11 +34,14 @@
     <string name="err_login">Login failed</string>
     <string name="err_signup">Sign up failed</string>
     <string name="err_forgot_password">Request to reset password failed</string>
+    <string name="err_wrong_current_password">Current password is wrong</string>
+
 
     <!-- Success messages -->
     <string name="success_login">Login successful</string>
     <string name="success_signup">Sign up successful</string>
     <string name="success_forgot_password">Reset email sent!</string>
+    <string name="success_change_password">Change password successful</string>
     <string name="home">Home</string>
     <string name="search">Search</string>
     <string name="library">Library</string>
@@ -164,7 +173,6 @@
     <string name="time_for_reviewing">It\'s time for reviewing</string>
     <string name="noti_note">due card. Don\'t miss out!</string>
     <string name="study_reminder">Study reminder</string>
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="err_get_data_from_firestore">Unable to download all data. Please check your network.</string>
     <string name="dialog_select_deck">Select a deck to save new card</string>
     <string name="msg_card_exists">This word to card is already exist in this deck</string>
