@@ -28,6 +28,8 @@ public class FavDetailViewModel extends ViewModel {
     private final MutableLiveData<FavFolder> currentFolder = new MutableLiveData<>();
     private final MutableLiveData<List<FavWord>> folderWords = new MutableLiveData<>();
 
+    private String currentSearchKeyword = "";
+
     @Inject
     public FavDetailViewModel(FavRepository repository, @ApplicationContext Context context) {
         this.context = context;
@@ -43,7 +45,19 @@ public class FavDetailViewModel extends ViewModel {
     }
 
     public void loadWords(UUID folderId) {
-        repository.getWordsByFolder(folderId, folderWords::postValue);
+        searchWords(folderId, currentSearchKeyword);
+    }
+
+    public void searchWords(UUID folderId, String keyword) {
+        this.currentSearchKeyword = keyword; // Lưu trạng thái
+
+        if (keyword == null || keyword.trim().isEmpty()) {
+            // Nếu không nhập gì, lấy toàn bộ từ trong thư mục
+            repository.getWordsByFolder(folderId, folderWords::postValue);
+        } else {
+            // Nếu có nhập, gọi hàm search
+            repository.searchWords(folderId, keyword.trim(), folderWords::postValue);
+        }
     }
 
     public void togglePinStatus(FavWord word) {

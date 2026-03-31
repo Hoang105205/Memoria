@@ -76,4 +76,12 @@ public interface CardDao {
     // Kiểm tra xem thẻ đã tồn tại trong bộ chưa (Trả về số lượng)
     @Query("SELECT COUNT(card_id) FROM cards WHERE deck_id = :deckId AND front_text = :frontText AND sync_status IN (0, 1)")
     int checkCardExist(UUID deckId, String frontText);
+
+    // Lấy danh sách thẻ theo deckId dạng List tĩnh (để phục vụ cho tính năng Search)
+    @Query("SELECT * FROM cards WHERE deck_id = :deckId AND sync_status IN (0, 1) ORDER BY created_at DESC")
+    List<Card> getCardsByDeckIdSync(UUID deckId);
+
+    // Tìm kiếm thẻ trong bộ thẻ theo từ khóa (Tìm theo mặt trước của thẻ)
+    @Query("SELECT * FROM cards WHERE deck_id = :deckId AND sync_status IN (0, 1) AND front_text LIKE '%' || :keyword || '%' ORDER BY created_at DESC")
+    List<Card> searchCardsInDeck(UUID deckId, String keyword);
 }

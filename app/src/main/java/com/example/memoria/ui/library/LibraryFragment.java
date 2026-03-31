@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.memoria.R;
@@ -32,9 +33,12 @@ public class LibraryFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        LibraryViewModel viewModel = new ViewModelProvider(requireActivity()).get(LibraryViewModel.class);
+
         // Ánh xạ View
         tlLibraryTabs = view.findViewById(R.id.tl_library_tabs);
         vpLibraryPager = view.findViewById(R.id.vp_library_pager);
+        android.widget.EditText edtSearch = view.findViewById(R.id.edt_search);
 
         // Cài đặt Adapter
         LibraryPagerAdapter pagerAdapter = new LibraryPagerAdapter(this);
@@ -48,5 +52,22 @@ public class LibraryFragment extends Fragment {
                 tab.setText(R.string.tab_decks);
             }
         }).attach();
+
+        edtSearch.addTextChangedListener(new android.text.TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                String keyword = s.toString();
+                // Gọi hàm search cho FavFolder
+                viewModel.searchFavFolders(keyword);
+
+                viewModel.searchDecks(keyword);
+            }
+
+            @Override
+            public void afterTextChanged(android.text.Editable s) {}
+        });
     }
 }

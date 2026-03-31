@@ -65,4 +65,14 @@ public interface FavDao {
     // Lấy danh sách Word chưa đồng bộ
     @Query("SELECT * FROM fav_words WHERE sync_status NOT IN (1)")
     List<FavWord> getUnsyncedWords();
+
+    // Truy vấn danh sách thư mục kèm số lượng từ, lọc theo tên (Search)
+    @Query("SELECT f.*, (SELECT COUNT(fav_id) FROM fav_words WHERE folder_id = f.folder_id AND sync_status IN (0, 1)) AS word_count " +
+            "FROM fav_folders f WHERE f.sync_status IN (0, 1) AND f.folder_name LIKE '%' || :keyword || '%' " +
+            "ORDER BY f.created_at DESC")
+    List<FavFolderWithCount> searchFoldersWithWordCount(String keyword);
+
+    // Tìm kiếm từ vựng trong 1 folder theo từ khóa, ưu tiên từ được ghim lên đầu
+    @Query("SELECT * FROM fav_words WHERE folder_id = :folderId AND sync_status IN (0, 1) AND word_text LIKE '%' || :keyword || '%' ORDER BY pin_status DESC, added_at DESC")
+    List<FavWord> searchWordsInFolder(UUID folderId, String keyword);
 }

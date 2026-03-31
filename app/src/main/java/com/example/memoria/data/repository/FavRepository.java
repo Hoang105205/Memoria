@@ -116,6 +116,20 @@ public class FavRepository {
         });
     }
 
+    public void searchFolders(String keyword, DataCallback<List<FavFolderWithCount>> callback) {
+        executor.execute(() -> {
+            List<FavFolderWithCount> data = favDao.searchFoldersWithWordCount(keyword);
+            callback.onDataLoaded(data);
+        });
+    }
+
+    public void searchWords(UUID folderId, String keyword, DataCallback<List<FavWord>> callback) {
+        executor.execute(() -> {
+            List<FavWord> words = favDao.searchWordsInFolder(folderId, keyword);
+            callback.onDataLoaded(words);
+        });
+    }
+
     public void insertWordIfNotExists(FavWord word, DataCallback<Boolean> callback) {
         executor.execute(() -> {
             // Kiểm tra số lượng

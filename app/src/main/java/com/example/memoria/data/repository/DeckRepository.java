@@ -3,6 +3,7 @@ package com.example.memoria.data.repository;
 import com.example.memoria.data.database.dao.DeckDao;
 import com.example.memoria.data.model.entity.Deck;
 import com.example.memoria.data.model.entity.DeckWithCount;
+import com.example.memoria.data.model.entity.FavFolderWithCount;
 
 import java.util.List;
 import java.util.UUID;
@@ -42,6 +43,13 @@ public class DeckRepository {
     public void getAllDecksWithCount(DataCallback<List<DeckWithCount>> callback) {
         executor.execute(() -> {
             List<DeckWithCount> data = deckDao.getAllDecksWithCount();
+            callback.onDataLoaded(data);
+        });
+    }
+
+    public void searchDecks(String keyword, DeckRepository.DataCallback<List<DeckWithCount>> callback) {
+        executor.execute(() -> {
+            List<DeckWithCount> data = deckDao.searchDecksWithWordCount(keyword);
             callback.onDataLoaded(data);
         });
     }

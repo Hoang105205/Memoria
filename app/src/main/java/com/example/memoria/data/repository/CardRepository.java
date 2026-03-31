@@ -86,4 +86,18 @@ public class CardRepository {
             }
         });
     }
+
+    public void getCardsByDeckIdList(UUID deckId, DataCallback<List<Card>> callback) {
+        executor.execute(() -> {
+            List<Card> cards = cardDao.getCardsByDeckIdSync(deckId);
+            callback.onDataLoaded(cards);
+        });
+    }
+
+    public void searchCards(UUID deckId, String keyword, DataCallback<List<Card>> callback) {
+        executor.execute(() -> {
+            List<Card> cards = cardDao.searchCardsInDeck(deckId, keyword);
+            callback.onDataLoaded(cards);
+        });
+    }
 }
