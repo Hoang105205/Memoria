@@ -84,7 +84,10 @@ public class SearchResultFragment extends Fragment {
             dialog.show(getChildFragmentManager(), "SelectFavFolderDialog");
         });
 
-        btnSave.setOnClickListener(v -> Log.d("ACTION", "Create flashcard clicked"));
+        btnSave.setOnClickListener(v -> {
+            SelectDeckDialog dialog = new SelectDeckDialog();
+            dialog.show(getChildFragmentManager(), "SelectDeckDialog");
+        });
 
         btnPlay.setOnClickListener(v -> {
             playAudio();

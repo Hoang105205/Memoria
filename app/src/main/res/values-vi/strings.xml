@@ -141,4 +141,6 @@
     <string name="noti_note">thẻ cần hoàn thành. Đừng bỏ lỡ nhé!</string>
     <string name="study_reminder">Nhắc nhở học tập</string>
     <string name="err_get_data_from_firestore">Không thể tải toàn bộ dữ liệu. Vui lòng kiểm tra mạng.</string>
+    <string name="dialog_select_deck">Chọn 1 bộ thẻ để chứa thẻ mới</string>
+    <string name="msg_card_exists">Từ mà bạn muốn chuyển thành thẻ đã tồn tại trong bộ thẻ này</string>
 </resources>

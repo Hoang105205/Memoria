@@ -72,4 +72,8 @@ public interface CardDao {
     // Lấy danh sách Card chưa đồng bộ
     @Query("SELECT * FROM cards WHERE sync_status NOT IN (1)")
     List<Card> getUnsyncedCards();
+
+    // Kiểm tra xem thẻ đã tồn tại trong bộ chưa (Trả về số lượng)
+    @Query("SELECT COUNT(card_id) FROM cards WHERE deck_id = :deckId AND front_text = :frontText AND sync_status IN (0, 1)")
+    int checkCardExist(UUID deckId, String frontText);
 }
