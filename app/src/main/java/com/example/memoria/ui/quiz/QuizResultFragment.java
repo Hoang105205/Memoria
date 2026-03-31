@@ -13,12 +13,18 @@ import androidx.appcompat.widget.AppCompatButton;
 import androidx.fragment.app.Fragment;
 
 import com.example.memoria.R;
+import com.example.memoria.utils.SoundManager;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.UUID;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class QuizResultFragment extends Fragment {
 
     private CircularProgressIndicator progressOverall;
@@ -28,6 +34,9 @@ public class QuizResultFragment extends Fragment {
 
     private UUID currentDeckId;
     private String currentDeckName;
+
+    @Inject
+    SoundManager soundManager;
 
     @Nullable
     @Override
@@ -41,6 +50,7 @@ public class QuizResultFragment extends Fragment {
 
         initViews(view);
         loadScoreData();
+        soundManager.playSound(SoundManager.SoundEvent.COMPLETE_QUIZ);
         setupClickListeners();
     }
 

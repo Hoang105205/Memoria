@@ -28,6 +28,7 @@ import com.example.memoria.data.model.Card;
 import com.example.memoria.data.model.QuizHistory;
 import com.example.memoria.utils.GeminiHelper;
 import com.example.memoria.utils.PronunciationManager;
+import com.example.memoria.utils.SoundManager;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,6 +37,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 import java.util.UUID;
+
+import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -74,6 +77,9 @@ public class QuizFragment extends Fragment {
 
     private boolean isInteractionLocked = false;
     private Button selectedButton = null;
+
+    @Inject
+    SoundManager soundManager;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -377,12 +383,16 @@ public class QuizFragment extends Fragment {
         String selectedAnswer = selectedButton.getText().toString();
 
         if (selectedAnswer.equals(currentQuestion.correctAnswer)) {
+            soundManager.playSound(SoundManager.SoundEvent.CORRECT_ANSWER);
+
             selectedButton.setBackgroundResource(R.drawable.bg_choice_correct);
             selectedButton.setTextColor(Color.parseColor("#4FBC53"));
             selectedButton.setTypeface(selectedButton.getTypeface(), Typeface.BOLD);
 
             currentScore++;
         } else {
+            soundManager.playSound(SoundManager.SoundEvent.WRONG_ANSWER);
+
             selectedButton.setBackgroundResource(R.drawable.bg_choice_incorrect);
             selectedButton.setTextColor(Color.parseColor("#F64F43"));
             selectedButton.setTypeface(selectedButton.getTypeface(), Typeface.BOLD);
@@ -438,7 +448,8 @@ public class QuizFragment extends Fragment {
                 loadQuestionToUI(quizList.get(currentIndex));
             } else {
                 timerHandler.removeCallbacks(timerRunnable);
-                QuizHistory history = new QuizHistory(UUID.randomUUID());
+                QuizHistory history = new QuizHistory();
+                history.setResultId(UUID.randomUUID());
                 history.setDeckId(this.deckId);
                 history.setCorrectCount(currentScore);
                 history.setTotalQuestions(quizList.size());
