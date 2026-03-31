@@ -9,6 +9,7 @@ import androidx.room.Update;
 
 import com.example.memoria.data.model.entity.Deck;
 import com.example.memoria.data.model.entity.DeckWithCount;
+import com.example.memoria.data.model.entity.FavFolderWithCount;
 
 import java.util.List;
 import java.util.UUID;
@@ -45,4 +46,10 @@ public interface DeckDao {
     // Lấy danh sách Deck chưa đồng bộ
     @Query("SELECT * FROM decks WHERE sync_status NOT IN (1)")
     List<Deck> getUnsyncedDecks();
+
+    // Truy vấn danh sách bộ thẻ kèm số lượng từ, lọc theo tên (Search)
+    @Query("SELECT d.*, (SELECT COUNT(card_id) FROM cards WHERE deck_id = d.deck_id AND sync_status IN (0, 1)) AS total_cards " +
+            "FROM decks d WHERE d.sync_status IN (0, 1) AND d.deck_name LIKE '%' || :keyword || '%' " +
+            "ORDER BY d.created_at DESC")
+    List<DeckWithCount> searchDecksWithWordCount(String keyword);
 }

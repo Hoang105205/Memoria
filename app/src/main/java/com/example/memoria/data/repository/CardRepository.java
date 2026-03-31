@@ -71,5 +71,33 @@ public class CardRepository {
         return cardDao.countDueCards(currentTime);
     }
 
+    // Thêm Card nếu chưa tồn tại
+    public void insertCardIfNotExists(Card card, DataCallback<Boolean> callback) {
+        executor.execute(() -> {
+            // Kiểm tra số lượng thẻ trùng lặp trong Deck
+            int count = cardDao.checkCardExist(card.getDeckId(), card.getFrontText());
 
+            if (count == 0) {
+                card.setSyncStatus(0);
+                cardDao.insertCard(card); // Chưa có thì thêm vào
+                if (callback != null) callback.onDataLoaded(true); // Trả về true (Thành công)
+            } else {
+                if (callback != null) callback.onDataLoaded(false); // Trả về false (Đã tồn tại)
+            }
+        });
+    }
+
+    public void getCardsByDeckIdList(UUID deckId, DataCallback<List<Card>> callback) {
+        executor.execute(() -> {
+            List<Card> cards = cardDao.getCardsByDeckIdSync(deckId);
+            callback.onDataLoaded(cards);
+        });
+    }
+
+    public void searchCards(UUID deckId, String keyword, DataCallback<List<Card>> callback) {
+        executor.execute(() -> {
+            List<Card> cards = cardDao.searchCardsInDeck(deckId, keyword);
+            callback.onDataLoaded(cards);
+        });
+    }
 }

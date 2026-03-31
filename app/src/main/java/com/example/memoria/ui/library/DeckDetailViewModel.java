@@ -62,6 +62,17 @@ public class DeckDetailViewModel extends ViewModel {
         }
     }
 
+    public void updateDeckTheme(String newColor) {
+        Deck deck = currentDeck.getValue();
+        if (deck != null) {
+            deck.setCoverColor(newColor);
+            repository.updateDeck(deck, () -> {
+                currentDeck.postValue(deck); // Update LiveData
+                triggerSync();
+            });
+        }
+    }
+
     private void triggerSync() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {

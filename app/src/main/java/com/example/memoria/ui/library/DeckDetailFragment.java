@@ -44,48 +44,65 @@ public class DeckDetailFragment extends Fragment {
         ImageButton btnOptions = view.findViewById(R.id.btn_deck_detail_options);
         ImageButton btnBack = view.findViewById(R.id.btn_back);
         RecyclerView rvCards = view.findViewById(R.id.rv_deck_cards);
+        android.widget.EditText edtSearchCard = view.findViewById(R.id.edt_search_card);
 
         viewModel = new ViewModelProvider(this).get(DeckDetailViewModel.class);
         CardViewModel cardViewModel = new ViewModelProvider(this).get(CardViewModel.class);
 
-        // 1. Cấu hình layout cho RecyclerView
+        // Nhận ID từ Bundle và load dữ liệu
         rvCards.setLayoutManager(new LinearLayoutManager(requireContext()));
-
-        // Lắng nghe dữ liệu từ ViewModel để set tên
-        viewModel.getDeck().observe(getViewLifecycleOwner(), deck -> {
-            if (deck != null) {
-                tvDeckName.setText(deck.getDeckName());
-            }
-        });
-
-        // 2. Khởi tạo DeckCardAdapter và gắn vào RecyclerView
         DeckCardAdapter cardAdapter = new DeckCardAdapter((card, position) -> {
-            // Khi bấm vào 1 thẻ trong danh sách -> Mở CardDetailFragment
             Bundle bundle = new Bundle();
             bundle.putSerializable("DECK_ID", card.getDeckId());
             bundle.putInt("SELECTED_POSITION", position);
 
-            String currentDeckName = "";
             if (viewModel.getDeck().getValue() != null) {
-                currentDeckName = viewModel.getDeck().getValue().getDeckName();
+                bundle.putString("DECK_NAME", viewModel.getDeck().getValue().getDeckName());
+                bundle.putString("COVER_COLOR", viewModel.getDeck().getValue().getCoverColor());
             }
-            bundle.putString("DECK_NAME", currentDeckName);
 
             androidx.navigation.Navigation.findNavController(view)
                     .navigate(R.id.cardDetailFragment, bundle);
         });
         rvCards.setAdapter(cardAdapter);
 
-        // 3. Nhận ID từ Bundle và load dữ liệu
+        // Lắng nghe Tên Deck
+        viewModel.getDeck().observe(getViewLifecycleOwner(), deck -> {
+            if (deck != null) {
+                tvDeckName.setText(deck.getDeckName());
+            }
+        });
+
+        // Lắng nghe Danh sách Card (Đã được search/load)
+        cardViewModel.getDeckCards().observe(getViewLifecycleOwner(), cards -> {
+            if (cards != null) {
+                cardAdapter.setCards(cards);
+            }
+        });
+
+        // Lấy ID từ Bundle, Load dữ liệu và gắn bộ Search (Gộp lại 1 lần duy nhất)
         if (getArguments() != null) {
             UUID deckId = (UUID) getArguments().getSerializable("DECK_ID");
             if (deckId != null) {
                 viewModel.loadDeck(deckId); // Load tên Deck
+                cardViewModel.loadCards(deckId); // Load danh sách Card (Dùng hàm mới)
 
-                // Lắng nghe danh sách Card trả về và gán vào Adapter
-                cardViewModel.getCardsByDeckId(deckId).observe(getViewLifecycleOwner(), cards -> {
-                    cardAdapter.setCards(cards);
-                });
+                // Lắng nghe sự kiện gõ tìm kiếm
+                if (edtSearchCard != null) {
+                    edtSearchCard.addTextChangedListener(new android.text.TextWatcher() {
+                        @Override
+                        public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+                        @Override
+                        public void onTextChanged(CharSequence s, int start, int before, int count) {
+                            // Gọi hàm search khi text thay đổi
+                            cardViewModel.searchCards(deckId, s.toString());
+                        }
+
+                        @Override
+                        public void afterTextChanged(android.text.Editable s) {}
+                    });
+                }
             }
         }
 
@@ -121,8 +138,8 @@ public class DeckDetailFragment extends Fragment {
                     Toast.makeText(requireContext(), "Share deck clicked", Toast.LENGTH_SHORT).show();
                     return true;
                 case 3:
-                    // TODO: Xử lý Edit card theme
-                    Toast.makeText(requireContext(), "Edit card theme clicked", Toast.LENGTH_SHORT).show();
+                    EditThemeDialog themeDialog = new EditThemeDialog();
+                    themeDialog.show(getChildFragmentManager(), "EditThemeDialog");
                     return true;
                 case 4:
                     // Chuyển sang trang CreateNewCardFragment

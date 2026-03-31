@@ -28,11 +28,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CardPagerAdapter extends RecyclerView.Adapter<CardPagerAdapter.CardViewHolder> {
-
     private List<Card> cardList = new ArrayList<>();
+    private String themeColor = "";
 
     public void setCards(List<Card> cards) {
         this.cardList = cards;
+        notifyDataSetChanged();
+    }
+
+    public void setThemeColor(String themeColor) {
+        this.themeColor = themeColor;
         notifyDataSetChanged();
     }
 
@@ -46,7 +51,7 @@ public class CardPagerAdapter extends RecyclerView.Adapter<CardPagerAdapter.Card
     @Override
     public void onBindViewHolder(@NonNull CardViewHolder holder, int position) {
         Card card = cardList.get(position);
-        holder.bind(card);
+        holder.bind(card, themeColor);
     }
 
     @Override
@@ -63,7 +68,8 @@ public class CardPagerAdapter extends RecyclerView.Adapter<CardPagerAdapter.Card
     }
 
     static class CardViewHolder extends RecyclerView.ViewHolder {
-        CardView cardContainer;
+        com.google.android.material.card.MaterialCardView cardContainer;
+        // CardView cardContainer;
         View layoutFront, layoutBack;
         ImageButton btnFlip;
         TextView tvFrontText, tvBackText, tvMeanings;
@@ -85,7 +91,7 @@ public class CardPagerAdapter extends RecyclerView.Adapter<CardPagerAdapter.Card
             setupFlipAnimation();
         }
 
-        void bind(Card card) {
+        void bind(Card card, String themeColor) {
             // Đảm bảo luôn bắt đầu từ mặt trước
             isFront = true;
             layoutFront.setVisibility(View.VISIBLE);
@@ -122,6 +128,14 @@ public class CardPagerAdapter extends RecyclerView.Adapter<CardPagerAdapter.Card
                     meaningsBuilder.append(i + 1).append(". ").append(card.getBackMeanings().get(i)).append("\n\n");
                 }
                 tvMeanings.setText(meaningsBuilder.toString().trim());
+            }
+
+            // Áp dụng Theme Color
+            if (themeColor != null && !themeColor.isEmpty()) {
+                cardContainer.setStrokeColor(android.graphics.Color.parseColor(themeColor));
+                cardContainer.setStrokeWidth(12); // ~4dp
+            } else {
+                cardContainer.setStrokeWidth(0);
             }
         }
 

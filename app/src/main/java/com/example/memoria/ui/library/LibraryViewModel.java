@@ -32,6 +32,8 @@ public class LibraryViewModel extends ViewModel {
     private final MutableLiveData<List<DeckWithCount>> decks = new MutableLiveData<>();
     private final MutableLiveData<List<FavFolderWithCount>> folders = new MutableLiveData<>();
 
+    private String currentSearchKeyword = "";
+
     public LiveData<List<FavFolderWithCount>> getFavFolders() { return folders; }
 
     public LiveData<List<DeckWithCount>> getDecks() {
@@ -39,8 +41,37 @@ public class LibraryViewModel extends ViewModel {
     }
 
     public void loadFavFolders() {
+        searchFavFolders(currentSearchKeyword);
         // Gọi hàm có đếm số lượng thay vì hàm cũ
-        favRepository.getFoldersWithWordCount(folders::postValue);
+        // favRepository.getFoldersWithWordCount(folders::postValue);
+    }
+
+    public void loadDecks() {
+        searchDecks(currentSearchKeyword);
+    }
+
+    public void searchFavFolders(String keyword) {
+        this.currentSearchKeyword = keyword; // Lưu lại trạng thái
+
+        if (keyword == null || keyword.trim().isEmpty()) {
+            // Nếu ô search rỗng, lấy tất cả
+            favRepository.getFoldersWithWordCount(folders::postValue);
+        } else {
+            // Nếu có chữ, gọi hàm search
+            favRepository.searchFolders(keyword.trim(), folders::postValue);
+        }
+    }
+
+    public void searchDecks(String keyword) {
+        this.currentSearchKeyword = keyword; // Lưu lại trạng thái
+
+        if (keyword == null || keyword.trim().isEmpty()) {
+            // Nếu ô search rỗng, lấy tất cả
+            deckRepository.getAllDecksWithCount(decks::postValue);
+        } else {
+            // Nếu có chữ, gọi hàm search
+            deckRepository.searchDecks(keyword.trim(), decks::postValue);
+        }
     }
 
     // Ngay khi ViewModel được khởi tạo, lấy dữ liệu từ DB
@@ -52,11 +83,6 @@ public class LibraryViewModel extends ViewModel {
 
         loadDecks();
         loadFavFolders();
-    }
-
-    public void loadDecks() {
-        // Đổi hàm gọi sang getAllDecksWithCount để lấy cả số thẻ trong deck
-        deckRepository.getAllDecksWithCount(decks::postValue);
     }
 
     public void addNewDeck(Deck deck) {

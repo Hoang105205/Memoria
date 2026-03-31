@@ -1,6 +1,7 @@
 package com.example.memoria.ui.library;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.memoria.data.model.entity.Card;
@@ -24,6 +25,26 @@ public class CardViewModel extends ViewModel {
     private final CardRepository repository;
     private final Context context;
 
+    private final MutableLiveData<List<Card>> deckCards = new MutableLiveData<>();
+    private String currentSearchKeyword = "";
+
+    public LiveData<List<Card>> getDeckCards() {
+        return deckCards;
+    }
+
+    public void loadCards(UUID deckId) {
+        searchCards(deckId, currentSearchKeyword);
+    }
+
+    public void searchCards(UUID deckId, String keyword) {
+        this.currentSearchKeyword = keyword;
+        if (keyword == null || keyword.trim().isEmpty()) {
+            repository.getCardsByDeckIdList(deckId, deckCards::postValue);
+        } else {
+            repository.searchCards(deckId, keyword.trim(), deckCards::postValue);
+        }
+    }
+
     @Inject
     public CardViewModel(CardRepository repository, @ApplicationContext Context context) {
         this.context = context;
@@ -38,18 +59,21 @@ public class CardViewModel extends ViewModel {
     public void insertCard(Card card) {
         repository.insertCard(card, () -> {
             triggerSync();
+            loadCards(card.getDeckId());
         });
     }
 
     public void updateCard(Card card) {
         repository.updateCard(card, () -> {
             triggerSync();
+            loadCards(card.getDeckId());
         });
     }
 
     public void deleteCard(Card card) {
         repository.deleteCard(card, () -> {
             triggerSync();
+            loadCards(card.getDeckId());
         });
     }
 

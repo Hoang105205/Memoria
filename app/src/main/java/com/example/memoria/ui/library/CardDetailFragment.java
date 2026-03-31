@@ -31,6 +31,7 @@ public class CardDetailFragment extends Fragment {
     private UUID deckId;
     private String deckName;
     private int startPosition;
+    private String coverColor;
 
     @Nullable
     @Override
@@ -46,6 +47,7 @@ public class CardDetailFragment extends Fragment {
             deckId = (UUID) getArguments().getSerializable("DECK_ID");
             deckName = getArguments().getString("DECK_NAME");
             startPosition = getArguments().getInt("SELECTED_POSITION", 0);
+            coverColor = getArguments().getString("COVER_COLOR", "");
         }
 
         viewPager = view.findViewById(R.id.view_pager_cards);
@@ -57,6 +59,7 @@ public class CardDetailFragment extends Fragment {
         }
 
         pagerAdapter = new CardPagerAdapter();
+        pagerAdapter.setThemeColor(coverColor);
         viewPager.setAdapter(pagerAdapter);
 
         viewModel = new ViewModelProvider(this).get(CardViewModel.class);

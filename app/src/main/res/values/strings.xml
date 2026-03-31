@@ -166,6 +166,8 @@
     <string name="study_reminder">Study reminder</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="err_get_data_from_firestore">Unable to download all data. Please check your network.</string>
+    <string name="dialog_select_deck">Select a deck to save new card</string>
+    <string name="msg_card_exists">This word to card is already exist in this deck</string>
     <string name="action_enter_learn_mode">Start Learning</string>
     <string name="action_enter_quiz_mode">Take a Quiz</string>
 

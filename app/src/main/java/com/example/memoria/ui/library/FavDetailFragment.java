@@ -2,6 +2,8 @@ package com.example.memoria.ui.library;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,14 +43,45 @@ public class FavDetailFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        viewModel = new ViewModelProvider(this).get(FavDetailViewModel.class);
+
         tvFolderName = view.findViewById(R.id.tv_fav_name);
         ImageButton btnOptions = view.findViewById(R.id.btn_fav_detail_options);
         ImageButton btnBack = view.findViewById(R.id.btn_back);
+        android.widget.EditText edtSearchWord = view.findViewById(R.id.edt_search);
+        RecyclerView rvCards = view.findViewById(R.id.rv_cards);
 
-        viewModel = new ViewModelProvider(this).get(FavDetailViewModel.class);
+        // Nhận ID từ Bundle
+        UUID folderId = null;
+        if (getArguments() != null) {
+            folderId = (UUID) getArguments().getSerializable("FOLDER_ID");
+            if (folderId != null) {
+                viewModel.loadFolder(folderId);
+                viewModel.loadWords(folderId);
+            }
+        }
+
+        final UUID finalFolderId = folderId; // Cần final để dùng trong TextWatcher
+
+        // Lắng nghe sự kiện gõ tìm kiếm
+        if (edtSearchWord != null && finalFolderId != null) {
+            edtSearchWord.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    // Truyền folderId và từ khóa vào ViewModel
+                    viewModel.searchWords(finalFolderId, s.toString());
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {}
+            });
+        }
 
         // Khởi tạo RecyclerView và Adapter
-        RecyclerView rvCards = view.findViewById(R.id.rv_cards);
+
         rvCards.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(requireContext()));
 
         FavWordAdapter wordAdapter = new FavWordAdapter(new FavWordAdapter.OnWordInteractionListener() {
@@ -81,17 +114,14 @@ public class FavDetailFragment extends Fragment {
                 // Chuyển tab (Truyền null thay vì bundle)
                 navController.navigate(R.id.search_graph, null, navOptions);
             }
+
+            @Override
+            public void onWordLongClick(FavWord word) {
+                // Gọi hàm hiển thị Dialog xóa khi ấn giữ
+                showDeleteWordDialog(word);
+            }
         });
         rvCards.setAdapter(wordAdapter);
-
-        // Nhận ID từ Bundle và load dữ liệu
-        if (getArguments() != null) {
-            UUID folderId = (UUID) getArguments().getSerializable("FOLDER_ID");
-            if (folderId != null) {
-                viewModel.loadFolder(folderId);
-                viewModel.loadWords(folderId); // Yêu cầu lấy danh sách từ
-            }
-        }
 
         viewModel.getFolder().observe(getViewLifecycleOwner(), folder -> {
             if (folder != null) {
@@ -167,6 +197,18 @@ public class FavDetailFragment extends Fragment {
                     androidx.navigation.Navigation.findNavController(requireView()).navigateUp();
                 })
                 .setNegativeButton(R.string.action_cancel, null)
+                .show();
+    }
+
+    private void showDeleteWordDialog(FavWord word) {
+        new android.app.AlertDialog.Builder(requireContext())
+                .setTitle("Xóa từ vựng")
+                .setMessage("Bạn có chắc muốn xóa từ '" + word.getWordText() + "' khỏi thư mục này không?")
+                .setPositiveButton("Xóa", (dialog, which) -> {
+                    // Gọi ViewModel để thực hiện xóa dưới Database
+                    viewModel.deleteWord(word);
+                })
+                .setNegativeButton("Hủy", null)
                 .show();
     }
 }
