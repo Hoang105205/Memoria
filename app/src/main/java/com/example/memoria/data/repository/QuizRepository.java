@@ -1,7 +1,7 @@
 package com.example.memoria.data.repository;
 
 import com.example.memoria.data.database.dao.QuizDao;
-import com.example.memoria.data.model.QuizHistory;
+import com.example.memoria.data.model.entity.QuizHistory;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -24,8 +24,8 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.memoria.R;
-import com.example.memoria.data.model.Card;
-import com.example.memoria.data.model.QuizHistory;
+import com.example.memoria.data.model.entity.Card;
+import com.example.memoria.data.model.entity.QuizHistory;
 import com.example.memoria.utils.GeminiHelper;
 import com.example.memoria.utils.PronunciationManager;
 import com.example.memoria.utils.SoundManager;

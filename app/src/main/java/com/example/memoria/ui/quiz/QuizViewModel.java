@@ -5,8 +5,8 @@ import android.content.Context;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.memoria.data.model.Card;
-import com.example.memoria.data.model.QuizHistory;
+import com.example.memoria.data.model.entity.Card;
+import com.example.memoria.data.model.entity.QuizHistory;
 import com.example.memoria.data.repository.CardRepository;
 import com.example.memoria.data.repository.QuizRepository;
 
