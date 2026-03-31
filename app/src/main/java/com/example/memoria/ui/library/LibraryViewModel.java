@@ -4,10 +4,10 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.memoria.data.model.Deck;
-import com.example.memoria.data.model.DeckWithCount;
-import com.example.memoria.data.model.FavFolder;
-import com.example.memoria.data.model.FavFolderWithCount;
+import com.example.memoria.data.model.entity.Deck;
+import com.example.memoria.data.model.entity.DeckWithCount;
+import com.example.memoria.data.model.entity.FavFolder;
+import com.example.memoria.data.model.entity.FavFolderWithCount;
 import com.example.memoria.data.repository.DeckRepository;
 import com.example.memoria.data.repository.FavRepository;
 

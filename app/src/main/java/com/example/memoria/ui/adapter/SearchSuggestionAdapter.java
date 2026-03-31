@@ -1,4 +1,4 @@
-package com.example.memoria.ui.search;
+package com.example.memoria.ui.adapter;
 
 import android.view.LayoutInflater;
 import android.view.View;

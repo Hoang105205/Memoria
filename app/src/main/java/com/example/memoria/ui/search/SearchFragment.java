@@ -33,8 +33,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.memoria.R;
-import com.example.memoria.data.model.SearchHistory;
+import com.example.memoria.data.model.entity.SearchHistory;
 import com.example.memoria.data.repository.SearchHistoryRepository;
+import com.example.memoria.service.search.RetrofitClient;
+import com.example.memoria.service.search.SuggestionClient;
+import com.example.memoria.ui.adapter.RecentSearchAdapter;
+import com.example.memoria.ui.adapter.SearchSuggestionAdapter;
 import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexWrap;
 import com.google.android.flexbox.FlexboxLayoutManager;
@@ -217,6 +221,19 @@ public class SearchFragment extends Fragment {
                 viewModel.setExternalSearchQuery(null);
             }
         });
+
+        getParentFragmentManager().setFragmentResultListener(
+                CameraFragment.OCR_REQUEST_KEY,
+                getViewLifecycleOwner(),
+                (key, bundle) -> {
+                    String ocrText = bundle.getString(CameraFragment.OCR_RESULT_TEXT, "");
+                    edtWord.setText(ocrText);
+                    edtWord.setSelection(ocrText.length());
+                    hideSuggestions();
+                    hideNoResults();
+                    searchWord(ocrText);
+                }
+        );
 
         return view;
     }

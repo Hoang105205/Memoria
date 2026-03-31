@@ -1,5 +1,7 @@
 package com.example.memoria.ui.quiz;
 
+import com.example.memoria.data.model.entity.Card;
+
 import java.util.List;
 import java.util.UUID;
 

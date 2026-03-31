@@ -1,13 +1,10 @@
 package com.example.memoria.data.repository;
 
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 
 import com.example.memoria.data.database.dao.CardDao;
-import com.example.memoria.data.model.Card;
+import com.example.memoria.data.model.entity.Card;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
@@ -62,19 +59,17 @@ public class CardRepository {
     }
 
     // Lấy số từ đã học hôm nay
-    public void getWordsLearnedToday(DataCallback<Integer> callback) {
-        executor.execute(() -> {
-            java.util.Calendar calendar = java.util.Calendar.getInstance();
-            calendar.set(java.util.Calendar.HOUR_OF_DAY, 0);
-            calendar.set(java.util.Calendar.MINUTE, 0);
-            calendar.set(java.util.Calendar.SECOND, 0);
-            calendar.set(java.util.Calendar.MILLISECOND, 0);
 
-            long startOfToday = calendar.getTimeInMillis();
-
-            int count = cardDao.countCardsReviewedToday(startOfToday);
-
-            callback.onDataLoaded(count);
-        });
+    public LiveData<Integer> getWordsLearnedTodayLiveData(long startOfToday) {
+        return cardDao.countCardsReviewedToday(startOfToday);
     }
+
+    public LiveData<List<Long>> getAllReviewDaysLiveData() {
+        return cardDao.getDistinctStudyDays();
+    }
+    public int getDueCardsCountSync(long currentTime) {
+        return cardDao.countDueCards(currentTime);
+    }
+
+
 }

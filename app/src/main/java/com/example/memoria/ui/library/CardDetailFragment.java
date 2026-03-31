@@ -15,7 +15,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.memoria.R;
-import com.example.memoria.data.model.Card;
+import com.example.memoria.data.model.entity.Card;
 import com.example.memoria.ui.adapter.CardPagerAdapter;
 
 import java.util.UUID;

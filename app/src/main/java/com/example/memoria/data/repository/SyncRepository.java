@@ -5,13 +5,12 @@ import android.util.Log;
 import com.example.memoria.data.database.dao.CardDao;
 import com.example.memoria.data.database.dao.DeckDao;
 import com.example.memoria.data.database.dao.FavDao;
-import com.example.memoria.data.model.Card;
-import com.example.memoria.data.model.Deck;
-import com.example.memoria.data.model.FavFolder;
-import com.example.memoria.data.model.FavWord;
+import com.example.memoria.data.model.entity.Card;
+import com.example.memoria.data.model.entity.Deck;
+import com.example.memoria.data.model.entity.FavFolder;
+import com.example.memoria.data.model.entity.FavWord;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.WriteBatch;
 
 import java.util.ArrayList;

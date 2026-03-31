@@ -1,4 +1,4 @@
-package com.example.memoria.data.model;
+package com.example.memoria.data.model.entity;
 
 public class OnboardingItem {
     private final int image;

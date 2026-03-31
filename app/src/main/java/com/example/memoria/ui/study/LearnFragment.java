@@ -16,7 +16,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.example.memoria.data.model.Card;
+import com.example.memoria.data.model.entity.Card;
 
 import android.annotation.SuppressLint;
 import androidx.annotation.NonNull;
@@ -27,6 +27,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.memoria.R;
+import com.example.memoria.service.MemoriaWidgetProvider;
 import com.example.memoria.ui.library.CardViewModel;
 import com.example.memoria.utils.SpacedRepetitionAlgo;
 
@@ -269,7 +270,6 @@ public class LearnFragment extends Fragment {
 
         ImageView imgFront = cardView.findViewById(R.id.img_flash_card);
         String imageString = data.getFrontImage();
-        Log.d("imgFront", imageString);
         if (imageString != null && !imageString.isEmpty()) {
             Glide.with(requireContext())
                     .load(imageString)
@@ -399,6 +399,8 @@ public class LearnFragment extends Fragment {
         card.setLastReviewAt(today);
 
         viewModel.updateCard(card);
+
+        MemoriaWidgetProvider.forceUpdateWidget(requireContext());
     }
 
     private void flipCard(CardView card) {

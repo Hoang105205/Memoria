@@ -9,8 +9,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.memoria.R;
-import com.example.memoria.data.model.Deck;
-import com.example.memoria.data.model.DeckWithCount;
+import com.example.memoria.data.model.entity.Deck;
+import com.example.memoria.data.model.entity.DeckWithCount;
 
 import java.util.ArrayList;
 import java.util.List;

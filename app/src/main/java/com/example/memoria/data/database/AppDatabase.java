@@ -5,10 +5,16 @@ import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
 
 // Import Entities
-import com.example.memoria.data.model.*;
 // Import DAOs
 import com.example.memoria.data.database.dao.*;
 // Import Converters
+import com.example.memoria.data.model.entity.Card;
+import com.example.memoria.data.model.entity.Deck;
+import com.example.memoria.data.model.entity.FavFolder;
+import com.example.memoria.data.model.entity.FavWord;
+import com.example.memoria.data.model.entity.QuizHistory;
+import com.example.memoria.data.model.entity.QuizStat;
+import com.example.memoria.data.model.entity.SearchHistory;
 import com.example.memoria.utils.DateConverter;
 import com.example.memoria.utils.JSONStringConverter;
 import com.example.memoria.utils.UUIDConverter;
@@ -23,7 +29,7 @@ import com.example.memoria.utils.UUIDConverter;
                 QuizStat.class,
                 QuizHistory.class
         },
-        version = 1,
+        version = 2,
         exportSchema = false
 )
 // Đăng ký Converter để hiểu kiểu Date, UUID

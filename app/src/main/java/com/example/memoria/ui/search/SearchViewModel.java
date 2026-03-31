@@ -4,8 +4,8 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.memoria.data.model.FavFolder;
-import com.example.memoria.data.model.FavWord;
+import com.example.memoria.data.model.entity.FavFolder;
+import com.example.memoria.data.model.entity.FavWord;
 import com.example.memoria.data.repository.FavRepository;
 
 import android.content.Context;

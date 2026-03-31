@@ -6,14 +6,12 @@ import androidx.lifecycle.ViewModel;
 
 import android.content.Context;
 
-import com.example.memoria.data.model.Card;
-import com.example.memoria.data.model.Deck;
+import com.example.memoria.data.model.entity.Deck;
 import com.example.memoria.data.repository.DeckRepository;
 import com.example.memoria.utils.SyncHelper;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import java.util.List;
 import java.util.UUID;
 
 import javax.inject.Inject;

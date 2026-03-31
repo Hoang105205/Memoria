@@ -17,7 +17,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.memoria.R;
-import com.example.memoria.data.model.FavWord;
+import com.example.memoria.data.model.entity.FavWord;
 import com.example.memoria.ui.adapter.FavWordAdapter;
 import com.example.memoria.ui.search.SearchViewModel;
 

@@ -1,13 +1,11 @@
 package com.example.memoria.data.repository;
 
 import com.example.memoria.data.database.dao.FavDao;
-import com.example.memoria.data.model.FavFolder;
-import com.example.memoria.data.model.FavFolderWithCount;
-import com.example.memoria.data.model.FavWord;
+import com.example.memoria.data.model.entity.FavFolder;
+import com.example.memoria.data.model.entity.FavFolderWithCount;
+import com.example.memoria.data.model.entity.FavWord;
 
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.WriteBatch;
-import com.google.firebase.firestore.DocumentReference;
 
 import java.util.List;
 import java.util.UUID;

@@ -1,5 +1,6 @@
 package com.example.memoria.data.database.dao;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -7,8 +8,7 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
-import com.example.memoria.data.model.Card;
-import com.example.memoria.data.model.Deck;
+import com.example.memoria.data.model.entity.Card;
 
 import java.util.List;
 import java.util.UUID;
@@ -51,8 +51,24 @@ public interface CardDao {
     //Tổng số từ đã học trong hôm nay
     //Thời gian review cuối cùng lớn hơn 0h ngày hôm nay
     @Query("SELECT COUNT(*) FROM cards WHERE last_review_at >= :startOfDay")
-    int countCardsReviewedToday(long startOfDay);
+    LiveData<Integer> countCardsReviewedToday(long startOfDay);
 
+    @Query("SELECT DISTINCT (last_review_at / 86400000) * 86400000 AS study_date " +
+            "FROM cards " +
+            "WHERE last_review_at IS NOT NULL " +
+            "ORDER BY study_date DESC")
+    LiveData<List<Long>> getDistinctStudyDays();
+
+
+    //Card den han
+    @Query("SELECT COUNT(*) FROM cards WHERE next_review_date <= :currentTime")
+    int countDueCards(long currentTime);
+
+    @Query("SELECT COUNT(*) FROM cards WHERE last_review_at >= :startOfDay")
+    int countCardsReviewedTodaySync(long startOfDay); // Bản không có LiveData
+
+    @Query("SELECT DISTINCT (last_review_at / 86400000) * 86400000 AS study_date FROM cards WHERE last_review_at IS NOT NULL ORDER BY study_date DESC")
+    List<Long> getDistinctStudyDaysSync(); // Bản không có LiveData
     // Lấy danh sách Card chưa đồng bộ
     @Query("SELECT * FROM cards WHERE sync_status NOT IN (1)")
     List<Card> getUnsyncedCards();
