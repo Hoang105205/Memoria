@@ -65,11 +65,10 @@ public class DeckDetailFragment extends Fragment {
             bundle.putSerializable("DECK_ID", card.getDeckId());
             bundle.putInt("SELECTED_POSITION", position);
 
-            String currentDeckName = "";
             if (viewModel.getDeck().getValue() != null) {
-                currentDeckName = viewModel.getDeck().getValue().getDeckName();
+                bundle.putString("DECK_NAME", viewModel.getDeck().getValue().getDeckName());
+                bundle.putString("COVER_COLOR", viewModel.getDeck().getValue().getCoverColor()); //
             }
-            bundle.putString("DECK_NAME", currentDeckName);
 
             androidx.navigation.Navigation.findNavController(view)
                     .navigate(R.id.cardDetailFragment, bundle);
@@ -121,8 +120,8 @@ public class DeckDetailFragment extends Fragment {
                     Toast.makeText(requireContext(), "Share deck clicked", Toast.LENGTH_SHORT).show();
                     return true;
                 case 3:
-                    // TODO: Xử lý Edit card theme
-                    Toast.makeText(requireContext(), "Edit card theme clicked", Toast.LENGTH_SHORT).show();
+                    EditThemeDialog themeDialog = new EditThemeDialog();
+                    themeDialog.show(getChildFragmentManager(), "EditThemeDialog");
                     return true;
                 case 4:
                     // Chuyển sang trang CreateNewCardFragment
