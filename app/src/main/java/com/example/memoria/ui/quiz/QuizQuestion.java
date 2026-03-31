@@ -3,19 +3,22 @@ package com.example.memoria.ui.quiz;
 import com.example.memoria.data.model.entity.Card;
 
 import java.util.List;
+import java.util.UUID;
 
 public class QuizQuestion {
-    public enum Type { AUDIO_TO_WORD, WORD_TO_MEANING }
+    public enum Type { WORD, AUDIO, SYNONYM }
 
+    public UUID id;
+    public String word;
+    public String meaning;
     public Type questionType;
-    public Card correctCard;
     public List<String> options;
     public String correctAnswer;
 
-    public QuizQuestion(Type questionType, Card correctCard, List<String> options, String correctAnswer) {
+    public QuizQuestion(UUID id, String word, String meaning, Type questionType) {
+        this.id = id;
+        this.word = word;
+        this.meaning = meaning;
         this.questionType = questionType;
-        this.correctCard = correctCard;
-        this.options = options;
-        this.correctAnswer = correctAnswer;
     }
 }

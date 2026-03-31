@@ -123,8 +123,8 @@ public class DeckDetailFragment extends Fragment {
         popupMenu.getMenu().add(0, 3, 2, R.string.action_edit_card_theme);
         popupMenu.getMenu().add(0, 4, 3, R.string.action_add_new_card);
         popupMenu.getMenu().add(0, 5, 4, R.string.action_delete_deck);
-        popupMenu.getMenu().add(0, 6, 5, "Enter learn mode");
-        popupMenu.getMenu().add(0, 7, 6, "Enter quiz mode");
+        popupMenu.getMenu().add(0, 6, 5, R.string.action_enter_learn_mode);
+        popupMenu.getMenu().add(0, 7, 6, R.string.action_enter_quiz_mode);
 
         UUID currentDeckId = viewModel.getDeck().getValue() != null ?
                 viewModel.getDeck().getValue().getDeckId() : null;
@@ -169,8 +169,18 @@ public class DeckDetailFragment extends Fragment {
                     }
                     return true;
                 case 7:
-                    // TODO: Xử lý Quiz mode
-                    Toast.makeText(requireContext(), "Quiz mode clicked", Toast.LENGTH_SHORT).show();
+                    if (currentDeckId != null) {
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable("DECK_ID", currentDeckId);
+                        String currentDeckName = "";
+                        if (viewModel.getDeck().getValue() != null) {
+                            currentDeckName = viewModel.getDeck().getValue().getDeckName();
+                        }
+                        bundle.putString("DECK_NAME", currentDeckName);
+
+                        androidx.navigation.Navigation.findNavController(requireView())
+                                .navigate(R.id.cardQuizModeFragment, bundle);
+                    }
                     return true;
                 default:
                     return false;

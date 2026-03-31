@@ -1,6 +1,7 @@
 package com.example.memoria.data.repository;
 
 import com.example.memoria.data.database.dao.QuizDao;
+import com.example.memoria.data.model.entity.QuizHistory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -77,5 +78,40 @@ public class QuizRepository {
 
         // Trả về dữ liệu mock ngay lập tức
         callback.onDataLoaded(mockData);*/
+    }
+
+    public void addQuizResult(QuizHistory history, CardRepository.DataCallback<Boolean> callback) {
+        executor.execute(() -> {
+            try {
+                history.setSyncStatus(0);
+                quizDao.insertQuizHistory(history);
+
+                new android.os.Handler(android.os.Looper.getMainLooper()).post(() ->
+                        callback.onDataLoaded(true)
+                );
+            } catch (Exception e) {
+                e.printStackTrace();
+                new android.os.Handler(android.os.Looper.getMainLooper()).post(() ->
+                        callback.onDataLoaded(false)
+                );
+            }
+        });
+    }
+
+    public void updateQuizResult(QuizHistory history, CardRepository.DataCallback<Boolean> callback) {
+        executor.execute(() -> {
+            try {
+                history.setSyncStatus(0);
+                quizDao.updateQuizHistory(history);
+                new android.os.Handler(android.os.Looper.getMainLooper()).post(() ->
+                        callback.onDataLoaded(true)
+                );
+            } catch (Exception e) {
+                e.printStackTrace();
+                new android.os.Handler(android.os.Looper.getMainLooper()).post(() ->
+                        callback.onDataLoaded(false)
+                );
+            }
+        });
     }
 }
