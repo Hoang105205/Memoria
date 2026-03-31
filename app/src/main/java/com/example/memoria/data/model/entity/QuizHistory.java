@@ -4,7 +4,12 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
+
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
 import java.util.Date;
 import java.util.UUID;
 
@@ -18,7 +23,9 @@ import java.util.UUID;
         )
 )
 @Data
-public class QuizHistory {
+@NoArgsConstructor
+@AllArgsConstructor
+public class QuizHistory implements Serializable {
     @PrimaryKey
     @ColumnInfo(name = "result_id")
     @androidx.annotation.NonNull
@@ -39,6 +46,12 @@ public class QuizHistory {
     @ColumnInfo(name = "expire_at")
     private Date expireAt;
 
+    @ColumnInfo(name = "time_taken")
+    private int timeTaken;
+
     @ColumnInfo(name = "firestore_id")
     private String firestoreId;
+
+    @ColumnInfo(name = "sync_status")
+    private int syncStatus;
 }

@@ -166,4 +166,25 @@
     <string name="study_reminder">Study reminder</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="err_get_data_from_firestore">Unable to download all data. Please check your network.</string>
+    <string name="action_enter_learn_mode">Start Learning</string>
+    <string name="action_enter_quiz_mode">Take a Quiz</string>
+
+
+    <string name="quiz_word_instruction">Select the correct meaning?</string>
+    <string name="quiz_audio_instruction">What do you hear?</string>
+    <string name="quiz_synonym_instruction">Choose the most similar word in meaning</string>
+    <string name="quiz_btn_check">CHECK</string>
+    <string name="quiz_tv_loading">Loading quiz data...</string>
+    <string name="quiz_start_timer" translatable="false">00:00</string>
+    <string name="quiz_null_deck">Deck not found</string>
+    <string name="quiz_empty_deck">Your deck is empty</string>
+    <string name="quiz_null_selected">Please select an answer!</string>
+    <string name="quiz_load_error">Failed to load questions. Please try again</string>
+    <string name="quiz_save_error">Failed to save results</string>
+    <string name="quiz_result_tv_overall_score">Overall Score</string>
+    <string name="quiz_result_tv_review">Words to Practice</string>
+    <string name="quiz_result_btn_retake">TEST AGAIN</string>
+    <string name="quiz_result_btn_return">BACK TO LIBRARY</string>
+    <string name="quiz_return_content_desc">Go back</string>
+    <string name="quiz_result_tv_congratulate">Awesome! All answers are correct</string>
 </resources>

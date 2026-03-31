@@ -4,6 +4,7 @@ import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+import androidx.room.Update;
 
 import com.example.memoria.data.model.entity.QuizHistory;
 import com.example.memoria.data.model.entity.QuizStat;
@@ -25,6 +26,9 @@ public interface QuizDao {
     // --- Phần Lịch Sử Quiz (QuizHistory) ---
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertQuizHistory(QuizHistory history);
+
+    @Update
+    void updateQuizHistory(QuizHistory history);
 
     // Lấy lịch sử Quiz của 1 bộ thẻ cụ thể, mới nhất xếp trước
     @Query("SELECT * FROM quiz_his WHERE deck_id = :deckId ORDER BY taken_at DESC")

@@ -60,13 +60,32 @@ public class LearnFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (getArguments() != null) {
+            deckId = (UUID) getArguments().getSerializable("DECK_ID");
+            deckName = getArguments().getString("DECK_NAME");
+        }
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_learn, container, false);
+        return inflater.inflate(R.layout.fragment_learn, container, false);
+    }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        initViews(view);
+
+        viewModel = new ViewModelProvider(this).get(CardViewModel.class);
+        TextView tvDeckName = view.findViewById(R.id.tv_deck_name_header);
+        tvDeckName.setText(deckName);
+
+        initCardData();
+    }
+
+    private void initViews(View view) {
         cardTop = view.findViewById(R.id.card_top);
         cardBottom = view.findViewById(R.id.card_bottom);
 
@@ -88,24 +107,6 @@ public class LearnFragment extends Fragment {
         settingScrollView(cardTop);
 
         setupTouchListener();
-
-        return view;
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        if (getArguments() != null) {
-            deckId = (UUID) getArguments().getSerializable("DECK_ID");
-            deckName = getArguments().getString("DECK_NAME");
-        }
-
-        viewModel = new ViewModelProvider(this).get(CardViewModel.class);
-        TextView tvDeckName = view.findViewById(R.id.tv_deck_name_header);
-        tvDeckName.setText(deckName);
-
-        initCardData();
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -141,7 +142,6 @@ public class LearnFragment extends Fragment {
         }
     }
 
-    // Bổ sung tham số Context vào hàm
     private String formatTimeRemaining(Context context, long currentTime, long futureTime) {
         long diffInMillis = futureTime - currentTime;
 
@@ -210,7 +210,6 @@ public class LearnFragment extends Fragment {
 
             loadCards();
 
-            // Ngắt kết nối để tránh lỗi cập nhật liên tục
             liveData.removeObservers(getViewLifecycleOwner());
         });
     }

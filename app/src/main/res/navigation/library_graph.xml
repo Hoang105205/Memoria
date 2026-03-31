@@ -40,4 +40,24 @@
         android:name="com.example.memoria.ui.study.LearnFragment"
         android:label="cardLearnModeFragment"
         tools:layout="@layout/fragment_learn" />
+
+    <fragment
+        android:id="@+id/cardQuizModeFragment"
+        android:name="com.example.memoria.ui.quiz.QuizFragment"
+        android:label="cardQuizModeFragment"
+        tools:layout="@layout/fragment_base_quiz">
+
+        <action
+            android:id="@+id/action_quiz_to_result"
+            app:destination="@id/scoreResultFragment"
+            app:popUpTo="@id/cardQuizModeFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/scoreResultFragment"
+        android:name="com.example.memoria.ui.quiz.QuizResultFragment"
+        android:label="Score Result"
+        tools:layout="@layout/fragment_result_quiz" />
+
 </navigation>
