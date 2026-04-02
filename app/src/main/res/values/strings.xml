@@ -197,4 +197,8 @@
     <string name="quiz_result_btn_return">BACK TO LIBRARY</string>
     <string name="quiz_return_content_desc">Go back</string>
     <string name="quiz_result_tv_congratulate">Awesome! All answers are correct</string>
+    <string name="action_publish_deck">Publish to Community</string>
+    <string name="publish_deck_dialog_content">Your deck will be published to our community. This action will take some time.</string>
+    <string name="action_publish">Publish</string>
+    <string name="msg_publishing_deck">Publishing to community. Please wait...</string>
 </resources>
