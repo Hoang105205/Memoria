@@ -169,10 +169,40 @@ public class PublicService {
 
                         // Cập nhật hoặc Thêm mới các thẻ từ máy lên Public
                         for (Card card : localCards) {
+                            // TẠO BẢN SAO ẢO VÀ RESET DATA TRƯỚC KHI PUSH LÊN FIRESTORE
+                            Card publicCard = new Card();
+                            publicCard.setCardId(card.getCardId());
+                            publicCard.setDeckId(card.getDeckId());
+                            publicCard.setFrontText(card.getFrontText());
+                            publicCard.setFrontImage(card.getFrontImage());
+
+                            if (card.getBackTypes() != null) {
+                                publicCard.setBackTypes(new ArrayList<>(card.getBackTypes()));
+                            }
+                            if (card.getBackMeanings() != null) {
+                                publicCard.setBackMeanings(new ArrayList<>(card.getBackMeanings()));
+                            }
+
+                            publicCard.setCreatedAt(card.getCreatedAt() != null ? card.getCreatedAt() : new Date());
+                            publicCard.setUpdatedAt(new Date());
+
+                            // TIẾN HÀNH RESET TIẾN ĐỘ HỌC
+                            publicCard.setEaseFactor(2.5);
+                            publicCard.setIntervalDays(0);
+                            publicCard.setLastResult(0);
+                            publicCard.setLastReviewAt(null);
+                            publicCard.setNextReviewDate(null);
+                            publicCard.setReviewCount(0);
+
+                            // Không cần quản lý Sync đối với public deck
+                            publicCard.setFirestoreId(null);
+                            publicCard.setSyncStatus(0);
+
+                            // Dùng publicCard thay vì card cũ
                             batch.set(
                                     firestore.collection("public_decks").document(publicDocId)
                                             .collection("cards").document(card.getCardId().toString()),
-                                    card
+                                    publicCard
                             );
                         }
 

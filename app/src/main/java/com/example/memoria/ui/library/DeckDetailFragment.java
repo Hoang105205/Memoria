@@ -1,6 +1,7 @@
 package com.example.memoria.ui.library;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +30,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 public class DeckDetailFragment extends Fragment {
     private DeckDetailViewModel viewModel;
     private TextView tvDeckName;
+    private ProgressDialog progressDialog; // Để hiển thị vòng xoay loading
 
     @Nullable
     @Override
@@ -106,6 +108,36 @@ public class DeckDetailFragment extends Fragment {
             }
         }
 
+        // Khởi tạo ProgressDialog
+        progressDialog = new ProgressDialog(requireContext());
+        progressDialog.setMessage(getString(R.string.msg_publishing_deck));
+        progressDialog.setCancelable(false); // Không cho bấm ra ngoài để hủy
+
+        // Lắng nghe trạng thái Publishing
+        viewModel.getIsPublishing().observe(getViewLifecycleOwner(), isPublishing -> {
+            try {
+                if (isPublishing) {
+                    if (!progressDialog.isShowing()) {
+                        progressDialog.show();
+                    }
+                } else {
+                    // Loại bỏ điều kiện isShowing() vì Dialog có thể bị lệch state với Window Manager
+                    progressDialog.dismiss();
+                }
+            } catch (IllegalArgumentException e) {
+                // Bắt lỗi rò rỉ cửa sổ (Window Leak) nếu fragment/activity đã bị hủy trước khi dismiss
+                e.printStackTrace();
+            }
+        });
+
+        // Lắng nghe Message trả về
+        viewModel.getPublishMessage().observe(getViewLifecycleOwner(), message -> {
+            if (message != null) {
+                Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
+                viewModel.clearPublishMessage(); // Xóa message để tránh bị hiện Toast lại khi xoay màn hình
+            }
+        });
+
         // Hiện Popup Menu 5 lựa chọn
         btnOptions.setOnClickListener(this::showPopupMenu);
 
@@ -120,11 +152,12 @@ public class DeckDetailFragment extends Fragment {
 
         popupMenu.getMenu().add(0, 1, 0, R.string.action_edit_deck_name);
         popupMenu.getMenu().add(0, 2, 1, R.string.action_share_deck);
-        popupMenu.getMenu().add(0, 3, 2, R.string.action_edit_card_theme);
-        popupMenu.getMenu().add(0, 4, 3, R.string.action_add_new_card);
-        popupMenu.getMenu().add(0, 5, 4, R.string.action_delete_deck);
-        popupMenu.getMenu().add(0, 6, 5, R.string.action_enter_learn_mode);
-        popupMenu.getMenu().add(0, 7, 6, R.string.action_enter_quiz_mode);
+        popupMenu.getMenu().add(0, 3, 2, R.string.action_publish_deck);
+        popupMenu.getMenu().add(0, 4, 3, R.string.action_edit_card_theme);
+        popupMenu.getMenu().add(0, 5, 4, R.string.action_add_new_card);
+        popupMenu.getMenu().add(0, 6, 5, R.string.action_delete_deck);
+        popupMenu.getMenu().add(0, 7, 6, R.string.action_enter_learn_mode);
+        popupMenu.getMenu().add(0, 8, 7, R.string.action_enter_quiz_mode);
 
         UUID currentDeckId = viewModel.getDeck().getValue() != null ?
                 viewModel.getDeck().getValue().getDeckId() : null;
@@ -138,10 +171,13 @@ public class DeckDetailFragment extends Fragment {
                     Toast.makeText(requireContext(), "Share deck clicked", Toast.LENGTH_SHORT).show();
                     return true;
                 case 3:
+                    showPublishDialog();
+                    return true;
+                case 4:
                     EditThemeDialog themeDialog = new EditThemeDialog();
                     themeDialog.show(getChildFragmentManager(), "EditThemeDialog");
                     return true;
-                case 4:
+                case 5:
                     // Chuyển sang trang CreateNewCardFragment
                     if (currentDeckId != null) {
                         Bundle bundle = new Bundle();
@@ -150,11 +186,11 @@ public class DeckDetailFragment extends Fragment {
                                 .navigate(R.id.createNewCardFragment, bundle);
                     }
                     return true;
-                case 5:
+                case 6:
                     // Hiển thị Dialog xác nhận xóa
                     showDeleteConfirmDialog();
                     return true;
-                case 6:
+                case 7:
                     if (currentDeckId != null) {
                         Bundle bundle = new Bundle();
                         bundle.putSerializable("DECK_ID", currentDeckId);
@@ -168,7 +204,7 @@ public class DeckDetailFragment extends Fragment {
                                 .navigate(R.id.cardLearnModeFragment, bundle);
                     }
                     return true;
-                case 7:
+                case 8:
                     if (currentDeckId != null) {
                         Bundle bundle = new Bundle();
                         bundle.putSerializable("DECK_ID", currentDeckId);
@@ -221,6 +257,17 @@ public class DeckDetailFragment extends Fragment {
 
                     // Back về LibraryFragment
                     androidx.navigation.Navigation.findNavController(requireView()).navigateUp();
+                })
+                .setNegativeButton(R.string.action_cancel, null)
+                .show();
+    }
+
+    private void showPublishDialog(){
+        new AlertDialog.Builder(requireContext())
+                .setTitle(R.string.action_publish_deck)
+                .setMessage(R.string.publish_deck_dialog_content)
+                .setPositiveButton(R.string.action_publish, (dialog, which) -> {
+                    viewModel.publishCurrentDeck();
                 })
                 .setNegativeButton(R.string.action_cancel, null)
                 .show();
