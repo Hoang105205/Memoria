@@ -34,6 +34,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="7"
+            android:inputType="textMultiLine"
             android:background="@drawable/bg_edit_text"
             android:padding="12dp"
             android:hint="@string/meaning_hint" />
