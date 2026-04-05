@@ -81,6 +81,9 @@ public class CloneService {
                         clonedCard.setFrontText(card.getFrontText());
                         clonedCard.setFrontImage(card.getFrontImage());
 
+                        // copy kieu card
+                        clonedCard.setCardType(card.getCardType());
+
                         // copy du lieu tu back card
                         if (card.getBackTypes() != null) {
                             clonedCard.setBackTypes(new ArrayList<>(card.getBackTypes()));

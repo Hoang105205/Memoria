@@ -60,36 +60,73 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/layout_creator_front"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:visibility="visible"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btn_flip_card">
+                android:id="@+id/layout_creator_front"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/btn_flip_card">
 
                 <ImageView
                     android:id="@+id/img_front_picker"
                     android:layout_width="match_parent"
                     android:layout_height="200dp"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="8dp"
                     android:background="#EEEEEE"
                     android:scaleType="centerInside"
                     android:src="@drawable/ic_add_a_image"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    android:visibility="gone"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent" />
 
                 <EditText
                     android:id="@+id/et_front_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="24dp"
+                    android:layout_marginTop="16dp"
                     android:background="@drawable/bg_edit_text"
-                    android:gravity="top|start"
+                    android:gravity="center_vertical|start"
                     android:hint="@string/front_text_hint"
-                    android:minLines="3"
+                    android:inputType="text"
                     android:padding="12dp"
                     app:layout_constraintTop_toBottomOf="@+id/img_front_picker"
-                    tools:layout_editor_absoluteX="0dp" />
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent" />
+
+                <RadioGroup
+                    android:id="@+id/rg_card_type"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="8dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent">
+
+                    <RadioButton
+                        android:id="@+id/rb_type_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:text="@string/text" />
+
+                    <RadioButton
+                        android:id="@+id/rb_type_image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:text="@string/image" />
+
+                    <RadioButton
+                        android:id="@+id/rb_type_audio"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:text="@string/audio" />
+                </RadioGroup>
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout

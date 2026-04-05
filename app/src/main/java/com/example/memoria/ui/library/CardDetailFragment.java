@@ -17,6 +17,7 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.example.memoria.R;
 import com.example.memoria.data.model.entity.Card;
 import com.example.memoria.ui.adapter.CardPagerAdapter;
+import com.example.memoria.utils.PronunciationManager;
 
 import java.util.UUID;
 
@@ -25,6 +26,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 @AndroidEntryPoint
 public class CardDetailFragment extends Fragment {
 
+    private PronunciationManager pronunciationManager;
     private CardViewModel viewModel;
     private ViewPager2 viewPager;
     private CardPagerAdapter pagerAdapter;
@@ -50,6 +52,8 @@ public class CardDetailFragment extends Fragment {
             coverColor = getArguments().getString("COVER_COLOR", "");
         }
 
+        pronunciationManager = new PronunciationManager(requireContext());
+
         viewPager = view.findViewById(R.id.view_pager_cards);
         ImageButton btnOptions = view.findViewById(R.id.btn_card_detail_options);
 
@@ -60,9 +64,28 @@ public class CardDetailFragment extends Fragment {
 
         pagerAdapter = new CardPagerAdapter();
         pagerAdapter.setThemeColor(coverColor);
+
+        pagerAdapter.setOnAudioPlayListener(textToRead -> {
+            if (textToRead != null && !textToRead.isEmpty()) {
+                pronunciationManager.playSound(textToRead, null, 1.0f);
+            }
+        });
+
         viewPager.setAdapter(pagerAdapter);
 
         viewModel = new ViewModelProvider(this).get(CardViewModel.class);
+
+        viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+                startPosition = position;
+
+                if (getArguments() != null) {
+                    getArguments().putInt("SELECTED_POSITION", position);
+                }
+            }
+        });
 
         if (deckId != null) {
             // Lắng nghe dữ liệu Card trả về từ DB
@@ -120,5 +143,11 @@ public class CardDetailFragment extends Fragment {
                 })
                 .setNegativeButton(R.string.action_cancel, null)
                 .show();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (pronunciationManager != null) pronunciationManager.releaseResources();
     }
 }

@@ -29,6 +29,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.memoria.R;
 import com.example.memoria.service.MemoriaWidgetProvider;
 import com.example.memoria.ui.library.CardViewModel;
+import com.example.memoria.utils.PronunciationManager;
 import com.example.memoria.utils.SpacedRepetitionAlgo;
 
 import java.util.ArrayList;
@@ -44,6 +45,7 @@ public class LearnFragment extends Fragment {
     private String deckName;
 
     private CardViewModel viewModel;
+    private PronunciationManager pronunciationManager;
 
     private CardView cardTop, cardBottom;
     private TextView tvBadgeRemember, tvBadgeForgot;
@@ -76,6 +78,9 @@ public class LearnFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        pronunciationManager = new PronunciationManager(requireContext());
+
         initViews(view);
 
         viewModel = new ViewModelProvider(this).get(CardViewModel.class);
@@ -105,7 +110,6 @@ public class LearnFragment extends Fragment {
         }
 
         settingScrollView(cardTop);
-
         setupTouchListener();
     }
 
@@ -122,7 +126,6 @@ public class LearnFragment extends Fragment {
                         case MotionEvent.ACTION_DOWN:
                             startX = event.getX();
                             startY = event.getY();
-                            // Allow ScrollView continue operate
                             break;
                         case MotionEvent.ACTION_UP:
                             float endX = event.getX();
@@ -136,7 +139,7 @@ public class LearnFragment extends Fragment {
                             }
                             break;
                     }
-                    return v.onTouchEvent(event); // Give back control to ScrollView
+                    return v.onTouchEvent(event);
                 }
             });
         }
@@ -144,13 +147,9 @@ public class LearnFragment extends Fragment {
 
     private String formatTimeRemaining(Context context, long currentTime, long futureTime) {
         long diffInMillis = futureTime - currentTime;
-
         long diffInMinutes = diffInMillis / (60 * 1000);
         long diffInHours = diffInMillis / (60 * 60 * 1000);
         long diffInDays = diffInMillis / (24 * 60 * 60 * 1000);
-
-        Log.e("hour", String.format("%d", diffInHours));
-
 
         android.content.res.Resources res = context.getResources();
 
@@ -209,7 +208,6 @@ public class LearnFragment extends Fragment {
             }
 
             loadCards();
-
             liveData.removeObservers(getViewLifecycleOwner());
         });
     }
@@ -258,26 +256,55 @@ public class LearnFragment extends Fragment {
         TextView tvFront = cardView.findViewById(R.id.tv_word_front);
         TextView tvBack = cardView.findViewById(R.id.tv_word_back);
         TextView tvDef = cardView.findViewById(R.id.tv_definition);
+        ImageView imgFront = cardView.findViewById(R.id.img_flash_card);
+        ImageButton btnPlayAudio = cardView.findViewById(R.id.btn_play_audio);
 
-        if (tvFront != null) tvFront.setText(data.getFrontText());
         if (tvBack != null) tvBack.setText(data.getFrontText());
         if (tvDef != null) tvDef.setText(backText.toString());
+
+        int cardType = data.getCardType();
+
+        if (cardType == 0) {
+            if (tvFront != null) {
+                tvFront.setVisibility(View.VISIBLE);
+                tvFront.setText(data.getFrontText());
+            }
+            if (imgFront != null) imgFront.setVisibility(View.GONE);
+            if (btnPlayAudio != null) btnPlayAudio.setVisibility(View.GONE);
+
+        } else if (cardType == 1) {
+            if (tvFront != null) tvFront.setVisibility(View.GONE);
+            if (btnPlayAudio != null) btnPlayAudio.setVisibility(View.GONE);
+
+            if (imgFront != null) {
+                imgFront.setVisibility(View.VISIBLE);
+                String imageString = data.getFrontImage();
+                if (imageString != null && !imageString.isEmpty()) {
+                    Glide.with(requireContext()).load(imageString).centerCrop().into(imgFront);
+                } else {
+                    Glide.with(requireContext()).clear(imgFront);
+                }
+            }
+
+        } else if (cardType == 2) {
+            if (tvFront != null) tvFront.setVisibility(View.GONE);
+            if (imgFront != null) imgFront.setVisibility(View.GONE);
+
+            if (btnPlayAudio != null) {
+                btnPlayAudio.setVisibility(View.VISIBLE);
+                btnPlayAudio.setOnClickListener(v -> {
+                    if (pronunciationManager != null && data.getFrontText() != null) {
+                        pronunciationManager.playSound(data.getFrontText(), null, 1.0f);
+                    }
+                });
+            }
+        }
 
         View front = cardView.findViewById(R.id.layout_front);
         View back = cardView.findViewById(R.id.layout_back);
         if (front != null) front.setVisibility(View.VISIBLE);
         if (back != null) back.setVisibility(View.GONE);
-
-        ImageView imgFront = cardView.findViewById(R.id.img_flash_card);
-        String imageString = data.getFrontImage();
-        if (imageString != null && !imageString.isEmpty()) {
-            Glide.with(requireContext())
-                    .load(imageString)
-                    .centerCrop()
-                    .into(imgFront);
-        } else {
-            Glide.with(requireContext()).clear(imgFront);
-        }
+        cardView.setRotationY(0f);
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -341,13 +368,13 @@ public class LearnFragment extends Fragment {
 
     private void animateReset(View v) {
         v.animate()
-            .translationX(0f)
-            .translationY(0f)
-            .rotation(0f)
-            .alpha(1f)
-            .setDuration(300)
-            .setListener(null)
-            .start();
+                .translationX(0f)
+                .translationY(0f)
+                .rotation(0f)
+                .alpha(1f)
+                .setDuration(300)
+                .setListener(null)
+                .start();
     }
 
     private void resetCardPosition(View v) {
@@ -376,7 +403,6 @@ public class LearnFragment extends Fragment {
                     public void onAnimationEnd(Animator animation) {
                         Card currentCard = flashcardList.get(currentIndex);
 
-                        // targetX > 0: Right (Remember)
                         boolean isRemember = targetX > 0;
                         processCardReview(currentCard, isRemember);
 
@@ -454,5 +480,11 @@ public class LearnFragment extends Fragment {
         });
 
         flipOut.start();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (pronunciationManager != null) pronunciationManager.releaseResources();
     }
 }
