@@ -5,15 +5,19 @@ import android.util.Log;
 import com.example.memoria.data.database.dao.CardDao;
 import com.example.memoria.data.database.dao.DeckDao;
 import com.example.memoria.data.database.dao.FavDao;
+import com.example.memoria.data.database.dao.QuizDao;
 import com.example.memoria.data.model.entity.Card;
 import com.example.memoria.data.model.entity.Deck;
 import com.example.memoria.data.model.entity.FavFolder;
 import com.example.memoria.data.model.entity.FavWord;
+import com.example.memoria.data.model.entity.QuizHistory;
+import com.example.memoria.data.model.entity.QuizStat;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.WriteBatch;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
@@ -30,16 +34,17 @@ public class SyncRepository {
     private final FavDao favDao;
     private final DeckDao deckDao;
     private final CardDao cardDao;
+    private final QuizDao quizDao;
 
     private final FirebaseFirestore firestore;
     private final ExecutorService executor;
 
     @Inject
-    public SyncRepository(FavDao favDao, DeckDao deckDao, CardDao cardDao, FirebaseFirestore firestore) {
+    public SyncRepository(FavDao favDao, DeckDao deckDao, CardDao cardDao, QuizDao quizDao, FirebaseFirestore firestore) {
         this.favDao = favDao;
         this.deckDao = deckDao;
         this.cardDao = cardDao;
-        // this.quizDao = quizDao;
+        this.quizDao = quizDao;
         this.firestore = firestore;
         this.executor = Executors.newSingleThreadExecutor();
     }
@@ -207,7 +212,89 @@ public class SyncRepository {
 
     // --- Hàm 3: Đồng bộ Lịch sử & Thống kê (QuizStat & QuizHis) ---
     public void syncQuizData(String userId, DataCallback<Boolean> callback) {
-        // Chứa WriteBatch xử lý QuizStat và QuizHis
+        executor.execute(() -> {
+            List<QuizHistory> unsyncedHistories = quizDao.getUnsyncedHistories();
+            QuizStat unsyncedStat = quizDao.getUnsyncedStats();
+
+            if (unsyncedHistories.isEmpty() && unsyncedStat == null) {
+                if (callback != null) callback.onDataLoaded(true);
+                return;
+            }
+
+            WriteBatch batch = firestore.batch();
+
+            // 1. Chuẩn bị dữ liệu QuizHistory: users/{userId}/quiz_histories/{resultId}
+            for (QuizHistory history : unsyncedHistories) {
+                String resultIdStr = history.getResultId().toString();
+
+                DocumentReference historyRef = firestore
+                        .collection("users").document(userId)
+                        .collection("quiz_histories").document(resultIdStr);
+
+                if (history.getSyncStatus() == 2) {
+                    batch.delete(historyRef);
+                } else {
+                    history.setSyncStatus(1);
+                    history.setFirestoreId(resultIdStr);
+
+                    if (history.getExpireAt() == null) {
+                        Calendar calendar = Calendar.getInstance();
+                        if (history.getTakenAt() != null) {
+                            calendar.setTime(history.getTakenAt());
+                        }
+                        calendar.add(Calendar.DAY_OF_YEAR, 30);
+                        history.setExpireAt(calendar.getTime());
+                    }
+
+                    batch.set(historyRef, history);
+                }
+            }
+
+            // 2. Chuẩn bị dữ liệu QuizStat: users/{userId}/quiz_stats/{statId}
+            if (unsyncedStat != null) {
+                String statIdStr = String.valueOf(unsyncedStat.getStatId());
+
+                DocumentReference statRef = firestore
+                        .collection("users").document(userId)
+                        .collection("quiz_stats").document(statIdStr);
+
+                if (unsyncedStat.getSyncStatus() == 2) {
+                    batch.delete(statRef);
+                } else {
+                    unsyncedStat.setSyncStatus(1);
+                    unsyncedStat.setFirestoreId(statIdStr);
+                    batch.set(statRef, unsyncedStat);
+                }
+            }
+
+            // 3. Thực thi Batch và cập nhật lại Local Database (Room)
+            batch.commit()
+                    .addOnSuccessListener(aVoid -> {
+                        executor.execute(() -> {
+                            for (QuizHistory history : unsyncedHistories) {
+                                if (history.getSyncStatus() == 2) {
+                                    quizDao.deleteHistory(history);
+                                } else {
+                                    quizDao.updateHistory(history);
+                                }
+                            }
+
+                            if (unsyncedStat != null) {
+                                if (unsyncedStat.getSyncStatus() == 2) {
+                                    quizDao.deleteStat(unsyncedStat);
+                                } else {
+                                    quizDao.updateStat(unsyncedStat);
+                                }
+                            }
+
+                            if (callback != null) callback.onDataLoaded(true);
+                        });
+                    })
+                    .addOnFailureListener(e -> {
+                        e.printStackTrace();
+                        if (callback != null) callback.onDataLoaded(false);
+                    });
+        });
     }
 
     // --- Hàm Pull: Kéo dữ liệu từ Cloud về Local ---
@@ -221,10 +308,16 @@ public class SyncRepository {
         Task<com.google.firebase.firestore.QuerySnapshot> decksTask = firestore
                 .collection("users").document(userId).collection("decks").get();
 
-        // 3. Kéo Quiz (làm sau)
+        // 3. Kéo QuizHistory
+        Task<com.google.firebase.firestore.QuerySnapshot> historyTask = firestore
+                .collection("users").document(userId).collection("quiz_histories").get();
 
-        // Chờ cả Folder và Deck tải về xong (sau này thêm quiz)
-        Tasks.whenAllSuccess(foldersTask, decksTask)
+        // 4. Kéo QuizStat
+        Task<com.google.firebase.firestore.QuerySnapshot> statTask = firestore
+                .collection("users").document(userId).collection("quiz_stats").get();
+
+        // Chờ cả Folder và Deck tải về xong
+        Tasks.whenAllSuccess(foldersTask, decksTask, historyTask, statTask)
                 .addOnSuccessListener(results -> {
                     executor.execute(() -> {
                         List<Task<com.google.firebase.firestore.QuerySnapshot>> subCollectionTasks = new ArrayList<>();
@@ -261,7 +354,34 @@ public class SyncRepository {
                             subCollectionTasks.add(cardsTask);
                         }
 
-                        // Xử lý Quiz (sẽ làm sau)
+                        // Xử lý Quiz History
+                        for (QueryDocumentSnapshot doc : (com.google.firebase.firestore.QuerySnapshot) results.get(2)) {
+                            QuizHistory history = doc.toObject(QuizHistory.class);
+                            history.setResultId(UUID.fromString(doc.getId()));
+                            history.setSyncStatus(1);
+                            try {
+                                quizDao.insertHistory(history);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                        // Xử lý Quiz Stat
+                        for (QueryDocumentSnapshot doc : (com.google.firebase.firestore.QuerySnapshot) results.get(3)) {
+                            QuizStat stat = doc.toObject(QuizStat.class);
+                            stat.setStatId(1);
+                            stat.setSyncStatus(1);
+                            try {
+                                quizDao.insertStat(stat);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                        if (subCollectionTasks.isEmpty()) {
+                            if (callback != null) callback.onDataLoaded(true);
+                            return;
+                        }
 
                         // Chờ tất cả các sub-collection (Words và Cards) tải về xong
                         Tasks.whenAllSuccess(subCollectionTasks).addOnSuccessListener(subResults -> {
