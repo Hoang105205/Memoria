@@ -40,7 +40,11 @@ public interface DeckDao {
     @Query("SELECT * FROM decks WHERE deck_name LIKE '%' || :keyword || '%'")
     List<Deck> searchDecks(String keyword);
 
-    @Query("SELECT d.*, COUNT(c.card_id) AS total_cards FROM decks d LEFT JOIN cards c ON d.deck_id = c.deck_id GROUP BY d.deck_id")
+    @Query("SELECT d.*, COUNT(c.card_id) AS total_cards " +
+            "FROM decks d LEFT JOIN cards c ON d.deck_id = c.deck_id AND c.sync_status IN (0, 1) " +
+            "WHERE d.sync_status IN (0, 1) " +
+            "GROUP BY d.deck_id " +
+            "ORDER BY d.created_at DESC")
     List<DeckWithCount> getAllDecksWithCount();
 
     // Lấy danh sách Deck chưa đồng bộ
