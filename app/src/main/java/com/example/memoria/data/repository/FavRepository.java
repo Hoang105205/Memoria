@@ -69,6 +69,7 @@ public class FavRepository {
         executor.execute(() -> {
             folder.setSyncStatus(2); // Chuyển thành trạng thái Chờ xóa
             favDao.updateFolder(folder);
+            favDao.markWordsForDeleted(folder.getFolderId());
 
             // Báo cáo đã ghi DB Local xong
             if (onComplete != null) onComplete.run();

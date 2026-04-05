@@ -44,6 +44,9 @@ public interface FavDao {
     @Delete
     void deleteWord(FavWord word);
 
+    @Query("UPDATE fav_words SET sync_status = 2 WHERE folder_id = :folderId")
+    void markWordsForDeleted(UUID folderId);
+
     // Lấy danh sách từ trong 1 folder, đưa các từ được ghim (pin) lên đầu
     @Query("SELECT * FROM fav_words WHERE folder_id = :folderId AND sync_status IN (0, 1) ORDER BY pin_status DESC, added_at DESC")
     List<FavWord> getWordsByFolder(UUID folderId);
