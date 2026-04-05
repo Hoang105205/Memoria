@@ -57,17 +57,17 @@ public class CardViewModel extends ViewModel {
     }
 
     public void insertCard(Card card) {
-        repository.insertCard(card, () -> {
-            triggerSync();
-            loadCards(card.getDeckId());
-        });
+        repository.insertCard(card,
+            () -> loadCards(card.getDeckId()),
+            () -> triggerSync()
+        );
     }
 
     public void updateCard(Card card) {
-        repository.updateCard(card, () -> {
-            triggerSync();
-            loadCards(card.getDeckId());
-        });
+        repository.updateCard(card,
+            () -> loadCards(card.getDeckId()),
+            () -> triggerSync()
+        );
     }
 
     public void deleteCard(Card card) {
