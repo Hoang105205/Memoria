@@ -201,4 +201,11 @@
     <string name="publish_deck_dialog_content">Your deck will be published to our community. This action will take some time.</string>
     <string name="action_publish">Publish</string>
     <string name="msg_publishing_deck">Publishing to community. Please wait...</string>
+    <string name="type_hint">Type</string>
+    <string name="error_empty_image">Please select an image for the front card</string>
+    <string name="front_audio_hint">Enter text for voice pronunciation...</string>
+    <string name="text">Text</string>
+    <string name="image">Image</string>
+    <string name="audio">Audio</string>
+    <string name="front_text_image_hint">Enter word (for this image)...</string>
 </resources>

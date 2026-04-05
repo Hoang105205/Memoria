@@ -39,6 +39,9 @@ public class Card implements Serializable {
     @Exclude
     private UUID deckId;
 
+    @ColumnInfo(name = "card_type")
+    private int cardType; // 0: Text, 1: Image, 2: Audio
+
     @ColumnInfo(name = "front_text")
     private String frontText;
 

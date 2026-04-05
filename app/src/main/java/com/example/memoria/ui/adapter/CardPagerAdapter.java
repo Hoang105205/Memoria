@@ -31,6 +31,15 @@ public class CardPagerAdapter extends RecyclerView.Adapter<CardPagerAdapter.Card
     private List<Card> cardList = new ArrayList<>();
     private String themeColor = "";
 
+    public interface OnAudioPlayListener {
+        void onPlayAudio(String textToRead);
+    }
+    private OnAudioPlayListener audioPlayListener;
+
+    public void setOnAudioPlayListener(OnAudioPlayListener listener) {
+        this.audioPlayListener = listener;
+    }
+
     public void setCards(List<Card> cards) {
         this.cardList = cards;
         notifyDataSetChanged();
@@ -51,7 +60,7 @@ public class CardPagerAdapter extends RecyclerView.Adapter<CardPagerAdapter.Card
     @Override
     public void onBindViewHolder(@NonNull CardViewHolder holder, int position) {
         Card card = cardList.get(position);
-        holder.bind(card, themeColor);
+        holder.bind(card, themeColor, audioPlayListener);
     }
 
     @Override
@@ -59,7 +68,6 @@ public class CardPagerAdapter extends RecyclerView.Adapter<CardPagerAdapter.Card
         return cardList == null ? 0 : cardList.size();
     }
 
-    // Hàm này để CardDetailFragment có thể lấy thẻ đang hiển thị
     public Card getCardAt(int position) {
         if (position >= 0 && position < cardList.size()) {
             return cardList.get(position);
@@ -69,9 +77,8 @@ public class CardPagerAdapter extends RecyclerView.Adapter<CardPagerAdapter.Card
 
     static class CardViewHolder extends RecyclerView.ViewHolder {
         com.google.android.material.card.MaterialCardView cardContainer;
-        // CardView cardContainer;
         View layoutFront, layoutBack;
-        ImageButton btnFlip;
+        ImageButton btnPlayAudio;
         TextView tvFrontText, tvBackText, tvMeanings;
         ImageView imgFront;
 
@@ -87,45 +94,64 @@ public class CardPagerAdapter extends RecyclerView.Adapter<CardPagerAdapter.Card
             tvBackText = itemView.findViewById(R.id.tv_word_back);
             tvMeanings = itemView.findViewById(R.id.tv_definition);
             imgFront = itemView.findViewById(R.id.img_flash_card);
+            btnPlayAudio = itemView.findViewById(R.id.btn_play_audio);
 
             setupFlipAnimation();
         }
 
-        void bind(Card card, String themeColor) {
+        void bind(Card card, String themeColor, OnAudioPlayListener listener) {
             // Đảm bảo luôn bắt đầu từ mặt trước
             isFront = true;
             layoutFront.setVisibility(View.VISIBLE);
             layoutBack.setVisibility(View.GONE);
             cardContainer.setRotationY(0f);
 
-            // Gán dữ liệu
+            // Bất kể thẻ gì, mặt sau luôn hiển thị FrontText (Dùng làm đáp án)
             if (card.getFrontText() != null) {
-                tvFrontText.setText(card.getFrontText());
                 tvBackText.setText(card.getFrontText());
             }
 
-            String imageUriString = card.getFrontImage();
-            if (imageUriString != null && !imageUriString.isEmpty()) {
+            int cardType = card.getCardType();
 
-                Uri imageUri = Uri.parse(imageUriString);
-
-                Glide.with(itemView.getContext())
-                        .load(imageUri)
-                        .fitCenter()
-                        // .placeholder(R.drawable.ic_loading) // (Tùy chọn) Ảnh hiển thị trong lúc chờ load
-                        // .error(R.drawable.ic_error_image)   // (Tùy chọn) Ảnh hiển thị nếu load lỗi/mất file
-                        .into(imgFront);
-
-            } else {
-                // No image
+            if (cardType == 0) {
+                tvFrontText.setVisibility(View.VISIBLE);
                 imgFront.setVisibility(View.GONE);
-                Glide.with(itemView.getContext()).clear(imgFront);
+                btnPlayAudio.setVisibility(View.GONE);
+
+                tvFrontText.setText(card.getFrontText());
+
+            } else if (cardType == 1) {
+                tvFrontText.setVisibility(View.GONE);
+                imgFront.setVisibility(View.VISIBLE);
+                btnPlayAudio.setVisibility(View.GONE);
+
+                if (card.getFrontImage() != null && !card.getFrontImage().isEmpty()) {
+                    Glide.with(itemView.getContext())
+                            .load(Uri.parse(card.getFrontImage()))
+                            .fitCenter()
+                            .into(imgFront);
+                } else {
+                    Glide.with(itemView.getContext()).clear(imgFront);
+                }
+
+            } else if (cardType == 2) {
+                tvFrontText.setVisibility(View.GONE);
+                imgFront.setVisibility(View.GONE);
+                btnPlayAudio.setVisibility(View.VISIBLE);
+
+                // Gắn sự kiện phát âm thanh
+                btnPlayAudio.setOnClickListener(v -> {
+                    if (listener != null && card.getFrontText() != null) {
+                        listener.onPlayAudio(card.getFrontText());
+                    }
+                });
             }
 
             if (card.getBackMeanings() != null) {
                 StringBuilder meaningsBuilder = new StringBuilder();
                 for (int i = 0; i < card.getBackMeanings().size(); i++) {
-                    meaningsBuilder.append(i + 1).append(". ").append(card.getBackMeanings().get(i)).append("\n\n");
+                    //meaningsBuilder.append(i + 1).append(". ").append(card.getBackMeanings().get(i)).append("\n\n");
+                    meaningsBuilder.append(String.format("• %s - %s\n\n", card.getBackTypes().get(i), card.getBackMeanings().get(i)));
                 }
                 tvMeanings.setText(meaningsBuilder.toString().trim());
             }
@@ -133,7 +159,7 @@ public class CardPagerAdapter extends RecyclerView.Adapter<CardPagerAdapter.Card
             // Áp dụng Theme Color
             if (themeColor != null && !themeColor.isEmpty()) {
                 cardContainer.setStrokeColor(android.graphics.Color.parseColor(themeColor));
-                cardContainer.setStrokeWidth(12); // ~4dp
+                cardContainer.setStrokeWidth(12);
             } else {
                 cardContainer.setStrokeWidth(0);
             }
@@ -141,40 +167,6 @@ public class CardPagerAdapter extends RecyclerView.Adapter<CardPagerAdapter.Card
 
         @SuppressLint("ClickableViewAccessibility")
         private void setupFlipAnimation() {
-//            btnFlip.setOnClickListener(v -> {
-//                if (!flipable) return;
-//                flipable = false;
-//
-//                ObjectAnimator flipOut = ObjectAnimator.ofFloat(cardContainer, "rotationY", 0f, -90f);
-//                flipOut.setDuration(150);
-//                ObjectAnimator flipIn = ObjectAnimator.ofFloat(cardContainer, "rotationY", 90f, 0f);
-//                flipIn.setDuration(150);
-//
-//                flipOut.addListener(new AnimatorListenerAdapter() {
-//                    @Override
-//                    public void onAnimationEnd(Animator animation) {
-//                        if (isFront) {
-//                            layoutFront.setVisibility(View.GONE);
-//                            layoutBack.setVisibility(View.VISIBLE);
-//                        } else {
-//                            layoutFront.setVisibility(View.VISIBLE);
-//                            layoutBack.setVisibility(View.GONE);
-//                        }
-//                        isFront = !isFront;
-//                        flipIn.start();
-//                    }
-//                });
-//
-//                flipIn.addListener(new AnimatorListenerAdapter() {
-//                    @Override
-//                    public void onAnimationEnd(Animator animation) {
-//                        flipable = true;
-//                    }
-//                });
-//
-//                flipOut.start();
-//            });
-
             ScrollView scrollView = itemView.findViewById(R.id.scroll_definition);
             if (scrollView != null) {
                 scrollView.setOnTouchListener(new View.OnTouchListener() {
@@ -186,7 +178,6 @@ public class CardPagerAdapter extends RecyclerView.Adapter<CardPagerAdapter.Card
                             case MotionEvent.ACTION_DOWN:
                                 startX = event.getX();
                                 startY = event.getY();
-                                // Allow ScrollView continue operate
                                 break;
                             case MotionEvent.ACTION_UP:
                                 float endX = event.getX();
@@ -199,7 +190,7 @@ public class CardPagerAdapter extends RecyclerView.Adapter<CardPagerAdapter.Card
                                 }
                                 break;
                         }
-                        return v.onTouchEvent(event); // Give back control to ScrollView
+                        return v.onTouchEvent(event);
                     }
                 });
             }
@@ -219,7 +210,6 @@ public class CardPagerAdapter extends RecyclerView.Adapter<CardPagerAdapter.Card
             if (front == null || back == null) return;
 
             card.setClickable(false);
-
             final float originalElevation = card.getCardElevation();
 
             ObjectAnimator flipOut = ObjectAnimator.ofFloat(card, "rotationY", 0f, -90f);

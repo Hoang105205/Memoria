@@ -175,6 +175,7 @@ public class PublicService {
                             publicCard.setDeckId(card.getDeckId());
                             publicCard.setFrontText(card.getFrontText());
                             publicCard.setFrontImage(card.getFrontImage());
+                            publicCard.setCardType(card.getCardType());
 
                             if (card.getBackTypes() != null) {
                                 publicCard.setBackTypes(new ArrayList<>(card.getBackTypes()));

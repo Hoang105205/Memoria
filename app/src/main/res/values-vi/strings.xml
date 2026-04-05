@@ -171,4 +171,11 @@
     <string name="publish_deck_dialog_content">Bộ thẻ của bạn sẽ được chia sẻ với cộng đồng. Hành động này sẽ tốn một chút thơ gian để thực hiện.</string>
     <string name="action_publish">Công khai</string>
     <string name="msg_publishing_deck">Đang chia sẻ lên cộng đồng. Vui lòng chờ...</string>
+    <string name="type_hint">Từ loại</string>
+    <string name="error_empty_image">Vui lòng chọn ảnh mặt trước</string>
+    <string name="front_audio_hint">Nhập văn bản để máy phát âm...</string>
+    <string name="text">Văn bản</string>
+    <string name="image">Hình ảnh</string>
+    <string name="audio">Âm thanh</string>
+    <string name="front_text_image_hint">Nhập từ vựng (cho ảnh này)...</string>
 </resources>

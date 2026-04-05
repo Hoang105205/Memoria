@@ -3,18 +3,24 @@ package com.example.memoria.ui.library;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
@@ -33,11 +39,6 @@ import java.util.UUID;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
-// Thu viện hỗ trợ lấy ảnh từ Gallery
-import android.net.Uri;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-
 @AndroidEntryPoint
 public class CreateNewCardFragment extends Fragment {
 
@@ -45,43 +46,44 @@ public class CreateNewCardFragment extends Fragment {
 
     private UUID deckId;
     private String deckName;
-
-    // Xử lý Edit và Image
     private Card cardToEdit = null;
+
     private String selectedImageUri = null;
+    private int currentCardType = 0; // 0: Text, 1: Image, 2: Audio (TTS)
 
     private View layoutFront, layoutBack;
     private CardView cardContainer;
     private ImageButton btnFlip;
     private boolean isFront = true;
-    private boolean flipable = true;
+    private boolean flippable = true;
 
     // Front UI
+    private RadioGroup rgCardType;
     private EditText etFrontText;
-    private ImageView imgFront;
+    private ImageView imgFrontPicker;
 
     // Back UI
     private LinearLayout containerMeanings;
     private Button btnAddMeaning;
 
-    // --- Khai báo bộ ảnh chọn từ thư viện ---
-    private final ActivityResultLauncher<String[]> pickImageLauncher = registerForActivityResult(
-        new ActivityResultContracts.OpenDocument(),
-        uri -> {
-            if (uri != null) {
-                requireActivity().getContentResolver().takePersistableUriPermission(
-                        uri,
-                        android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
-                );
+    private final String[] MEANING_TYPES = new String[]{"noun", "verb", "adj", "adv", "prep", "conj", "idiom"};
 
-                selectedImageUri = uri.toString();
-                Glide.with(requireContext())
-                        .load(Uri.parse(selectedImageUri))
-                        .fitCenter()
-                        .into(imgFront);
+    private final ActivityResultLauncher<String[]> pickImageLauncher = registerForActivityResult(
+            new ActivityResultContracts.OpenDocument(),
+            uri -> {
+                if (uri != null) {
+                    takePersistableUriPermission(uri);
+                    selectedImageUri = uri.toString();
+                    Glide.with(requireContext()).load(uri).fitCenter().into(imgFrontPicker);
+                }
             }
-        }
     );
+
+    private void takePersistableUriPermission(Uri uri) {
+        requireActivity().getContentResolver().takePersistableUriPermission(
+                uri, android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
+        );
+    }
 
     @Nullable
     @Override
@@ -94,7 +96,6 @@ public class CreateNewCardFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // xác định xem đang là mode edit hay create
         if (getArguments() != null) {
             deckId = (UUID) getArguments().getSerializable("DECK_ID");
             deckName = getArguments().getString("DECK_NAME");
@@ -103,26 +104,18 @@ public class CreateNewCardFragment extends Fragment {
             }
         }
 
-        if (getArguments() != null) {
-            deckId = (UUID) getArguments().getSerializable("DECK_ID");
-        }
-
         initViews(view);
+        setupCardTypeListener();
         setupFlipAnimation();
-        loadDataToUI(); // Tự động điền dữ liệu nếu là Edit, hoặc tạo field rỗng nếu Create
+        loadDataToUI();
 
-        btnAddMeaning.setOnClickListener(v -> addNewMeaningField());
-
-        Button btnCreate = view.findViewById(R.id.btn_create_card);
-        btnCreate.setOnClickListener(v -> saveCard());
+        imgFrontPicker.setOnClickListener(v -> pickImageLauncher.launch(new String[]{"image/*"}));
+        btnAddMeaning.setOnClickListener(v -> addNewMeaningField("", ""));
+        view.findViewById(R.id.btn_back).setOnClickListener(v -> Navigation.findNavController(v).navigateUp());
+        view.findViewById(R.id.btn_create_card).setOnClickListener(v -> saveCard());
 
         TextView tvDeckName = view.findViewById(R.id.tv_deck_name_header);
         tvDeckName.setText(deckName);
-
-        view.findViewById(R.id.btn_back).setOnClickListener(v -> Navigation.findNavController(v).navigateUp());
-
-        // Bấm vào icon ảnh để mở thư viện
-        imgFront.setOnClickListener(v -> pickImageLauncher.launch(new String[]{"image/*"}));
     }
 
     private void initViews(View view) {
@@ -131,59 +124,86 @@ public class CreateNewCardFragment extends Fragment {
         layoutBack = view.findViewById(R.id.layout_creator_back);
         btnFlip = view.findViewById(R.id.btn_flip_card);
 
+        rgCardType = view.findViewById(R.id.rg_card_type);
         etFrontText = view.findViewById(R.id.et_front_text);
-        imgFront = view.findViewById(R.id.img_front_picker);
+        imgFrontPicker = view.findViewById(R.id.img_front_picker);
 
         containerMeanings = view.findViewById(R.id.container_meanings);
         btnAddMeaning = view.findViewById(R.id.btn_add_meaning);
     }
 
-    // điền dữ liệu cũ nếu đang là mode edit
+    private void setupCardTypeListener() {
+        rgCardType.setOnCheckedChangeListener((group, checkedId) -> {
+            imgFrontPicker.setVisibility(View.GONE);
+
+            if (checkedId == R.id.rb_type_text) {
+                currentCardType = 0;
+                etFrontText.setHint(R.string.front_text_hint);
+            }
+            else if (checkedId == R.id.rb_type_image) {
+                currentCardType = 1;
+                etFrontText.setHint(R.string.front_text_image_hint);
+                imgFrontPicker.setVisibility(View.VISIBLE);
+            }
+            else if (checkedId == R.id.rb_type_audio) {
+                currentCardType = 2;
+                etFrontText.setHint(R.string.front_audio_hint);
+            }
+        });
+    }
+
     private void loadDataToUI() {
         if (cardToEdit != null) {
-            // Đổi chữ nút Create thành Save
             Button btnCreate = requireView().findViewById(R.id.btn_create_card);
             btnCreate.setText(R.string.action_save);
 
-            // Điền mặt trước
+            currentCardType = cardToEdit.getCardType();
+
+            etFrontText.setVisibility(View.VISIBLE);
             etFrontText.setText(cardToEdit.getFrontText());
-            if (cardToEdit.getFrontImage() != null) {
+
+            if (currentCardType == 0) {
+                rgCardType.check(R.id.rb_type_text);
+            } else if (currentCardType == 1) {
+                rgCardType.check(R.id.rb_type_image);
                 selectedImageUri = cardToEdit.getFrontImage();
-                Glide.with(requireContext())
-                        .load(Uri.parse(selectedImageUri))
-                        .fitCenter() // Tự động cắt ảnh cho đẹp mắt
-                        .into(imgFront);
+                Glide.with(requireContext()).load(selectedImageUri).fitCenter().into(imgFrontPicker);
+            } else if (currentCardType == 2) {
+                rgCardType.check(R.id.rb_type_audio);
             }
 
-            // Điền mặt sau (Meanings)
             containerMeanings.removeAllViews();
-            if (cardToEdit.getBackMeanings() != null && !cardToEdit.getBackMeanings().isEmpty()) {
-                for (String meaning : cardToEdit.getBackMeanings()) {
-                    View meaningView = getLayoutInflater().inflate(R.layout.item_meaning_input, containerMeanings, false);
-                    TextView tvLabel = meaningView.findViewById(R.id.tv_meaning_label);
-                    EditText etInput = meaningView.findViewById(R.id.et_meaning_input);
+            List<String> meanings = cardToEdit.getBackMeanings();
+            List<String> types = cardToEdit.getBackTypes();
 
-                    int currentCount = containerMeanings.getChildCount() + 1;
-                    tvLabel.setText(getString(R.string.meaning_label, currentCount));
-                    etInput.setText(meaning);
-
-                    containerMeanings.addView(meaningView);
+            if (meanings != null && !meanings.isEmpty()) {
+                for (int i = 0; i < meanings.size(); i++) {
+                    String meaning = meanings.get(i);
+                    String type = (types != null && i < types.size()) ? types.get(i) : "";
+                    addNewMeaningField(type, meaning);
                 }
             } else {
-                addNewMeaningField();
+                addNewMeaningField("", "");
             }
         } else {
-            // Create Mode mặc định
-            addNewMeaningField();
+            addNewMeaningField("", "");
         }
     }
 
-    private void addNewMeaningField() {
+    private void addNewMeaningField(String initialType, String initialMeaning) {
         View meaningView = getLayoutInflater().inflate(R.layout.item_meaning_input, containerMeanings, false);
         TextView tvLabel = meaningView.findViewById(R.id.tv_meaning_label);
+        AutoCompleteTextView autoType = meaningView.findViewById(R.id.auto_meaning_type);
+        EditText etInput = meaningView.findViewById(R.id.et_meaning_input);
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_dropdown_item_1line, MEANING_TYPES);
+        autoType.setAdapter(adapter);
 
         int currentCount = containerMeanings.getChildCount() + 1;
         tvLabel.setText(getString(R.string.meaning_label, currentCount));
+
+        autoType.setText(initialType);
+        etInput.setText(initialMeaning);
 
         containerMeanings.addView(meaningView);
     }
@@ -195,32 +215,51 @@ public class CreateNewCardFragment extends Fragment {
 
         for (int i = 0; i < containerMeanings.getChildCount(); i++) {
             View child = containerMeanings.getChildAt(i);
+            AutoCompleteTextView autoType = child.findViewById(R.id.auto_meaning_type);
             EditText etInput = child.findViewById(R.id.et_meaning_input);
-            String text = etInput.getText().toString().trim();
-            if (!text.isEmpty()) {
-                finalMeanings.add(text);
-                finalTypes.add("general");
+
+            String meaningText = etInput.getText().toString().trim();
+            String typeText = autoType.getText().toString().trim();
+
+            if (!meaningText.isEmpty()) {
+                finalMeanings.add(meaningText);
+                finalTypes.add(typeText.isEmpty() ? "general" : typeText);
             }
         }
 
-        if (frontText.isEmpty() || finalMeanings.isEmpty()) {
+        if (finalMeanings.isEmpty()) {
             Toast.makeText(requireContext(), R.string.error_empty_card, Toast.LENGTH_SHORT).show();
             return;
         }
 
-        Card newCard;
-        if (cardToEdit != null) {
-            newCard = cardToEdit; // Dùng lại ID cũ để Update
-            newCard.setUpdatedAt(new Date());
-        } else {
-            newCard = new Card();
-            newCard.setCardId(UUID.randomUUID()); // ID mới để Insert
-            newCard.setDeckId(deckId);
-            newCard.setCreatedAt(new Date());
+        if (frontText.isEmpty()) {
+            Toast.makeText(requireContext(), R.string.error_empty_card, Toast.LENGTH_SHORT).show();
+            return;
         }
 
+        if (currentCardType == 1 && selectedImageUri == null) {
+            Toast.makeText(requireContext(), R.string.error_empty_image, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Card newCard = (cardToEdit != null) ? cardToEdit : new Card();
+        if (cardToEdit == null) {
+            newCard.setCardId(UUID.randomUUID());
+            newCard.setDeckId(deckId);
+            newCard.setCreatedAt(new Date());
+        } else {
+            newCard.setUpdatedAt(new Date());
+        }
+
+        newCard.setCardType(currentCardType);
         newCard.setFrontText(frontText);
-        newCard.setFrontImage(selectedImageUri); // Gắn ảnh vào thẻ
+
+        if (currentCardType == 1) {
+            newCard.setFrontImage(selectedImageUri);
+        } else {
+            newCard.setFrontImage(null);
+        }
+
         newCard.setBackMeanings(finalMeanings);
         newCard.setBackTypes(finalTypes);
 
@@ -231,14 +270,13 @@ public class CreateNewCardFragment extends Fragment {
             viewModel.insertCard(newCard);
             Toast.makeText(requireContext(), R.string.card_add_success, Toast.LENGTH_SHORT).show();
         }
-
         Navigation.findNavController(requireView()).navigateUp();
     }
 
     private void setupFlipAnimation() {
         btnFlip.setOnClickListener(v -> {
-            if (!flipable) return;
-            flipable = false;
+            if (!flippable) return;
+            flippable = false;
 
             ObjectAnimator flipOut = ObjectAnimator.ofFloat(cardContainer, "rotationY", 0f, -90f);
             flipOut.setDuration(150);
@@ -263,7 +301,7 @@ public class CreateNewCardFragment extends Fragment {
             flipIn.addListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                    flipable = true;
+                    flippable = true;
                 }
             });
 

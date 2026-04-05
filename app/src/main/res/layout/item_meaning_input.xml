@@ -3,22 +3,39 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:layout_marginBottom="12dp">
+    android:paddingBottom="12dp">
 
     <TextView
         android:id="@+id/tv_meaning_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@android:color/darker_gray"
-        android:textSize="14sp" />
+        android:textStyle="bold"
+        android:layout_marginBottom="4dp"/>
 
-    <EditText
-        android:id="@+id/et_meaning_input"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/bg_edit_text"
-        android:hint="@string/meaning_hint"
-        android:padding="12dp"
-        android:minLines="2"
-        android:gravity="top|start" />
+        android:orientation="horizontal"
+        android:weightSum="10">
+
+        <AutoCompleteTextView
+            android:id="@+id/auto_meaning_type"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="3"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/bg_edit_text"
+            android:padding="12dp"
+            android:hint="@string/type_hint"
+            android:completionThreshold="1" />
+
+        <EditText
+            android:id="@+id/et_meaning_input"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="7"
+            android:background="@drawable/bg_edit_text"
+            android:padding="12dp"
+            android:hint="@string/meaning_hint" />
+    </LinearLayout>
 </LinearLayout>

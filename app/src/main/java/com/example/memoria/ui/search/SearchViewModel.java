@@ -140,6 +140,7 @@ public class SearchViewModel extends ViewModel {
             Card newCard = new Card();
             newCard.setCardId(UUID.randomUUID());
             newCard.setDeckId(deckId);
+            newCard.setCardType(0);
             newCard.setFrontText(currentData.word);
             newCard.setBackTypes(java.util.Collections.singletonList(pos));
             newCard.setBackMeanings(java.util.Collections.singletonList(shortMeaning));

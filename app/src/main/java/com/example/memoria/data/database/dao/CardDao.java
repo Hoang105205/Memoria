@@ -29,7 +29,7 @@ public interface CardDao {
     Card getCardById(UUID cardId);
 
     // Lấy toàn bộ thẻ của 1 bộ thẻ
-    @Query("SELECT * FROM cards WHERE deck_id = :deckId")
+    @Query("SELECT * FROM cards WHERE deck_id = :deckId ORDER BY created_at DESC, card_id DESC")
     androidx.lifecycle.LiveData<List<Card>> getCardsByDeckId(UUID deckId);
 
     // Đếm số thẻ có trong bộ
