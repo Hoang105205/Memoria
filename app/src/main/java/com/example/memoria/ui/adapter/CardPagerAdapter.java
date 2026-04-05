@@ -195,9 +195,7 @@ public class CardPagerAdapter extends RecyclerView.Adapter<CardPagerAdapter.Card
                 });
             }
 
-            itemView.setOnClickListener(v -> {
-                flipCard((CardView) v);
-            });
+            itemView.setOnClickListener(v -> flipCard((CardView) v));
         }
 
         private void flipCard(CardView card) {

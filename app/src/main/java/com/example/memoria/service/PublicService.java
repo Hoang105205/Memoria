@@ -16,6 +16,7 @@ import com.google.firebase.firestore.WriteBatch;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -52,9 +53,7 @@ public class PublicService {
         List<String> keywords = new ArrayList<>();
         if (deckName != null && !deckName.isEmpty()) {
             String[] words = deckName.toLowerCase().trim().split("\\s+");
-            for (String word : words) {
-                keywords.add(word);
-            }
+            Collections.addAll(keywords, words);
         }
         return keywords;
     }
