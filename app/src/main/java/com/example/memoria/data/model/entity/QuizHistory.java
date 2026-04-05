@@ -5,6 +5,9 @@ import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
 
+import com.google.firebase.firestore.Exclude;
+import com.google.firebase.firestore.PropertyName;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -29,9 +32,11 @@ public class QuizHistory implements Serializable {
     @PrimaryKey
     @ColumnInfo(name = "result_id")
     @androidx.annotation.NonNull
+    @Exclude
     private UUID resultId;
 
     @ColumnInfo(name = "deck_id", index = true)
+    @Exclude
     private UUID deckId;
 
     @ColumnInfo(name = "correct_count")
@@ -54,4 +59,26 @@ public class QuizHistory implements Serializable {
 
     @ColumnInfo(name = "sync_status")
     private int syncStatus;
+
+    @Exclude
+    public UUID getResultId() { return resultId; }
+
+    @Exclude
+    public void setResultId(UUID resultId) { this.resultId = resultId; }
+
+    @Exclude
+    public UUID getDeckId() { return deckId; }
+
+    @Exclude
+    public void setDeckId(UUID deckId) { this.deckId = deckId; }
+
+    @PropertyName("deck_id_string")
+    public String getFirestoreDeckId() {
+        return deckId != null ? deckId.toString() : null;
+    }
+
+    @PropertyName("deck_id_string")
+    public void setFirestoreDeckId(String idStr) {
+        this.deckId = idStr != null ? UUID.fromString(idStr) : null;
+    }
 }

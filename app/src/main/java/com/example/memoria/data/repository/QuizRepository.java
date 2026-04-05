@@ -2,8 +2,10 @@ package com.example.memoria.data.repository;
 
 import com.example.memoria.data.database.dao.QuizDao;
 import com.example.memoria.data.model.entity.QuizHistory;
+import com.example.memoria.data.model.entity.QuizStat;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -21,7 +23,6 @@ public class QuizRepository {
         this.quizDao = quizDao;
         executor = Executors.newSingleThreadExecutor();
     }
-
 
     public void getStudyDaysInMonth(long startOfMonth, long endOfMonth, CardRepository.DataCallback<List<Long>> callback) {
         executor.execute(() -> {
@@ -84,11 +85,37 @@ public class QuizRepository {
         executor.execute(() -> {
             try {
                 history.setSyncStatus(0);
-                quizDao.insertQuizHistory(history);
+                quizDao.insertHistory(history);
+
+                QuizStat currentStat = quizDao.getQuizStat();
+                boolean isNewStat = false;
+
+                if (currentStat == null) {
+                    currentStat = new QuizStat();
+                    currentStat.setStatId(1);
+                    currentStat.setTotalQuiz(0);
+                    currentStat.setTotalCorrect(0);
+                    currentStat.setTotalQuestions(0);
+                    currentStat.setFirestoreId("1");
+                    isNewStat = true;
+                }
+
+                currentStat.setTotalQuiz(currentStat.getTotalQuiz() + 1);
+                currentStat.setTotalCorrect(currentStat.getTotalCorrect() + history.getCorrectCount());
+                currentStat.setTotalQuestions(currentStat.getTotalQuestions() + history.getTotalQuestions());
+                currentStat.setUpdatedAt(new java.util.Date());
+                currentStat.setSyncStatus(0);
+
+                if (isNewStat) {
+                    quizDao.insertStat(currentStat);
+                } else {
+                    quizDao.updateStat(currentStat);
+                }
 
                 new android.os.Handler(android.os.Looper.getMainLooper()).post(() ->
                         callback.onDataLoaded(true)
                 );
+
             } catch (Exception e) {
                 e.printStackTrace();
                 new android.os.Handler(android.os.Looper.getMainLooper()).post(() ->
@@ -102,7 +129,7 @@ public class QuizRepository {
         executor.execute(() -> {
             try {
                 history.setSyncStatus(0);
-                quizDao.updateQuizHistory(history);
+                quizDao.updateHistory(history);
                 new android.os.Handler(android.os.Looper.getMainLooper()).post(() ->
                         callback.onDataLoaded(true)
                 );

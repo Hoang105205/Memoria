@@ -36,7 +36,7 @@ public class SyncWorker extends Worker {
         }
 
         // Nào làm tới Quiz thì thay thành 3
-        int SYNC_TASKS_COUNT = 2;
+        int SYNC_TASKS_COUNT = 3;
         CountDownLatch latch = new CountDownLatch(SYNC_TASKS_COUNT);
 
         // Mặc định là true, nếu có bất kỳ luồng nào thất bại thì chuyển thành false
@@ -55,10 +55,10 @@ public class SyncWorker extends Worker {
         });
 
         // Gọi hàm đồng bộ Quiz
-        // syncRepository.syncQuizData(userId, success -> {
-        //     if (!success) isSuccess[0] = false;
-        //     latch.countDown();
-        // });
+         syncRepository.syncQuizData(userId, success -> {
+             if (!success) isSuccess[0] = false;
+             latch.countDown();
+         });
 
         try {
             // Hệ thống sẽ đứng chờ ở đây cho đến khi biến latch giảm về 0
