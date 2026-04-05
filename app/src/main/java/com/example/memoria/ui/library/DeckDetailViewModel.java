@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel;
 import android.content.Context;
 
 import com.example.memoria.data.model.entity.Deck;
+import com.example.memoria.data.repository.CardRepository;
 import com.example.memoria.data.repository.DeckRepository;
 import com.example.memoria.service.PublicService;
 import com.example.memoria.utils.SyncHelper;
@@ -22,7 +23,8 @@ import dagger.hilt.android.qualifiers.ApplicationContext;
 
 @HiltViewModel
 public class DeckDetailViewModel extends ViewModel {
-    private final DeckRepository repository;
+    private final DeckRepository deckRepository;
+    private final CardRepository cardRepository;
     private final PublicService publicService;
     private final MutableLiveData<Deck> currentDeck = new MutableLiveData<>();
     private final Context context;
@@ -32,8 +34,9 @@ public class DeckDetailViewModel extends ViewModel {
     private final MutableLiveData<String> publishMessage = new MutableLiveData<>();
 
     @Inject
-    public DeckDetailViewModel(DeckRepository repository, PublicService publicService, @ApplicationContext Context context) {
-        this.repository = repository;
+    public DeckDetailViewModel(DeckRepository deckRepository, CardRepository cardRepository, PublicService publicService, @ApplicationContext Context context) {
+        this.deckRepository = deckRepository;
+        this.cardRepository = cardRepository;
         this.publicService = publicService;
         this.context = context;
     }
@@ -56,7 +59,7 @@ public class DeckDetailViewModel extends ViewModel {
 
     // Tải thông tin của Deck
     public void loadDeck(UUID deckId) {
-        repository.getDeckById(deckId, currentDeck::postValue);
+        deckRepository.getDeckById(deckId, currentDeck::postValue);
     }
 
     // Đổi tên Deck
@@ -64,7 +67,7 @@ public class DeckDetailViewModel extends ViewModel {
         Deck deck = currentDeck.getValue();
         if (deck != null) {
             deck.setDeckName(newName);
-            repository.updateDeck(deck, () -> {
+            deckRepository.updateDeck(deck, () -> {
                 currentDeck.postValue(deck);
                 triggerSync();
             });
@@ -75,8 +78,8 @@ public class DeckDetailViewModel extends ViewModel {
     public void deleteCurrentDeck() {
         Deck deck = currentDeck.getValue();
         if (deck != null) {
-            repository.deleteDeck(deck, () -> {
-                triggerSync();
+            deckRepository.deleteDeck(deck, () -> {
+                cardRepository.markCardsForDeleted(deck.getDeckId(), () -> triggerSync());
             });
         }
     }
@@ -85,7 +88,7 @@ public class DeckDetailViewModel extends ViewModel {
         Deck deck = currentDeck.getValue();
         if (deck != null) {
             deck.setCoverColor(newColor);
-            repository.updateDeck(deck, () -> {
+            deckRepository.updateDeck(deck, () -> {
                 currentDeck.postValue(deck); // Update LiveData
                 triggerSync();
             });

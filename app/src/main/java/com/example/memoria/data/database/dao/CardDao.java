@@ -59,6 +59,8 @@ public interface CardDao {
             "ORDER BY study_date DESC")
     LiveData<List<Long>> getDistinctStudyDays();
 
+    @Query("UPDATE cards SET sync_status = 2 WHERE deck_id = :deckId")
+    void markCardsForDeleted(UUID deckId);
 
     //Card den han
     @Query("SELECT COUNT(*) FROM cards WHERE next_review_date <= :currentTime")

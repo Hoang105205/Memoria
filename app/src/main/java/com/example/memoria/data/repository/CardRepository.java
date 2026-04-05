@@ -133,6 +133,13 @@ public class CardRepository {
         });
     }
 
+    public void markCardsForDeleted(UUID deckId, Runnable onComplete) {
+        executor.execute(() -> {
+            cardDao.markCardsForDeleted(deckId);
+            if (onComplete != null) onComplete.run();
+        });
+    }
+
     // Lấy số từ đã học hôm nay
 
     public LiveData<Integer> getWordsLearnedTodayLiveData(long startOfToday) {
