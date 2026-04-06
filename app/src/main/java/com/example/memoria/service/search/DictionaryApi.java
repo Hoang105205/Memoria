@@ -1,6 +1,6 @@
 package com.example.memoria.service.search;
 
-import com.example.memoria.ui.search.DictionaryResponse;
+import com.example.memoria.data.model.dto.DictionaryResponse;
 
 import java.util.List;
 

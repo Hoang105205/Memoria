@@ -1,7 +1,6 @@
 package com.example.memoria.ui.search;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +18,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.memoria.R;
+import com.example.memoria.data.model.dto.Definition;
+import com.example.memoria.data.model.dto.DictionaryResponse;
+import com.example.memoria.data.model.dto.Meaning;
 import com.example.memoria.ui.adapter.SearchWordResultAdapter;
 import com.example.memoria.utils.PronunciationManager;
 

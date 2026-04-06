@@ -115,6 +115,9 @@
     <string name="action_delete_card">Xóa thẻ</string>
     <string name="dialog_title_delete_card">Xóa thẻ</string>
     <string name="dialog_message_delete_card">Bạn có chắc muốn xóa thẻ này?</string>
+    <string name="passive_learning">Học thụ động</string>
+    <string name="passive_learning_select_deck">Chọn bộ thẻ</string>
+    <string name="select_all">Chọn tất cả bộ thẻ</string>
 
     <plurals name="time_days">
         <item quantity="other">%d ngày</item>

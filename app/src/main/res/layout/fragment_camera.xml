@@ -18,7 +18,7 @@
         android:visibility="gone" />
 
     <!-- Overlay để vẽ bbox và kéo chọn -->
-    <com.example.memoria.ui.search.OcrSelectOverlayView
+    <com.example.memoria.data.model.dto.OcrSelectOverlayView
         android:id="@+id/ocrOverlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
