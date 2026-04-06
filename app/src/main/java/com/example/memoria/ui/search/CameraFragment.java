@@ -30,6 +30,8 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
 import com.example.memoria.R;
+import com.example.memoria.data.model.dto.OcrSelectOverlayView;
+import com.example.memoria.data.model.dto.OcrWord;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.mlkit.vision.common.InputImage;

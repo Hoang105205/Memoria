@@ -1,4 +1,4 @@
-package com.example.memoria.ui.search;
+package com.example.memoria.data.model.dto;
 
 import android.content.Context;
 import android.graphics.Canvas;

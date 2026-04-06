@@ -1,4 +1,4 @@
-package com.example.memoria.ui.search;
+package com.example.memoria.data.model.dto;
 
 public class Phonetic {
     public String text;

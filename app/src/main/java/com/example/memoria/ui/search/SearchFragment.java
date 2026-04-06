@@ -33,6 +33,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.memoria.R;
+import com.example.memoria.data.model.dto.DictionaryResponse;
+import com.example.memoria.data.model.dto.Suggestion;
 import com.example.memoria.data.model.entity.SearchHistory;
 import com.example.memoria.data.repository.SearchHistoryRepository;
 import com.example.memoria.service.search.RetrofitClient;
