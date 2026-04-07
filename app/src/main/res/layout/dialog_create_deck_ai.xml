@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/dialog_title_ai_deck"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="16dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/dialog_label_topic"
+        android:layout_marginBottom="4dp" />
+
+    <EditText
+        android:id="@+id/edt_ai_topic"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/dialog_hint_topic"
+        android:inputType="text"
+        android:layout_marginBottom="16dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/dialog_label_card_count"
+        android:layout_marginBottom="4dp" />
+
+    <EditText
+        android:id="@+id/edt_ai_card_count"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="10"
+        android:inputType="number" />
+</LinearLayout>

@@ -29,7 +29,7 @@ public interface CardDao {
     Card getCardById(UUID cardId);
 
     // Lấy toàn bộ thẻ của 1 bộ thẻ
-    @Query("SELECT * FROM cards WHERE deck_id = :deckId ORDER BY created_at DESC, card_id DESC")
+    @Query("SELECT * FROM cards WHERE deck_id = :deckId ORDER BY created_at DESC, front_text ASC")
     androidx.lifecycle.LiveData<List<Card>> getCardsByDeckId(UUID deckId);
 
     // Đếm số thẻ có trong bộ
@@ -80,10 +80,10 @@ public interface CardDao {
     int checkCardExist(UUID deckId, String frontText);
 
     // Lấy danh sách thẻ theo deckId dạng List tĩnh (để phục vụ cho tính năng Search)
-    @Query("SELECT * FROM cards WHERE deck_id = :deckId AND sync_status IN (0, 1) ORDER BY created_at DESC")
+    @Query("SELECT * FROM cards WHERE deck_id = :deckId AND sync_status IN (0, 1) ORDER BY created_at DESC, front_text ASC")
     List<Card> getCardsByDeckIdSync(UUID deckId);
 
     // Tìm kiếm thẻ trong bộ thẻ theo từ khóa (Tìm theo mặt trước của thẻ)
-    @Query("SELECT * FROM cards WHERE deck_id = :deckId AND sync_status IN (0, 1) AND front_text LIKE '%' || :keyword || '%' ORDER BY created_at DESC")
+    @Query("SELECT * FROM cards WHERE deck_id = :deckId AND sync_status IN (0, 1) AND front_text LIKE '%' || :keyword || '%' ORDER BY created_at DESC, front_text ASC")
     List<Card> searchCardsInDeck(UUID deckId, String keyword);
 }
