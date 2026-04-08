@@ -4,62 +4,73 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.memoria.R;
+import com.example.memoria.service.PublicService;
+import com.example.memoria.ui.profile.UserProfileViewModel;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link HomeFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import dagger.hilt.android.AndroidEntryPoint;
+import jakarta.inject.Inject;
+import com.example.memoria.ui.home.PublicAdapter;
+
+@AndroidEntryPoint
 public class HomeFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private UserProfileViewModel userViewModel;
+    private PublicService publicService;
+    private RecyclerView rvDiscover;
+    private PublicAdapter adapter;
 
     public HomeFragment() {
-        // Required empty public constructor
+        // Để trống
     }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment HomeFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static HomeFragment newInstance(String param1, String param2) {
-        HomeFragment fragment = new HomeFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
+    @Inject
+    public HomeFragment(PublicService publicService) {
+        this.publicService = publicService;
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_home, container, false);
+
+        // 1. Ánh xạ View
+        TextView tvWords = view.findViewById(R.id.tv_words_count);
+        TextView tvStreak = view.findViewById(R.id.tv_streak_count);
+        rvDiscover = view.findViewById(R.id.rv_discover_decks);
+
+        // 2. ViewModel lấy Progress (giống code ProgressFragment của bạn)
+        userViewModel = new ViewModelProvider(requireActivity()).get(UserProfileViewModel.class);
+        userViewModel.getLearnedToday().observe(getViewLifecycleOwner(), count -> tvWords.setText(String.valueOf(count)));
+        userViewModel.getStreakLiveData().observe(getViewLifecycleOwner(), streak -> tvStreak.setText(String.valueOf(streak)));
+
+        // 3. Navigation
+        view.findViewById(R.id.btn_go_to_discover).setOnClickListener(v -> {
+            Navigation.findNavController(v).navigate(R.id.action_homeFragment_to_deckPublicFragment);
+        });
+
+        view.findViewById(R.id.btn_create_deck).setOnClickListener(v -> {
+            // Logic mở màn hình tạo deck mới
+        });
+
+        // 4. Load dữ liệu Discover từ PublicService
+        //setupDiscoverList();
+
+        return view;
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home, container, false);
+    private void setupDiscoverList() {
+        publicService.getPublicDecks(10, null, null, (success, data, message) -> {
+            if (success && data != null) {
+                // data ở đây là List<DocumentSnapshot> từ Firestore
+                adapter = new PublicAdapter(data);
+                rvDiscover.setAdapter(adapter);
+            }
+        });
     }
 }
