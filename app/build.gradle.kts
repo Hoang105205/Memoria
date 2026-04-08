@@ -136,5 +136,7 @@ dependencies {
     // Required for streaming operations (to use `Publisher` from Reactive Streams)
     implementation("org.reactivestreams:reactive-streams:1.0.4")
 
-    implementation("androidx.core:core:1.12.0")
+    //Media player
+    implementation("androidx.media:media:1.7.0")
+    implementation("androidx.core:core:1.13.1")
 }

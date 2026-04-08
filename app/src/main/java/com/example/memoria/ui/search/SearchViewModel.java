@@ -4,6 +4,8 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.memoria.data.model.dto.DictionaryResponse;
+import com.example.memoria.data.model.dto.Meaning;
 import com.example.memoria.data.model.entity.Deck;
 import com.example.memoria.data.model.entity.Card;
 import com.example.memoria.data.model.entity.FavFolder;

@@ -62,6 +62,9 @@
     <string name="days_streak">days streak</string>
     <string name="setting">Setting</string>
     <string name="sign_out">Sign out</string>
+    <string name="passive_learning">Passive Learning</string>
+    <string name="passive_learning_select_deck">Select deck</string>
+    <string name="select_all">Select all</string>
 
     <string name="lang_en">English</string>
     <string name="lang_vi">Vietnamese</string>
@@ -208,6 +211,16 @@
     <string name="image">Image</string>
     <string name="audio">Audio</string>
     <string name="front_text_image_hint">Enter word (for this image)...</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="btn_create_deck_with_ai_des">Create deck with AI</string>
+
+    <!-- AI creates Deck Dialog -->
+    <string name="dialog_title_ai_deck">Create smart decks with AI!</string>
+    <string name="dialog_label_topic">Enter topic:</string>
+    <string name="dialog_hint_topic">e.g., Animals, Technology...</string>
+    <string name="dialog_label_card_count">Enter number of cards (max 20):</string>
+    <string name="error_topic_required">Please enter a topic.</string>
+    <string name="error_card_count_max">Maximum 20 cards allowed.</string>
+    <string name="msg_ai_deck_loading">Asking AI to generate %1$d cards for topic: %2$s...</string>
+    <string name="msg_ai_deck_success">Successfully created deck: %1$s</string>
+    <string name="msg_ai_deck_error">Error creating with AI: %1$s</string>
 </resources>

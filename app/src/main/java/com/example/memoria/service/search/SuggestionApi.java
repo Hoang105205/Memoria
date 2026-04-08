@@ -1,6 +1,6 @@
 package com.example.memoria.service.search;
 
-import com.example.memoria.ui.search.Suggestion;
+import com.example.memoria.data.model.dto.Suggestion;
 
 import java.util.List;
 

@@ -25,7 +25,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
 public class CardDetailFragment extends Fragment {
-
+    private UUID targetCardId;
     private PronunciationManager pronunciationManager;
     private CardViewModel viewModel;
     private ViewPager2 viewPager;
@@ -50,6 +50,7 @@ public class CardDetailFragment extends Fragment {
             deckName = getArguments().getString("DECK_NAME");
             startPosition = getArguments().getInt("SELECTED_POSITION", 0);
             coverColor = getArguments().getString("COVER_COLOR", "");
+            targetCardId = (UUID) getArguments().getSerializable("CARD_ID");
         }
 
         pronunciationManager = new PronunciationManager(requireContext());
@@ -92,6 +93,18 @@ public class CardDetailFragment extends Fragment {
             viewModel.getCardsByDeckId(deckId).observe(getViewLifecycleOwner(), cards -> {
                 if (cards != null && !cards.isEmpty()) {
                     pagerAdapter.setCards(cards);
+
+                    // Tìm chính xác vị trí của thẻ bằng ID
+                    if (targetCardId != null) {
+                        for (int i = 0; i < cards.size(); i++) {
+                            if (cards.get(i).getCardId().equals(targetCardId)) {
+                                startPosition = i;
+                                targetCardId = null; // Xóa đi để tránh tìm lại vào những lần update sau
+                                break;
+                            }
+                        }
+                    }
+
                     // Nhảy đến đúng vị trí thẻ mà người dùng đã click ngoài danh sách
                     viewPager.setCurrentItem(startPosition, false);
                 }

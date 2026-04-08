@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.os.LocaleListCompat;
 import androidx.fragment.app.Fragment;
@@ -19,14 +20,23 @@ import androidx.navigation.Navigation;
 
 import com.bumptech.glide.Glide;
 import com.example.memoria.R;
+import com.example.memoria.data.model.entity.Deck;
+import com.example.memoria.data.repository.VocabularyRepository;
+import com.example.memoria.data.repository.DeckRepository;
+import com.example.memoria.service.VocabTtsServiceStarter;
 import com.example.memoria.ui.auth.LoginActivity;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.imageview.ShapeableImageView;
+import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.UUID;
+
+import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -38,6 +48,11 @@ public class ProfileFragment extends Fragment {
     private Button btnSignOut, btnChangePassword;
     private TextView tvEditProfile;
     private MaterialAutoCompleteTextView actvLanguage;
+    private SwitchMaterial ListeningToggle;
+    private boolean ignoreToggleCallback = false;
+
+    @Inject VocabularyRepository vocabularyRepository;
+    @Inject DeckRepository deckRepository;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -86,6 +101,17 @@ public class ProfileFragment extends Fragment {
         
         view.findViewById(R.id.profile_cv_progress).setOnClickListener(v -> {
             Navigation.findNavController(v).navigate(R.id.action_profileFragment_to_progressFragment);
+        });
+
+        ListeningToggle = view.findViewById(R.id.profile_listening_toggle);
+        ListeningToggle.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (ignoreToggleCallback) return;
+
+            if (isChecked) {
+                showDeckPickerDialog();
+            } else {
+                VocabTtsServiceStarter.stop(requireContext());
+            }
         });
     }
 
@@ -162,5 +188,95 @@ public class ProfileFragment extends Fragment {
     private void changeAppLanguage(String languageCode) {
         LocaleListCompat appLocale = LocaleListCompat.forLanguageTags(languageCode);
         AppCompatDelegate.setApplicationLocales(appLocale);
+    }
+
+    private void showDeckPickerDialog() {
+        deckRepository.getAllDecks(decks -> {
+            if (getActivity() == null) return;
+
+            requireActivity().runOnUiThread(() -> {
+                if (decks == null || decks.isEmpty()) {
+                    // không có deck -> trả switch về OFF
+                    ignoreToggleCallback = true;
+                    ListeningToggle.setChecked(false);
+                    ignoreToggleCallback = false;
+                    return;
+                }
+                showDeckSelectDialogAndStart(decks);
+            });
+        });
+    }
+    private void showDeckSelectDialogAndStart(List<Deck> decks) {
+        int n = decks.size();
+
+        String[] names = new String[n + 1];
+        boolean[] checked = new boolean[n + 1];
+        names[0] = getString(R.string.select_all);
+        checked[0] = false;
+
+        for (int i = 0; i < n; i++) {
+            names[i + 1] = decks.get(i).getDeckName();
+            checked[i + 1] = false;
+        }
+
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.passive_learning_select_deck)
+                .setMultiChoiceItems(names, checked, (dialog, which, isChecked) -> {
+                    checked[which] = isChecked;
+                    AlertDialog ad = (AlertDialog) dialog;
+
+                    if (which == 0) {
+                        // toggle select all -> set tất cả deck theo nó
+                        for (int i = 1; i < checked.length; i++) {
+                            checked[i] = isChecked;
+                            ad.getListView().setItemChecked(i, isChecked);
+                        }
+                    } else {
+                        // nếu user bỏ chọn 1 deck -> select all off
+                        if (!isChecked && checked[0]) {
+                            checked[0] = false;
+                            ad.getListView().setItemChecked(0, false);
+                        }
+                        // nếu tất cả deck đều tick -> bật select all
+                        boolean all = true;
+                        for (int i = 1; i < checked.length; i++) {
+                            if (!checked[i]) { all = false; break; }
+                        }
+                        if (all && !checked[0]) {
+                            checked[0] = true;
+                            ad.getListView().setItemChecked(0, true);
+                        }
+                    }
+                })
+                .setCancelable(false)
+                .setNegativeButton(R.string.btn_cancel, (d, w) -> {
+                    ignoreToggleCallback = true;
+                    ListeningToggle.setChecked(false);
+                    ignoreToggleCallback = false;
+                })
+                .setPositiveButton(android.R.string.ok, (d, w) -> {
+                    boolean selectAll = checked[0];
+                    ArrayList<String> selectedDeckIds = new ArrayList<>();
+                    if (!selectAll) {
+                        for (int i = 0; i < n; i++) {
+                            if (checked[i + 1]) {
+                                UUID id = decks.get(i).getDeckId();
+                                selectedDeckIds.add(id.toString());
+                            }
+                        }
+                    }
+                    if (!selectAll && selectedDeckIds.isEmpty()) {
+                        ignoreToggleCallback = true;
+                        ListeningToggle.setChecked(false);
+                        ignoreToggleCallback = false;
+                        return;
+                    }
+                    VocabTtsServiceStarter.startWithDecks(requireContext(), selectedDeckIds, selectAll);
+
+                    ignoreToggleCallback = true;
+                    ListeningToggle.setChecked(true);
+                    ignoreToggleCallback = false;
+                })
+                .show();
     }
 }

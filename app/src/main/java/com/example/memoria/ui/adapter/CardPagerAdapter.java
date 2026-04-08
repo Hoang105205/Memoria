@@ -150,8 +150,13 @@ public class CardPagerAdapter extends RecyclerView.Adapter<CardPagerAdapter.Card
             if (card.getBackMeanings() != null) {
                 StringBuilder meaningsBuilder = new StringBuilder();
                 for (int i = 0; i < card.getBackMeanings().size(); i++) {
-                    //meaningsBuilder.append(i + 1).append(". ").append(card.getBackMeanings().get(i)).append("\n\n");
-                    meaningsBuilder.append(String.format("• %s - %s\n\n", card.getBackTypes().get(i), card.getBackMeanings().get(i)));
+                    // Kiểm tra an toàn cho mảng backTypes
+                    String type = "";
+                    if (card.getBackTypes() != null && i < card.getBackTypes().size()) {
+                        type = card.getBackTypes().get(i);
+                    }
+
+                    meaningsBuilder.append(String.format("• %s - %s\n\n", type, card.getBackMeanings().get(i)));
                 }
                 tvMeanings.setText(meaningsBuilder.toString().trim());
             }

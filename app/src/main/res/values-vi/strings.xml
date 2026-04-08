@@ -115,6 +115,9 @@
     <string name="action_delete_card">Xóa thẻ</string>
     <string name="dialog_title_delete_card">Xóa thẻ</string>
     <string name="dialog_message_delete_card">Bạn có chắc muốn xóa thẻ này?</string>
+    <string name="passive_learning">Học thụ động</string>
+    <string name="passive_learning_select_deck">Chọn bộ thẻ</string>
+    <string name="select_all">Chọn tất cả bộ thẻ</string>
 
     <plurals name="time_days">
         <item quantity="other">%d ngày</item>
@@ -178,4 +181,15 @@
     <string name="image">Hình ảnh</string>
     <string name="audio">Âm thanh</string>
     <string name="front_text_image_hint">Nhập từ vựng (cho ảnh này)...</string>
+    <string name="btn_create_deck_with_ai_des">Tạo bộ thẻ với AI</string>
+
+    <string name="dialog_title_ai_deck">Tạo bộ thẻ thông minh theo chủ đề mà bạn muốn cùng AI!</string>
+    <string name="dialog_label_topic">Nhập chủ đề:</string>
+    <string name="dialog_hint_topic">VD: Động vật, Lịch sử...</string>
+    <string name="dialog_label_card_count">Nhập số thẻ (tối đa 20):</string>
+    <string name="error_topic_required">Vui lòng nhập chủ đề.</string>
+    <string name="error_card_count_max">Số lượng thẻ tối đa là 20.</string>
+    <string name="msg_ai_deck_loading">Đang nhờ AI soạn %1$d thẻ chủ đề: %2$s...</string>
+    <string name="msg_ai_deck_success">Tạo thành công bộ thẻ: %1$s</string>
+    <string name="msg_ai_deck_error">Lỗi khi tạo bằng AI: %1$s</string>
 </resources>

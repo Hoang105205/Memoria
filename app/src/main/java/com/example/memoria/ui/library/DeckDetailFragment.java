@@ -56,6 +56,7 @@ public class DeckDetailFragment extends Fragment {
         DeckCardAdapter cardAdapter = new DeckCardAdapter((card, position) -> {
             Bundle bundle = new Bundle();
             bundle.putSerializable("DECK_ID", card.getDeckId());
+            bundle.putSerializable("CARD_ID", card.getCardId()); // Truyền ID của thẻ thay vì chỉ truyền vị trí
             bundle.putInt("SELECTED_POSITION", position);
 
             if (viewModel.getDeck().getValue() != null) {
