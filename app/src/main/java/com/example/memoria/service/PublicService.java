@@ -146,6 +146,7 @@ public class PublicService {
                         publicDeckData.put("coverColor", localDeck.getCoverColor());
                         publicDeckData.put("searchKeywords", generateSearchKeywords(localDeck.getDeckName()));
                         publicDeckData.put("downloadCount", currentCount); // Giữ count cũ
+                        publicDeckData.put("totalCards", localCards.size());
                         publicDeckData.put("publishedAt", new Date());
 
                         batch.set(firestore.collection("public_decks").document(publicDocId), publicDeckData);
