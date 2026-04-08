@@ -16,7 +16,7 @@
     </fragment>
     <fragment
         android:id="@+id/deckPublicFragment"
-        android:name="com.example.memoria.ui.home.deckPublicFragment"
+        android:name="com.example.memoria.ui.home.PublicDeckFragment"
         android:label="fragment_deck_public"
         tools:layout="@layout/fragment_deck_public" />
 </navigation>
