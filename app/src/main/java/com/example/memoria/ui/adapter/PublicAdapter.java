@@ -1,21 +1,30 @@
-package com.example.memoria.ui.home;
+package com.example.memoria.ui.adapter;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.memoria.R;
-import com.google.firebase.firestore.DocumentSnapshot;
+import com.example.memoria.data.model.dto.PublicDeck;
+
 import java.util.List;
 
 public class PublicAdapter extends RecyclerView.Adapter<PublicAdapter.ViewHolder> {
 
-    private final List<DocumentSnapshot> decks;
+    private List<PublicDeck> publicDecks;
+    private OnDeckClickListener listener;
 
-    public PublicAdapter(List<DocumentSnapshot> decks) {
-        this.decks = decks;
+    public interface OnDeckClickListener {
+        void onDeckClick(PublicDeck deck);
+    }
+
+    public PublicAdapter(List<PublicDeck> publicDecks, OnDeckClickListener listener) {
+        this.publicDecks = publicDecks;
+        this.listener = listener;
     }
 
     @NonNull
@@ -28,32 +37,43 @@ public class PublicAdapter extends RecyclerView.Adapter<PublicAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        DocumentSnapshot doc = decks.get(position);
-
-        // Lấy dữ liệu từ DocumentSnapshot của Firestore
-        String name = doc.getString("deckName");
-        Long downloads = doc.getLong("downloadCount");
-        // Giả sử bạn lưu số lượng card trong metadata hoặc query riêng, ở đây demo lấy tạm:
-        long cardCount = 0; // Bạn có thể update thêm logic đếm card ở đây
-
-        holder.tvName.setText(name != null ? name : "Unnamed Deck");
-        holder.tvDownload.setText((downloads != null ? downloads : 0) + " downloads");
-        holder.tvCards.setText("Cards: " + cardCount);
+        PublicDeck deck = publicDecks.get(position);
+        holder.bind(deck, listener);
     }
 
     @Override
     public int getItemCount() {
-        return decks.size();
+        return publicDecks == null ? 0 : publicDecks.size();
+    }
+
+    // Hàm này dùng để cập nhật lại list khi kéo thêm data
+    public void updateData(List<PublicDeck> newData) {
+        this.publicDecks = newData;
+        notifyDataSetChanged();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tvName, tvCards, tvDownload;
+        TextView tvDeckName, tvCardCount, tvDownloadCount;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            tvName = itemView.findViewById(R.id.item_tv_deck_name);
-            tvCards = itemView.findViewById(R.id.item_tv_card_count);
-            tvDownload = itemView.findViewById(R.id.item_tv_download_count);
+            tvDeckName = itemView.findViewById(R.id.item_tv_deck_name);
+            tvCardCount = itemView.findViewById(R.id.item_tv_card_count);
+            tvDownloadCount = itemView.findViewById(R.id.item_tv_download_count);
+        }
+
+        public void bind(PublicDeck deck, OnDeckClickListener listener) {
+            tvDeckName.setText(deck.getDeckName() != null ? deck.getDeckName() : "No Name");
+            tvCardCount.setText(deck.getTotalCards() + " cards");
+            tvDownloadCount.setText(deck.getDownloadCount() + " downloads");
+
+            // TODO: Nếu sau này bạn muốn đổi màu background của CardView dựa vào deck.getCoverColor(), làm ở đây
+
+            itemView.setOnClickListener(v -> {
+                if (listener != null) {
+                    listener.onDeckClick(deck);
+                }
+            });
         }
     }
 }
