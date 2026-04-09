@@ -231,4 +231,6 @@
     <string name="msg_loading_clone">Cloning deck...</string>
     <string name="msg_clone_success">Successfully cloned \'%1$s\' to your library!</string>
     <string name="msg_clone_error">Failed to clone deck: %1$s</string>
+    <string name="msg_no_cards_preview">There is no card to preview</string>
+    <string name="preview_title">Xem trước bộ thẻ</string>
 </resources>
