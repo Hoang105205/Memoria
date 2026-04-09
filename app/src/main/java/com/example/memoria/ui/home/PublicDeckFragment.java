@@ -58,6 +58,14 @@ public class PublicDeckFragment extends Fragment {
         setupRecyclerView();
         setupSearch();
         observeViewModel();
+
+        if (getArguments() != null) {
+            String searchDeckName = getArguments().getString("searchDeckName");
+            if (searchDeckName != null && !searchDeckName.isEmpty()) {
+                // Tự động điền chữ vào ô search. TextWatcher sẽ tự động kích hoạt API sau 500ms
+                etSearch.setText(searchDeckName);
+            }
+        }
     }
 
     private void setupRecyclerView() {

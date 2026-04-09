@@ -238,12 +238,18 @@ public class PublicService {
         Query query = firestore.collection("public_decks");
 
         // neu co dung search thi thuc hien
+        // neu nguoi dung nhap vao co space thi search theo deckname, khong thi search trong mang
         if (searchQuery != null && !searchQuery.trim().isEmpty()) {
-            // Chuyển từ khóa nhập vào thành chữ thường để khớp với mảng trên DB
-            String keyword = searchQuery.trim().toLowerCase();
+            String trimmedQuery = searchQuery.trim();
 
-            // Tìm những document có mảng searchKeywords chứa từ khóa này
-            query = query.whereArrayContains("searchKeywords", keyword);
+            // Kiểm tra nếu tên có dấu cách (Click từ Home) -> Tìm khớp chính xác 100%
+            if (trimmedQuery.contains(" ")) {
+                query = query.whereEqualTo("deckName", trimmedQuery);
+            }
+            // Nếu là một chữ duy nhất -> Tìm linh hoạt trong mảng
+            else {
+                query = query.whereArrayContains("searchKeywords", trimmedQuery.toLowerCase());
+            }
         }
 
         // phan trang va gioi han so luong
