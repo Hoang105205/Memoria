@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.memoria.data.model.dto.PublicDeck;
+import com.example.memoria.data.model.entity.Card;
 import com.example.memoria.service.PublicService;
 import com.example.memoria.service.CloneService;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -24,6 +25,9 @@ public class PublicDeckViewModel extends ViewModel {
 
     private final MutableLiveData<List<PublicDeck>> _publicDecks = new MutableLiveData<>(new ArrayList<>());
     public LiveData<List<PublicDeck>> publicDecks = _publicDecks;
+
+    private final MutableLiveData<List<Card>> _previewCards = new MutableLiveData<>();
+    public LiveData<List<Card>> previewCards = _previewCards;
 
     private final MutableLiveData<Boolean> _isLoading = new MutableLiveData<>(false);
     public LiveData<Boolean> isLoading = _isLoading;
@@ -118,5 +122,23 @@ public class PublicDeckViewModel extends ViewModel {
                 if (callback != null) callback.onResult(false, message);
             }
         });
+    }
+
+    public void loadPreviewCards(String publicDocId) {
+        _isLoading.postValue(true);
+        // Gọi hàm getPreviewDeck đã có sẵn trong PublicService, truyền limit = 5
+        publicService.getPreviewDeck(publicDocId, 5, (success, cards, message) -> {
+            _isLoading.postValue(false);
+            if (success && cards != null) {
+                _previewCards.postValue(cards);
+            } else {
+                _errorMessage.postValue(message);
+            }
+        });
+    }
+
+    // Thêm hàm reset data để tránh lỗi hiển thị nhầm thẻ của bộ cũ khi bấm sang bộ mới
+    public void clearPreviewCards() {
+        _previewCards.setValue(null);
     }
 }

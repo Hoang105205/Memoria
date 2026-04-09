@@ -66,6 +66,9 @@ public class PublicDeckFragment extends Fragment {
             if (searchDeckName != null && !searchDeckName.isEmpty()) {
                 // Tự động điền chữ vào ô search. TextWatcher sẽ tự động kích hoạt API sau 500ms
                 etSearch.setText(searchDeckName);
+                // Chủ động gọi API và xóa Bundle đi để back lại không bị dính nữa
+                viewModel.searchDecks(searchDeckName);
+                getArguments().remove("searchDeckName");
             }
         }
     }
@@ -74,18 +77,29 @@ public class PublicDeckFragment extends Fragment {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         rvPublicDecks.setLayoutManager(layoutManager);
 
-        adapter = new PublicDeckDetailAdapter(new PublicDeckDetailAdapter.OnDeckClickListener() {
-            @Override
-            public void onDeckClick(PublicDeck deck) {
-                // TODO: Chuyển qua màn hình Preview Card
-                Toast.makeText(getContext(), "Preview: " + deck.getDeckName(), Toast.LENGTH_SHORT).show();
-            }
+        if (adapter == null) {
+            adapter = new PublicDeckDetailAdapter(new PublicDeckDetailAdapter.OnDeckClickListener() {
+                @Override
+                public void onDeckClick(PublicDeck deck) {
+                    Bundle bundle = new Bundle();
+                    bundle.putString("PUBLIC_DOC_ID", deck.getPublicDocId());
+                    bundle.putString("DECK_NAME", deck.getDeckName());
+                    bundle.putString("COVER_COLOR", deck.getCoverColor());
 
-            @Override
-            public void onDownloadClick(PublicDeck deck) {
-                showCloneDialog(deck);
-            }
-        });
+                    androidx.navigation.Navigation.findNavController(requireView())
+                            .navigate(R.id.publicCardPreviewFragment, bundle);
+                }
+
+                @Override
+                public void onDownloadClick(PublicDeck deck) {
+                    showCloneDialog(deck);
+                }
+            });
+
+            // Bảo Adapter khoan hãy vẽ cho đến khi có data,
+            // giúp nhớ chính xác vị trí đang cuộn thay vì bị giật lên đầu trang
+            adapter.setStateRestorationPolicy(RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY);
+        }
 
         rvPublicDecks.setAdapter(adapter);
 
@@ -143,6 +157,8 @@ public class PublicDeckFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
+                if (!etSearch.hasFocus()) return;
+
                 // Hủy lệnh tìm kiếm cũ nếu người dùng vẫn đang gõ liên tục
                 if (searchRunnable != null) {
                     searchHandler.removeCallbacks(searchRunnable);

@@ -199,4 +199,6 @@
     <string name="msg_loading_clone">Đang tải bộ thẻ...</string>
     <string name="msg_clone_success">Đã tải bộ thẻ \'%1$s\' thành công!</string>
     <string name="msg_clone_error">Lỗi khi tải bộ thẻ: %1$s</string>
+    <string name="msg_no_cards_preview">Không có thẻ để hiển thị</string>
+    <string name="preview_title">Deck Preview</string>
 </resources>

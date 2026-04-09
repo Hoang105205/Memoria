@@ -32,6 +32,8 @@ public class PublicDeckDetailAdapter extends RecyclerView.Adapter<PublicDeckDeta
     }
 
     public void setDecks(List<PublicDeck> decks) {
+        if (this.publicDecks == decks) return;
+
         this.publicDecks = decks;
         notifyDataSetChanged();
     }
