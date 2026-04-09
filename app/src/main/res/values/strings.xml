@@ -223,4 +223,12 @@
     <string name="msg_ai_deck_loading">Asking AI to generate %1$d cards for topic: %2$s...</string>
     <string name="msg_ai_deck_success">Successfully created deck: %1$s</string>
     <string name="msg_ai_deck_error">Error creating with AI: %1$s</string>
+
+    <!-- Public Deck -->
+    <string name="dialog_title_clone_deck">Clone Deck</string>
+    <string name="dialog_message_clone_deck">Do you want to download and clone \'%1$s\' to your library?</string>
+    <string name="action_clone">Clone</string>
+    <string name="msg_loading_clone">Cloning deck...</string>
+    <string name="msg_clone_success">Successfully cloned \'%1$s\' to your library!</string>
+    <string name="msg_clone_error">Failed to clone deck: %1$s</string>
 </resources>

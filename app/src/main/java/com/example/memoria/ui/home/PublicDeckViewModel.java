@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.example.memoria.data.model.dto.PublicDeck;
 import com.example.memoria.service.PublicService;
+import com.example.memoria.service.CloneService;
 import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
 public class PublicDeckViewModel extends ViewModel {
 
     private final PublicService publicService;
+    private final CloneService cloneService;
 
     private final MutableLiveData<List<PublicDeck>> _publicDecks = new MutableLiveData<>(new ArrayList<>());
     public LiveData<List<PublicDeck>> publicDecks = _publicDecks;
@@ -34,9 +36,14 @@ public class PublicDeckViewModel extends ViewModel {
     private String currentSearchQuery = null;
     private final int PAGE_LIMIT = 10; // Load 10 item mỗi lần
 
+    public interface CloneResultCallback {
+        void onResult(boolean success, String message);
+    }
+
     @Inject
-    public PublicDeckViewModel(PublicService publicService) {
+    public PublicDeckViewModel(PublicService publicService, CloneService cloneService) {
         this.publicService = publicService;
+        this.cloneService = cloneService;
         loadDecks(false); // Init load trang đầu tiên
     }
 
@@ -90,6 +97,25 @@ public class PublicDeckViewModel extends ViewModel {
 
             } else {
                 _errorMessage.postValue(message);
+            }
+        });
+    }
+
+    public void clonePublicDeck(PublicDeck deck, CloneResultCallback callback) {
+        // Tải dữ liệu từ Firestore (Deck gốc + Danh sách Card)
+        publicService.downloadDeck(deck.getPublicDocId(), (success, data, message) -> {
+            if (success && data != null) {
+                // Nếu tải thành công -> Đẩy qua CloneService để lưu vào SQLite
+                cloneService.cloneDeckToLocal(data, (cloneSuccess, newDeckId) -> {
+                    if (cloneSuccess) {
+                        if (callback != null) callback.onResult(true, "");
+                    } else {
+                        if (callback != null) callback.onResult(false, "Lỗi khi lưu vào bộ nhớ máy");
+                    }
+                });
+            } else {
+                // Lỗi khi tải từ Firebase
+                if (callback != null) callback.onResult(false, message);
             }
         });
     }

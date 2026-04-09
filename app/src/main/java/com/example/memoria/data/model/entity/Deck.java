@@ -49,8 +49,4 @@ public class Deck {
     public void setDeckId(UUID deckId) {
         this.deckId = deckId;
     }
-    @Exclude
-    public String getDeckName() {
-        return deckName;
-    }
 }

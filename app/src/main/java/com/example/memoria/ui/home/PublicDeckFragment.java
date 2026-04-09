@@ -10,6 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.Toast;
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -81,8 +83,7 @@ public class PublicDeckFragment extends Fragment {
 
             @Override
             public void onDownloadClick(PublicDeck deck) {
-                // TODO: Chuyển sang tính năng Download qua CloneService
-                Toast.makeText(getContext(), "Downloading: " + deck.getDeckName(), Toast.LENGTH_SHORT).show();
+                showCloneDialog(deck);
             }
         });
 
@@ -180,5 +181,42 @@ public class PublicDeckFragment extends Fragment {
         if (searchRunnable != null) {
             searchHandler.removeCallbacks(searchRunnable);
         }
+    }
+
+    private void showCloneDialog(PublicDeck deck) {
+        // Hiển thị Dialog Xác nhận
+        new AlertDialog.Builder(requireContext())
+                .setTitle(R.string.dialog_title_clone_deck)
+                .setMessage(getString(R.string.dialog_message_clone_deck, deck.getDeckName()))
+                .setPositiveButton(R.string.action_clone, (dialog, which) -> {
+
+                    // Hiển thị Loading Dialog
+                    ProgressDialog progressDialog = new ProgressDialog(requireContext());
+                    progressDialog.setMessage(getString(R.string.msg_loading_clone));
+                    progressDialog.setCancelable(false); // Bắt buộc đợi, không cho bấm ra ngoài
+                    progressDialog.show();
+
+                    // Gọi ViewModel để tiến hành clone
+                    viewModel.clonePublicDeck(deck, (success, message) -> {
+                        // Việc lưu database diễn ra ở Background Thread, nên cần chạy Toast/Dismiss ở Main Thread
+                        if (getActivity() != null) {
+                            getActivity().runOnUiThread(() -> {
+                                progressDialog.dismiss();
+                                if (success) {
+                                    Toast.makeText(requireContext(),
+                                            getString(R.string.msg_clone_success, deck.getDeckName()),
+                                            Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(requireContext(),
+                                            getString(R.string.msg_clone_error, message),
+                                            Toast.LENGTH_LONG).show();
+                                }
+                            });
+                        }
+                    });
+
+                })
+                .setNegativeButton(R.string.action_cancel, null)
+                .show();
     }
 }
