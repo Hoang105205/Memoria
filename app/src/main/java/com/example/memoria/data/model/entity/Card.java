@@ -103,12 +103,4 @@ public class Card implements Serializable {
     public void setDeckId(UUID deckId) {
         this.deckId = deckId;
     }
-    @Exclude
-    public String getFrontText() {
-        return frontText;
-    }
-    @Exclude
-    public List<String> getBackMeanings() {
-        return backMeanings;
-    }
 }

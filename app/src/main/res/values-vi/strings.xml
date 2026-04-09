@@ -192,4 +192,11 @@
     <string name="msg_ai_deck_loading">Đang nhờ AI soạn %1$d thẻ chủ đề: %2$s...</string>
     <string name="msg_ai_deck_success">Tạo thành công bộ thẻ: %1$s</string>
     <string name="msg_ai_deck_error">Lỗi khi tạo bằng AI: %1$s</string>
+
+    <string name="dialog_title_clone_deck">Tải bộ thẻ</string>
+    <string name="dialog_message_clone_deck">Bạn có muốn tải bộ thẻ \'%1$s\' về thư viện của mình không?</string>
+    <string name="action_clone">Tải về</string>
+    <string name="msg_loading_clone">Đang tải bộ thẻ...</string>
+    <string name="msg_clone_success">Đã tải bộ thẻ \'%1$s\' thành công!</string>
+    <string name="msg_clone_error">Lỗi khi tải bộ thẻ: %1$s</string>
 </resources>
