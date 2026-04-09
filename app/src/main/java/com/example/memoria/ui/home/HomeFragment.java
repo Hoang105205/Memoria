@@ -93,11 +93,10 @@ public class HomeFragment extends Fragment {
 
                         // Khởi tạo Adapter với danh sách vừa parse
                         adapter = new PublicAdapter(parsedDecks, deck -> {
-                            // SỰ KIỆN CLICK: Mở trang PublicDeckDetail
-                            // Bạn có thể truyền publicDocId qua Bundle hoặc SafeArgs ở đây
                             Bundle bundle = new Bundle();
-                            bundle.putString("publicDocId", deck.getPublicDocId());
-                            // Navigation.findNavController(requireView()).navigate(R.id.action_homeFragment_to_publicDeckDetailFragment, bundle);
+                            bundle.putString("publicDocId", deck.getPublicDocId()); // Có thể không cần thiết
+                            bundle.putString("searchDeckName", deck.getDeckName());
+                            Navigation.findNavController(requireView()).navigate(R.id.deckPublicFragment, bundle);
 
                             Log.d("HomeFragment", "Clicked deck: " + deck.getDeckName());
                         });
