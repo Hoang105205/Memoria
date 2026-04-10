@@ -40,6 +40,12 @@ public class Deck {
     @ColumnInfo(name = "sync_status")
     private int syncStatus;
 
+    @ColumnInfo(name = "share_code")
+    private String shareCode;
+
+    @ColumnInfo(name = "shared_at")
+    private Date sharedAt;
+
     @Exclude
     public UUID getDeckId() {
         return deckId;
