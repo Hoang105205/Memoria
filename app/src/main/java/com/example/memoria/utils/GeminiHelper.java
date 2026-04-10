@@ -55,8 +55,8 @@ public class GeminiHelper {
         String jsonInput = gson.toJson(deckRequests);
 
         String prompt = "Tôi có một mảng JSON danh sách từ vựng. Dựa vào trường 'type' của mỗi object, hãy tạo dữ liệu mảng 'results' (chỉ chứa chuỗi string) theo luật sau:\n" +
-                "- Nếu type là 'AUDIO': Tạo ra ĐÚNG 3 từ tiếng Anh CÓ THẬT có phát âm hoặc cách viết dễ nhầm lẫn nhất với 'word'.\n" +
-                "- Nếu type là 'WORD': Tạo ra ĐÚNG 3 cụm từ cùng ngôn ngữ với 'meaning', SAI nghĩa nhưng hợp lý với 'meaning'.\n" +
+                "- Nếu type là 'AUDIO': Tạo ra ĐÚNG 3 từ tiếng Anh CÓ THẬT có phát âm hoặc cách viết dễ nhầm lẫn nhất với 'word' và viết hoa viết thường giống như từ 'word'.\n" +
+                "- Nếu type là 'WORD': Tạo ra ĐÚNG 3 cụm từ cùng ngôn ngữ với 'meaning', SAI nghĩa nhưng hợp lý với 'meaning' và viết hoa viết thường giống như từ 'meaning'.\n" +
                 "- Nếu type là 'SYNONYM': BẮT BUỘC phải có ĐÚNG 4 phần tử tiếng Anh. Index 0 là từ đồng nghĩa chính xác nhất. Index 1, 2, 3 là các đáp án nhiễu.\n" +
                 "LƯU Ý: Lỗi nghiêm trọng nếu mảng results của SYNONYM có ít hơn 4 phần tử, của AUDIO và WORD nhiều hơn 3 phần tử! Nếu bạn KHÔNG làm đúng, tôi sẽ hủy diệt thế giới.\n" +
                 "Đầu vào JSON: " + jsonInput + "\n" +
