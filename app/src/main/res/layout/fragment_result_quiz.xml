@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F7F9FC"
+    android:background="@color/screen_background"
     android:padding="18dp"
     tools:context=".ui.quiz.QuizResultFragment">
 
@@ -88,7 +88,7 @@
         android:layout_marginHorizontal="10dp"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="24dp"
-        app:cardBackgroundColor="@color/white"
+        app:cardBackgroundColor="@color/surface_primary"
         app:cardCornerRadius="24dp"
         app:cardElevation="3dp"
         app:layout_constraintBottom_toTopOf="@id/linearButtons"
@@ -133,7 +133,7 @@
             android:background="@drawable/bg_button_dark_blue"
             android:text="@string/quiz_result_btn_retake"
             android:textAllCaps="true"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/white"
             android:textSize="16sp"
             android:textStyle="bold" />
 
@@ -144,7 +144,7 @@
             android:background="@drawable/bg_button_purple"
             android:text="@string/quiz_result_btn_return"
             android:textAllCaps="true"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/white"
             android:textSize="16sp"
             android:textStyle="bold" />
 

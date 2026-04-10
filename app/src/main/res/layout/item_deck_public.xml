@@ -20,7 +20,7 @@
             android:ellipsize="end"
             android:maxLines="1"
             android:text="Deck name"
-            android:textColor="#1A1C1E"
+            android:textColor="@color/text_primary"
             android:textSize="16sp"
             android:textStyle="bold" />
 

@@ -1,11 +1,11 @@
 package com.example.memoria.ui.profile;
 
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -199,7 +199,10 @@ public class ProgressFragment extends Fragment {
         }
 
         com.github.mikephil.charting.data.BarDataSet set = new com.github.mikephil.charting.data.BarDataSet(entries, "Retention");
-        set.setColors(new int[]{Color.parseColor("#FFF9C4"), Color.parseColor("#FFD1DC")});
+        set.setColors(new int[]{
+                ContextCompat.getColor(requireContext(), R.color.chart_remembered),
+                ContextCompat.getColor(requireContext(), R.color.chart_forgotten)
+        });
         set.setStackLabels(new String[]{"Remembered", "Forgotten"});
 
         com.github.mikephil.charting.data.BarData data = new com.github.mikephil.charting.data.BarData(set);
@@ -212,7 +215,7 @@ public class ProgressFragment extends Fragment {
             }
         });
 
-        data.setValueTextColor(Color.BLACK);
+        data.setValueTextColor(ContextCompat.getColor(requireContext(), R.color.text_primary));
         data.setValueTextSize(12f);
 
 

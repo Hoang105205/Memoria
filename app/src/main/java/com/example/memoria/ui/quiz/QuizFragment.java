@@ -1,6 +1,5 @@
 package com.example.memoria.ui.quiz;
 
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
@@ -20,6 +19,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -165,7 +165,7 @@ public class QuizFragment extends Fragment {
 
             selectedButton = (Button) v;
             selectedButton.setBackgroundResource(R.drawable.bg_choice_selected);
-            selectedButton.setTextColor(Color.parseColor("#4A90E2"));
+            selectedButton.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary_blue));
             selectedButton.setTypeface(selectedButton.getTypeface(), Typeface.BOLD);
         };
 
@@ -386,7 +386,7 @@ public class QuizFragment extends Fragment {
             soundManager.playSound(SoundManager.SoundEvent.CORRECT_ANSWER);
 
             selectedButton.setBackgroundResource(R.drawable.bg_choice_correct);
-            selectedButton.setTextColor(Color.parseColor("#4FBC53"));
+            selectedButton.setTextColor(ContextCompat.getColor(requireContext(), R.color.status_success));
             selectedButton.setTypeface(selectedButton.getTypeface(), Typeface.BOLD);
 
             currentScore++;
@@ -394,7 +394,7 @@ public class QuizFragment extends Fragment {
             soundManager.playSound(SoundManager.SoundEvent.WRONG_ANSWER);
 
             selectedButton.setBackgroundResource(R.drawable.bg_choice_incorrect);
-            selectedButton.setTextColor(Color.parseColor("#F64F43"));
+            selectedButton.setTextColor(ContextCompat.getColor(requireContext(), R.color.status_error));
             selectedButton.setTypeface(selectedButton.getTypeface(), Typeface.BOLD);
 
             String wrongWord = currentQuestion.word;
@@ -413,7 +413,7 @@ public class QuizFragment extends Fragment {
         for (Button btn : targetButtons) {
             if (btn.getText().toString().equals(correctAnswer)) {
                 btn.setBackgroundResource(R.drawable.bg_choice_correct);
-                btn.setTextColor(Color.parseColor("#4FBC53"));
+                btn.setTextColor(ContextCompat.getColor(requireContext(), R.color.status_success));
                 btn.setTypeface(btn.getTypeface(), Typeface.BOLD);
 
                 break;
@@ -482,11 +482,11 @@ public class QuizFragment extends Fragment {
     private void resetButtonStyles() {
         for (int i = 0; i < 4; i++) {
             gridButtons[i].setBackgroundResource(R.drawable.bg_choice_normal);
-            gridButtons[i].setTextColor(Color.parseColor("#424242"));
+            gridButtons[i].setTextColor(ContextCompat.getColor(requireContext(), R.color.text_primary_quiz));
             gridButtons[i].setTypeface(null, Typeface.NORMAL);
 
             vertButtons[i].setBackgroundResource(R.drawable.bg_choice_normal);
-            vertButtons[i].setTextColor(Color.parseColor("#424242"));
+            vertButtons[i].setTextColor(ContextCompat.getColor(requireContext(), R.color.text_primary_quiz));
             vertButtons[i].setTypeface(null, Typeface.NORMAL);
         }
     }

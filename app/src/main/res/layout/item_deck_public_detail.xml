@@ -18,7 +18,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="Deck name"
-            android:textColor="#1A1C1E"
+            android:textColor="@color/text_primary"
             android:textSize="20sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toStartOf="@+id/ll_actions"
@@ -31,7 +31,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:text="Author name"
-            android:textColor="#666666"
+            android:textColor="@color/text_hint"
             android:textSize="14sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/item_tv_deck_name" />
@@ -50,13 +50,13 @@
                 android:layout_height="24dp"
                 android:layout_marginEnd="8dp"
                 android:src="@drawable/ic_download_circle"
-                app:tint="#9E9E9E" />
+                app:tint="@color/icon_subtle" />
 
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:src="@drawable/ic_chevron_right"
-                app:tint="#9E9E9E" />
+                app:tint="@color/icon_subtle" />
         </LinearLayout>
 
         <LinearLayout
@@ -78,7 +78,7 @@
                 android:paddingHorizontal="10dp"
                 android:paddingVertical="4dp"
                 android:text="132 cards"
-                android:textColor="#6A1B9A"
+                android:textColor="@color/pill_text"
                 android:textSize="11sp" />
 
             <TextView
@@ -93,7 +93,7 @@
                 android:paddingHorizontal="10dp"
                 android:paddingVertical="4dp"
                 android:text="1 download"
-                android:textColor="#6A1B9A"
+                android:textColor="@color/pill_text"
                 android:textSize="11sp" />
 
             <View
@@ -106,7 +106,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="12/2/2026"
-                android:textColor="#9E9E9E"
+                android:textColor="@color/icon_subtle"
                 android:textSize="11sp" />
         </LinearLayout>
 

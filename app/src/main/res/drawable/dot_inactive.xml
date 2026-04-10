@@ -6,7 +6,7 @@
     android:height="10dp"
     android:gravity="center">
     <shape android:shape="oval">
-        <solid android:color="#D9D9D9" />
+        <solid android:color="@color/border_subtle" />
     </shape>
 </item>
 </layer-list>

@@ -4,14 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F5F5"
+    android:background="@color/screen_background"
     tools:context=".ui.library.CreateNewCardFragment">
 
     <LinearLayout
         android:id="@+id/ll_header_create"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@android:color/white"
+        android:background="@color/surface_primary"
         android:elevation="4dp"
         android:gravity="center_vertical"
         android:orientation="horizontal"
@@ -27,7 +27,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:textColor="@android:color/black"
+        android:textColor="@color/text_strong"
         android:textSize="20sp"
         android:textStyle="bold"
         tools:text="Deck Name" />
@@ -72,7 +72,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="200dp"
                     android:layout_marginTop="8dp"
-                    android:background="#EEEEEE"
+                    android:background="@color/surface_muted"
                     android:scaleType="centerInside"
                     android:src="@drawable/ic_add_a_image"
                     android:visibility="gone"
@@ -178,7 +178,7 @@
         android:backgroundTint="@color/purple_500"
         android:padding="16dp"
         android:text="@string/create_new_card"
-        android:textColor="@android:color/white"
+        android:textColor="@color/white"
         android:textSize="18sp"
         android:textStyle="bold" />
 

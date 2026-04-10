@@ -8,7 +8,7 @@
     android:layout_margin="16dp"
     app:cardCornerRadius="24dp"
     app:cardElevation="6dp"
-    app:cardBackgroundColor="#FFFFFF"
+    app:cardBackgroundColor="@color/surface_card"
     app:strokeWidth="0dp">
 
     <FrameLayout
@@ -36,7 +36,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="32sp"
-                android:textColor="#000000"
+                android:textColor="@color/text_strong"
                 android:letterSpacing="0.05"
                 android:textStyle="bold"
                 android:gravity="center"
@@ -87,7 +87,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="32sp"
-                android:textColor="#000000"
+                android:textColor="@color/text_strong"
                 android:letterSpacing="0.05"
                 android:textStyle="bold"
                 app:layout_constraintTop_toTopOf="parent"
@@ -113,7 +113,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="18sp"
-                    android:textColor="#000000"
+                    android:textColor="@color/text_strong"
                     android:lineSpacingExtra="8dp" />
 
             </ScrollView>
@@ -129,12 +129,12 @@
             android:layout_marginEnd="40dp"
             android:alpha="0"
             android:rotation="15"
-            android:shadowColor="@android:color/white"
+            android:shadowColor="@color/status_shadow"
             android:shadowRadius="5"
             android:shadowDx="1"
             android:shadowDy="1"
             android:text="@string/forgot_flashcard"
-            android:textColor="#FF3B30"
+            android:textColor="@color/status_error"
             android:textSize="38sp"
             android:textStyle="bold" />
 
@@ -147,12 +147,12 @@
             android:layout_marginStart="40dp"
             android:alpha="0"
             android:rotation="-15"
-            android:shadowColor="@android:color/white"
+            android:shadowColor="@color/status_shadow"
             android:shadowRadius="5"
             android:shadowDx="1"
             android:shadowDy="1"
             android:text="@string/remember_flashcard"
-            android:textColor="#34C759"
+            android:textColor="@color/status_success"
             android:textSize="37sp"
             android:textStyle="bold" />
     </FrameLayout>

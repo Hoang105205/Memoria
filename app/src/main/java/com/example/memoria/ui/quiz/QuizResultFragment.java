@@ -10,6 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatButton;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.example.memoria.R;
@@ -79,7 +80,7 @@ public class QuizResultFragment extends Fragment {
 
             if (wrongWords == null || wrongWords.isEmpty()) {
                 tvReviewList.setText(R.string.quiz_result_tv_congratulate);
-                tvReviewList.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
+                tvReviewList.setTextColor(ContextCompat.getColor(requireContext(), R.color.status_success));
             } else {
                 StringBuilder reviewText = new StringBuilder();
                 for (String word : wrongWords) {

@@ -4,7 +4,7 @@
     <item android:id="@android:id/background">
         <shape>
             <corners android:radius="8dp" />
-            <solid android:color="#E2E8F0" />
+            <solid android:color="@color/progress_track" />
         </shape>
     </item>
     <item android:id="@android:id/progress">
@@ -12,8 +12,8 @@
             <shape>
                 <corners android:radius="8dp" />
                 <gradient
-                    android:startColor="#84A7FF"
-                    android:endColor="#4E80FF"
+                    android:startColor="@color/quiz_progress_start"
+                    android:endColor="@color/quiz_progress_end"
                     android:angle="0"
                     android:type="linear" />
             </shape>
