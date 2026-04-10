@@ -28,6 +28,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.memoria.R;
 import com.example.memoria.data.model.entity.Deck;
 import com.example.memoria.ui.adapter.DeckCardAdapter;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -59,8 +60,12 @@ public class DeckDetailFragment extends Fragment {
         tvDeckName = view.findViewById(R.id.tv_deck_name);
         ImageButton btnOptions = view.findViewById(R.id.btn_deck_detail_options);
         ImageButton btnBack = view.findViewById(R.id.btn_back);
+
         RecyclerView rvCards = view.findViewById(R.id.rv_deck_cards);
         android.widget.EditText edtSearchCard = view.findViewById(R.id.edt_search_card);
+
+        FloatingActionButton btnLearn = view.findViewById(R.id.btn_start_learn);
+        FloatingActionButton btnQuiz = view.findViewById(R.id.btn_start_quiz);
 
         deckDetailViewModel = new ViewModelProvider(this).get(DeckDetailViewModel.class);
         sharedDeckViewModel = new ViewModelProvider(this).get(SharedDeckViewModel.class);
@@ -167,6 +172,10 @@ public class DeckDetailFragment extends Fragment {
 
         // Nút Back
         btnBack.setOnClickListener(v -> androidx.navigation.Navigation.findNavController(view).navigateUp());
+
+        btnLearn.setOnClickListener(v -> enterLearnFlashcardMode());
+
+        btnQuiz.setOnClickListener(v -> enterQuizMode());
     }
 
     private void showPopupMenu(View view) {
@@ -178,8 +187,6 @@ public class DeckDetailFragment extends Fragment {
         popupMenu.getMenu().add(0, 4, 3, R.string.action_edit_card_theme);
         popupMenu.getMenu().add(0, 5, 4, R.string.action_add_new_card);
         popupMenu.getMenu().add(0, 6, 5, R.string.action_delete_deck);
-        popupMenu.getMenu().add(0, 7, 6, R.string.action_enter_learn_mode);
-        popupMenu.getMenu().add(0, 8, 7, R.string.action_enter_quiz_mode);
 
         UUID currentDeckId = deckDetailViewModel.getDeck().getValue() != null ?
                 deckDetailViewModel.getDeck().getValue().getDeckId() : null;
@@ -210,34 +217,6 @@ public class DeckDetailFragment extends Fragment {
                 case 6:
                     // Hiển thị Dialog xác nhận xóa
                     showDeleteConfirmDialog();
-                    return true;
-                case 7:
-                    if (currentDeckId != null) {
-                        Bundle bundle = new Bundle();
-                        bundle.putSerializable("DECK_ID", currentDeckId);
-                        String currentDeckName = "";
-                        if (deckDetailViewModel.getDeck().getValue() != null) {
-                            currentDeckName = deckDetailViewModel.getDeck().getValue().getDeckName();
-                        }
-                        bundle.putString("DECK_NAME", currentDeckName);
-
-                        androidx.navigation.Navigation.findNavController(requireView())
-                                .navigate(R.id.cardLearnModeFragment, bundle);
-                    }
-                    return true;
-                case 8:
-                    if (currentDeckId != null) {
-                        Bundle bundle = new Bundle();
-                        bundle.putSerializable("DECK_ID", currentDeckId);
-                        String currentDeckName = "";
-                        if (deckDetailViewModel.getDeck().getValue() != null) {
-                            currentDeckName = deckDetailViewModel.getDeck().getValue().getDeckName();
-                        }
-                        bundle.putString("DECK_NAME", currentDeckName);
-
-                        androidx.navigation.Navigation.findNavController(requireView())
-                                .navigate(R.id.cardQuizModeFragment, bundle);
-                    }
                     return true;
                 default:
                     return false;
@@ -369,5 +348,43 @@ public class DeckDetailFragment extends Fragment {
                 }
             });
         });
+    }
+
+    private void enterLearnFlashcardMode()
+    {
+        UUID currentDeckId = deckDetailViewModel.getDeck().getValue() != null ?
+                deckDetailViewModel.getDeck().getValue().getDeckId() : null;
+
+        if (currentDeckId != null) {
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("DECK_ID", currentDeckId);
+            String currentDeckName = "";
+            if (deckDetailViewModel.getDeck().getValue() != null) {
+                currentDeckName = deckDetailViewModel.getDeck().getValue().getDeckName();
+            }
+            bundle.putString("DECK_NAME", currentDeckName);
+
+            androidx.navigation.Navigation.findNavController(requireView())
+                    .navigate(R.id.cardLearnModeFragment, bundle);
+        }
+    }
+
+    private void enterQuizMode()
+    {
+        UUID currentDeckId = deckDetailViewModel.getDeck().getValue() != null ?
+                deckDetailViewModel.getDeck().getValue().getDeckId() : null;
+
+        if (currentDeckId != null) {
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("DECK_ID", currentDeckId);
+            String currentDeckName = "";
+            if (deckDetailViewModel.getDeck().getValue() != null) {
+                currentDeckName = deckDetailViewModel.getDeck().getValue().getDeckName();
+            }
+            bundle.putString("DECK_NAME", currentDeckName);
+
+            androidx.navigation.Navigation.findNavController(requireView())
+                    .navigate(R.id.cardQuizModeFragment, bundle);
+        }
     }
 }

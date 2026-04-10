@@ -81,7 +81,37 @@
         android:layout_height="0dp"
         android:layout_marginTop="16dp"
         android:layout_marginHorizontal="16dp"
+        android:clipToPadding="false"
+        android:paddingBottom="88dp"
         app:layout_constraintTop_toBottomOf="@+id/edt_search_card"
         app:layout_constraintBottom_toBottomOf="parent" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:clipChildren="false"
+        android:gravity="center_vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/btn_start_learn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/action_enter_learn_mode"
+            android:src="@drawable/ic_input_learn_mode"
+            app:useCompatPadding="true"/>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/btn_start_quiz"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="12dp"
+            android:contentDescription="@string/action_enter_quiz_mode"
+            android:src="@drawable/ic_input_quiz_mode"
+            app:useCompatPadding="true" />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
