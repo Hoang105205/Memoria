@@ -51,7 +51,7 @@
         android:layout_gravity="bottom"
         android:orientation="horizontal"
         android:padding="12dp"
-        android:background="@android:color/white"
+        android:background="@color/surface_primary"
         android:visibility="gone">
 
         <TextView

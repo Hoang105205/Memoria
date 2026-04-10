@@ -2,7 +2,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF">
+    android:background="@color/surface_primary">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -14,7 +14,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Hello, MP"
-            android:textColor="#1A1C1E"
+            android:textColor="@color/text_primary"
             android:textSize="28sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
@@ -24,7 +24,7 @@
             android:id="@+id/iv_avatar"
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:background="#E0E0E0"
+            android:background="@color/progress_track"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:shapeAppearanceOverlay="@style/CircleImage" />
@@ -75,7 +75,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="150"
-                            android:textColor="#1A1C1E"
+                            android:textColor="@color/text_primary"
                             android:textSize="26sp"
                             android:textStyle="bold" />
                         <ImageView
@@ -88,7 +88,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="words\nlearn today"
-                        android:textColor="#9E9E9E" />
+                        android:textColor="@color/icon_subtle" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -109,7 +109,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="50"
-                            android:textColor="#1A1C1E"
+                            android:textColor="@color/text_primary"
                             android:textSize="26sp"
                             android:textStyle="bold" />
                         <ImageView
@@ -122,7 +122,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="days streak"
-                        android:textColor="#9E9E9E" />
+                        android:textColor="@color/icon_subtle" />
                 </LinearLayout>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
@@ -141,14 +141,14 @@
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:src="@drawable/ic_add"
-                app:tint="#000000" />
+                app:tint="@color/text_strong" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:text="Create new deck"
-                android:textColor="#000000"
+                android:textColor="@color/text_strong"
                 android:textSize="16sp"
                 android:textStyle="bold" />
         </LinearLayout>

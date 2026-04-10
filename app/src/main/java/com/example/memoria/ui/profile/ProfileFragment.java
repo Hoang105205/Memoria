@@ -25,6 +25,7 @@ import com.example.memoria.data.repository.VocabularyRepository;
 import com.example.memoria.data.repository.DeckRepository;
 import com.example.memoria.service.VocabTtsServiceStarter;
 import com.example.memoria.ui.auth.LoginActivity;
+import com.example.memoria.utils.ThemePreferences;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.switchmaterial.SwitchMaterial;
@@ -49,6 +50,7 @@ public class ProfileFragment extends Fragment {
     private TextView tvEditProfile;
     private MaterialAutoCompleteTextView actvLanguage;
     private SwitchMaterial ListeningToggle;
+    private SwitchMaterial themeToggle;
     private boolean ignoreToggleCallback = false;
 
     @Inject VocabularyRepository vocabularyRepository;
@@ -81,9 +83,11 @@ public class ProfileFragment extends Fragment {
         btnChangePassword = view.findViewById(R.id.profile_btn_change_password);
         tvEditProfile = view.findViewById(R.id.profile_tv_edit); // Đã kết nối đúng ID
         actvLanguage = view.findViewById(R.id.profile_actv_language);
+        themeToggle = view.findViewById(R.id.profile_theme_toggle);
 
         setupObservers();
         setupLanguageSelection();
+        setupThemeSelection();
 
         // Gắn sự kiện Click cho TextView "Edit profile"
         tvEditProfile.setOnClickListener(v -> {
@@ -188,6 +192,17 @@ public class ProfileFragment extends Fragment {
     private void changeAppLanguage(String languageCode) {
         LocaleListCompat appLocale = LocaleListCompat.forLanguageTags(languageCode);
         AppCompatDelegate.setApplicationLocales(appLocale);
+    }
+
+    private void setupThemeSelection() {
+        int mode = ThemePreferences.getNightMode(requireContext());
+        themeToggle.setChecked(mode == AppCompatDelegate.MODE_NIGHT_YES);
+
+        themeToggle.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            int nextMode = isChecked ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO;
+            ThemePreferences.setNightMode(requireContext(), nextMode);
+            AppCompatDelegate.setDefaultNightMode(nextMode);
+        });
     }
 
     private void showDeckPickerDialog() {

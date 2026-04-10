@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F8F9FE"
+    android:background="@color/screen_background"
     android:fillViewport="true"
     tools:context=".ui.profile.ProgressFragment">
 
@@ -49,7 +49,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:textColor="#1A1C1E"
+                android:textColor="@color/text_primary"
                 android:textSize="22sp"
                 android:textStyle="bold"
                 android:breakStrategy="balanced"
@@ -78,7 +78,7 @@
                         android:layout_gravity="center"
                         android:layout_marginBottom="16dp"
                         android:text="@string/progress"
-                        android:textColor="#1A1C1E"
+                        android:textColor="@color/text_primary"
                         android:textStyle="bold" />
 
                     <LinearLayout
@@ -105,7 +105,7 @@
                                     android:id="@+id/profile_tv_words_count"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:textColor="#1A1C1E"
+                                    android:textColor="@color/text_primary"
                                     android:textSize="22sp"
                                     android:textStyle="bold" />
 
@@ -121,7 +121,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/words_learn_today"
-                                android:textColor="#666666"
+                                android:textColor="@color/text_hint"
                                 android:textSize="12sp" />
                         </LinearLayout>
 
@@ -144,7 +144,7 @@
                                     android:id="@+id/profile_tv_streak_count"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:textColor="#1A1C1E"
+                                    android:textColor="@color/text_primary"
                                     android:textSize="22sp"
                                     android:textStyle="bold" />
 
@@ -160,7 +160,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/days_streak"
-                                android:textColor="#666666"
+                                android:textColor="@color/text_hint"
                                 android:textSize="12sp" />
                         </LinearLayout>
                     </LinearLayout>
@@ -173,7 +173,7 @@
                 android:layout_gravity="center"
                 android:layout_marginTop="16dp"
                 android:text="@string/monthly_progress"
-                android:textColor="#666666"
+                android:textColor="@color/text_hint"
                 android:textSize="14sp" />
 
             <androidx.cardview.widget.CardView
@@ -219,7 +219,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginHorizontal="16dp"
                         android:text="Mar 16 - Mar 22"
-                        android:textColor="#666666"
+                        android:textColor="@color/text_hint"
                         android:textSize="14sp"
                         android:textStyle="bold" />
 
@@ -238,7 +238,7 @@
                     android:layout_gravity="center"
                     android:layout_marginTop="8dp"
                     android:text="@string/weekly_retention_rate"
-                    android:textColor="#666666"
+                    android:textColor="@color/text_hint"
                     android:textSize="14sp" />
 
 
@@ -265,7 +265,7 @@
             android:id="@+id/profile_iv_avatar"
             android:layout_width="120dp"
             android:layout_height="120dp"
-            android:background="#E0E0E0"
+            android:background="@color/progress_track"
             android:padding="4dp"
             android:scaleType="centerCrop"
             app:layout_constraintBottom_toTopOf="@+id/profile_content_container"

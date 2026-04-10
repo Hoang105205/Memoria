@@ -4,4 +4,4 @@
     android:width="10dp"
     android:height="10dp">
 
-    <solid android:color="#FFD700" /> </shape>
+    <solid android:color="@color/calendar_streak_dot" /> </shape>

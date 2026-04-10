@@ -32,7 +32,7 @@
                 android:layout_height="20dp"
                 android:contentDescription="@string/search"
                 android:src="@android:drawable/ic_menu_search"
-                android:tint="#8A8A8A" />
+                android:tint="@color/search_icon" />
 
             <EditText
                 android:id="@+id/edt_search_searchBar"
@@ -46,8 +46,8 @@
                 android:inputType="text"
                 android:maxLines="1"
                 android:paddingVertical="8dp"
-                android:textColor="#222222"
-                android:textColorHint="#B0B0B0" />
+                android:textColor="@color/text_default"
+                android:textColorHint="@color/search_hint" />
 
             <ImageView
                 android:id="@+id/ivCamera"
@@ -83,7 +83,7 @@
             android:layout_height="wrap_content"
             android:text="@string/recent"
             android:textStyle="bold"
-            android:textColor="#222222"
+            android:textColor="@color/text_default"
             android:drawableEnd="@drawable/ic_clock"
             android:drawablePadding="6dp"
             android:gravity="center_vertical"
@@ -162,7 +162,7 @@
             android:text='@string/no_results'
             android:textStyle="bold"
             android:textSize="16sp"
-            android:textColor="@android:color/black" />
+            android:textColor="@color/text_strong" />
     </LinearLayout>
 
 </FrameLayout>

@@ -3,6 +3,7 @@ package com.example.memoria;
 import android.app.Application;
 
 import com.cloudinary.android.MediaManager;
+import com.example.memoria.utils.ThemePreferences;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,6 +31,8 @@ public class MemoriaApp extends Application implements Configuration.Provider {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        ThemePreferences.applySavedNightMode(this);
 
         setUpCloudinary();
         com.jakewharton.threetenabp.AndroidThreeTen.init(this);

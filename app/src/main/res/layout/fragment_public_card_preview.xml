@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white">
+    android:background="@color/screen_background">
 
     <LinearLayout
         android:id="@+id/header_layout"
@@ -29,7 +29,7 @@
         android:text="Tên bộ thẻ"
         android:textSize="20sp"
         android:textStyle="bold"
-        android:textColor="@color/black"
+        android:textColor="@color/text_primary"
         android:maxLines="1"
         android:ellipsize="end"/>
     </LinearLayout>
