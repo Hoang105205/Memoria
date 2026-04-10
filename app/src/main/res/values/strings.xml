@@ -235,4 +235,22 @@
     <string name="msg_clone_error">Failed to clone deck: %1$s</string>
     <string name="msg_no_cards_preview">There is no card to preview</string>
     <string name="preview_title">Xem trước bộ thẻ</string>
+    <string name="dialog_import_title">Import Deck</string>
+    <string name="dialog_import_message">Please paste the deck code below to download it to your device.</string>
+    <string name="dialog_share_code_hint">e.g., MEMO-123-XYZ</string>
+    <string name="action_import">Enter Export code</string>
+    <string name="action_download">DOWNLOAD DECK</string>
+    <string name="error_empty_export_code">Please enter a deck code!</string>
+    <string name="action_cancel_share">CANCEL</string>
+    <string name="msg_import_loading">Loading data…</string>
+    <string name="action_export">GENERATE CODE</string>
+    <string name="action_copy">Copy</string>
+    <string name="dialog_export_already_shared">Created on: %1$s\n\nWould you like to generate a new backup?</string>
+    <string name="msg_copy_success">Code copied: %1$s</string>
+    <string name="dialog_exporting_data">Packaging data…</string>
+    <string name="dialog_export_not_shared">This deck hasn\'t been shared yet.\n\nTap \'Generate Code\' to create a cloud backup.</string>
+    <string name="msg_import_deck_success">Deck downloaded successfully!</string>
+    <string name="msg_export_deck_success">Share code created successfully!</string>
+    <string name="msg_share_deck_error">An error occurred while sharing. Please try again later!</string>
+    <string name="dialog_export_title">Export Deck</string>
 </resources>

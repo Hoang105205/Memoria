@@ -203,4 +203,22 @@
     <string name="msg_clone_error">Lỗi khi tải bộ thẻ: %1$s</string>
     <string name="msg_no_cards_preview">Không có thẻ để hiển thị</string>
     <string name="preview_title">Deck Preview</string>
+    <string name="dialog_import_title">Nhập mã Export</string>
+    <string name="dialog_import_message">Vui lòng dán mã bộ bài vào ô bên dưới để tải về máy.</string>
+    <string name="dialog_share_code_hint">Ví dụ: MEMO-123-XYZ</string>
+    <string name="action_import">Nhập mã Export</string>
+    <string name="action_download">TẢI BỘ BÀI</string>
+    <string name="error_empty_export_code">Vui lòng nhập mã bộ bài!</string>
+    <string name="action_cancel_share">HỦY</string>
+    <string name="msg_import_loading">Đang tải dữ liệu...</string>
+    <string name="action_export">TẠO MÃ</string>
+    <string name="action_copy">Sao chép</string>
+    <string name="dialog_export_already_shared">Đã tạo vào: %1$s\n\nBạn có muốn tạo bản sao lưu mới không?</string>
+    <string name="msg_copy_success">Đã copy mã: %1$s</string>
+    <string name="dialog_exporting_data">Đang đóng gói dữ liệu...</string>
+    <string name="dialog_export_not_shared">Bộ thẻ này chưa được chia sẻ.  Nhấn \'Tạo mã\' để tạo bản sao lưu trên Cloud.</string>
+    <string name="msg_import_deck_success">Tải bộ thẻ thành công!</string>
+    <string name="msg_export_deck_success">Tạo mã chia sẻ thành công!</string>
+    <string name="msg_share_deck_error">Đã có lỗi xảy ra khi chia sẻ. Vui lòng thử lại sau!</string>
+    <string name="dialog_export_title">Chia sẻ bộ thẻ</string>
 </resources>

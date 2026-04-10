@@ -136,4 +136,17 @@ public class DeckDetailViewModel extends ViewModel {
             publishMessage.postValue(message);
         });
     }
+
+    public void updateShareCodeToLocal(String newShareCode) {
+        Deck deck = currentDeck.getValue();
+        if (deck != null) {
+            deck.setShareCode(newShareCode);
+            deck.setSharedAt(new java.util.Date());
+
+            deckRepository.updateDeck(deck, () -> {
+                currentDeck.postValue(deck);
+                triggerSync();
+            });
+        }
+    }
 }
