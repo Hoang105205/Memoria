@@ -2,13 +2,19 @@ package com.example.memoria.ui.library;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,17 +26,25 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.memoria.R;
+import com.example.memoria.data.model.entity.Deck;
 import com.example.memoria.ui.adapter.DeckCardAdapter;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 import java.util.UUID;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
 public class DeckDetailFragment extends Fragment {
-    private DeckDetailViewModel viewModel;
+    private DeckDetailViewModel deckDetailViewModel;
+    private SharedDeckViewModel sharedDeckViewModel;
     private TextView tvDeckName;
     private ProgressDialog progressDialog; // Để hiển thị vòng xoay loading
+
+    private ProgressBar exportProgressBar = null;
+    private Button btnExportGenerate = null;
 
     @Nullable
     @Override
@@ -48,7 +62,9 @@ public class DeckDetailFragment extends Fragment {
         RecyclerView rvCards = view.findViewById(R.id.rv_deck_cards);
         android.widget.EditText edtSearchCard = view.findViewById(R.id.edt_search_card);
 
-        viewModel = new ViewModelProvider(this).get(DeckDetailViewModel.class);
+        deckDetailViewModel = new ViewModelProvider(this).get(DeckDetailViewModel.class);
+        sharedDeckViewModel = new ViewModelProvider(this).get(SharedDeckViewModel.class);
+
         CardViewModel cardViewModel = new ViewModelProvider(this).get(CardViewModel.class);
 
         // Nhận ID từ Bundle và load dữ liệu
@@ -59,9 +75,9 @@ public class DeckDetailFragment extends Fragment {
             bundle.putSerializable("CARD_ID", card.getCardId()); // Truyền ID của thẻ thay vì chỉ truyền vị trí
             bundle.putInt("SELECTED_POSITION", position);
 
-            if (viewModel.getDeck().getValue() != null) {
-                bundle.putString("DECK_NAME", viewModel.getDeck().getValue().getDeckName());
-                bundle.putString("COVER_COLOR", viewModel.getDeck().getValue().getCoverColor());
+            if (deckDetailViewModel.getDeck().getValue() != null) {
+                bundle.putString("DECK_NAME", deckDetailViewModel.getDeck().getValue().getDeckName());
+                bundle.putString("COVER_COLOR", deckDetailViewModel.getDeck().getValue().getCoverColor());
             }
 
             androidx.navigation.Navigation.findNavController(view)
@@ -70,7 +86,7 @@ public class DeckDetailFragment extends Fragment {
         rvCards.setAdapter(cardAdapter);
 
         // Lắng nghe Tên Deck
-        viewModel.getDeck().observe(getViewLifecycleOwner(), deck -> {
+        deckDetailViewModel.getDeck().observe(getViewLifecycleOwner(), deck -> {
             if (deck != null) {
                 tvDeckName.setText(deck.getDeckName());
             }
@@ -87,7 +103,7 @@ public class DeckDetailFragment extends Fragment {
         if (getArguments() != null) {
             UUID deckId = (UUID) getArguments().getSerializable("DECK_ID");
             if (deckId != null) {
-                viewModel.loadDeck(deckId); // Load tên Deck
+                deckDetailViewModel.loadDeck(deckId); // Load tên Deck
                 cardViewModel.loadCards(deckId); // Load danh sách Card (Dùng hàm mới)
 
                 // Lắng nghe sự kiện gõ tìm kiếm
@@ -115,7 +131,7 @@ public class DeckDetailFragment extends Fragment {
         progressDialog.setCancelable(false); // Không cho bấm ra ngoài để hủy
 
         // Lắng nghe trạng thái Publishing
-        viewModel.getIsPublishing().observe(getViewLifecycleOwner(), isPublishing -> {
+        deckDetailViewModel.getIsPublishing().observe(getViewLifecycleOwner(), isPublishing -> {
             try {
                 if (isPublishing) {
                     if (!progressDialog.isShowing()) {
@@ -132,10 +148,17 @@ public class DeckDetailFragment extends Fragment {
         });
 
         // Lắng nghe Message trả về
-        viewModel.getPublishMessage().observe(getViewLifecycleOwner(), message -> {
+        deckDetailViewModel.getPublishMessage().observe(getViewLifecycleOwner(), message -> {
             if (message != null) {
                 Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
-                viewModel.clearPublishMessage(); // Xóa message để tránh bị hiện Toast lại khi xoay màn hình
+                deckDetailViewModel.clearPublishMessage(); // Xóa message để tránh bị hiện Toast lại khi xoay màn hình
+            }
+        });
+
+        sharedDeckViewModel.isLoading.observe(getViewLifecycleOwner(), isLoading -> {
+            if (exportProgressBar != null && btnExportGenerate != null) {
+                exportProgressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+                btnExportGenerate.setEnabled(!isLoading);
             }
         });
 
@@ -143,9 +166,7 @@ public class DeckDetailFragment extends Fragment {
         btnOptions.setOnClickListener(this::showPopupMenu);
 
         // Nút Back
-        btnBack.setOnClickListener(v -> {
-            androidx.navigation.Navigation.findNavController(view).navigateUp();
-        });
+        btnBack.setOnClickListener(v -> androidx.navigation.Navigation.findNavController(view).navigateUp());
     }
 
     private void showPopupMenu(View view) {
@@ -160,16 +181,15 @@ public class DeckDetailFragment extends Fragment {
         popupMenu.getMenu().add(0, 7, 6, R.string.action_enter_learn_mode);
         popupMenu.getMenu().add(0, 8, 7, R.string.action_enter_quiz_mode);
 
-        UUID currentDeckId = viewModel.getDeck().getValue() != null ?
-                viewModel.getDeck().getValue().getDeckId() : null;
+        UUID currentDeckId = deckDetailViewModel.getDeck().getValue() != null ?
+                deckDetailViewModel.getDeck().getValue().getDeckId() : null;
         popupMenu.setOnMenuItemClickListener(item -> {
             switch (item.getItemId()) {
                 case 1:
                     showEditNameDialog();
                     return true;
                 case 2:
-                    // TODO: Xử lý Share deck
-                    Toast.makeText(requireContext(), "Share deck clicked", Toast.LENGTH_SHORT).show();
+                    showExportDialog();
                     return true;
                 case 3:
                     showPublishDialog();
@@ -196,8 +216,8 @@ public class DeckDetailFragment extends Fragment {
                         Bundle bundle = new Bundle();
                         bundle.putSerializable("DECK_ID", currentDeckId);
                         String currentDeckName = "";
-                        if (viewModel.getDeck().getValue() != null) {
-                            currentDeckName = viewModel.getDeck().getValue().getDeckName();
+                        if (deckDetailViewModel.getDeck().getValue() != null) {
+                            currentDeckName = deckDetailViewModel.getDeck().getValue().getDeckName();
                         }
                         bundle.putString("DECK_NAME", currentDeckName);
 
@@ -210,8 +230,8 @@ public class DeckDetailFragment extends Fragment {
                         Bundle bundle = new Bundle();
                         bundle.putSerializable("DECK_ID", currentDeckId);
                         String currentDeckName = "";
-                        if (viewModel.getDeck().getValue() != null) {
-                            currentDeckName = viewModel.getDeck().getValue().getDeckName();
+                        if (deckDetailViewModel.getDeck().getValue() != null) {
+                            currentDeckName = deckDetailViewModel.getDeck().getValue().getDeckName();
                         }
                         bundle.putString("DECK_NAME", currentDeckName);
 
@@ -240,7 +260,7 @@ public class DeckDetailFragment extends Fragment {
             String newName = input.getText().toString().trim();
             if (!newName.isEmpty()) {
 
-                viewModel.updateDeckName(newName);
+                deckDetailViewModel.updateDeckName(newName);
             }
         });
         builder.setNegativeButton(R.string.action_cancel, (dialog, which) -> dialog.cancel());
@@ -254,7 +274,7 @@ public class DeckDetailFragment extends Fragment {
                 .setMessage(R.string.dialog_message_delete_deck)
                 .setPositiveButton(R.string.action_delete, (dialog, which) -> {
                     // Xóa thông qua ViewModel
-                     viewModel.deleteCurrentDeck();
+                     deckDetailViewModel.deleteCurrentDeck();
 
                     // Back về LibraryFragment
                     androidx.navigation.Navigation.findNavController(requireView()).navigateUp();
@@ -268,9 +288,86 @@ public class DeckDetailFragment extends Fragment {
                 .setTitle(R.string.action_publish_deck)
                 .setMessage(R.string.publish_deck_dialog_content)
                 .setPositiveButton(R.string.action_publish, (dialog, which) -> {
-                    viewModel.publishCurrentDeck();
+                    deckDetailViewModel.publishCurrentDeck();
                 })
                 .setNegativeButton(R.string.action_cancel, null)
                 .show();
+    }
+
+    private void showExportDialog() {
+        Deck currentDeck = deckDetailViewModel.getDeck().getValue();
+        if (currentDeck == null) return;
+
+        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_export_deck, null);
+
+        TextView tvMessage = dialogView.findViewById(R.id.tv_export_message);
+        View layoutCodeContainer = dialogView.findViewById(R.id.layout_code_container);
+        TextView tvCode = dialogView.findViewById(R.id.tv_share_code);
+        ImageButton btnCopy = dialogView.findViewById(R.id.btn_copy_code);
+
+        exportProgressBar = dialogView.findViewById(R.id.pb_export_loading);
+        btnExportGenerate = dialogView.findViewById(R.id.btn_dialog_generate);
+        android.widget.Button btnCancel = dialogView.findViewById(R.id.btn_dialog_cancel);
+
+        String currentCode = currentDeck.getShareCode();
+        Date sharedDate = currentDeck.getSharedAt();
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm - dd/MM/yyyy", Locale.getDefault());
+
+        if (currentCode != null && !currentCode.isEmpty() && sharedDate != null) {
+            tvMessage.setText(getString(R.string.dialog_export_already_shared, sdf.format(sharedDate)));
+            tvCode.setText(currentCode);
+            layoutCodeContainer.setVisibility(View.VISIBLE);
+        } else {
+            tvMessage.setText(R.string.dialog_export_not_shared);
+            layoutCodeContainer.setVisibility(View.GONE);
+        }
+
+        btnCopy.setOnClickListener(v -> {
+            ClipboardManager clipboard = (ClipboardManager) requireContext().getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData clip = ClipData.newPlainText("Share Code", tvCode.getText().toString());
+            if (clipboard != null) {
+                clipboard.setPrimaryClip(clip);
+                Toast.makeText(requireContext(), getString(R.string.msg_copy_success, tvCode.getText().toString()), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        androidx.appcompat.app.AlertDialog dialog = new com.google.android.material.dialog.MaterialAlertDialogBuilder(requireContext())
+                .setView(dialogView)
+                .create();
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
+        }
+
+        dialog.setOnDismissListener(d -> {
+            exportProgressBar = null;
+            btnExportGenerate = null;
+        });
+
+        dialog.show();
+
+        btnCancel.setOnClickListener(v -> dialog.dismiss());
+
+        btnExportGenerate.setOnClickListener(v -> {
+            String localDeckId = currentDeck.getDeckId().toString();
+
+            sharedDeckViewModel.exportDeckToCloud(localDeckId, (success, shareCode, message) -> {
+                if (isAdded() && getActivity() != null) {
+                    requireActivity().runOnUiThread(() -> {
+                        if (success) {
+                            deckDetailViewModel.updateShareCodeToLocal(shareCode);
+                            tvCode.setText(shareCode);
+                            layoutCodeContainer.setVisibility(View.VISIBLE);
+                            tvMessage.setText(getString(R.string.dialog_export_already_shared, sdf.format(new Date())));
+
+                            Toast.makeText(requireContext(), R.string.msg_export_deck_success, Toast.LENGTH_SHORT).show();
+                        } else {
+                            Log.e("ExportError", "Lỗi từ hệ thống: " + message);
+                            Toast.makeText(requireContext(), getString(R.string.msg_share_deck_error), Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }
+            });
+        });
     }
 }

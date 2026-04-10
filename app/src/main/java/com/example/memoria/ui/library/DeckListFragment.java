@@ -2,11 +2,14 @@ package com.example.memoria.ui.library;
 
 import android.app.ProgressDialog;
 import android.app.AlertDialog;
+//import androidx.appcompat.app.AlertDialog;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -22,6 +25,7 @@ import com.example.memoria.data.model.entity.Card;
 import com.example.memoria.data.model.entity.Deck;
 import com.example.memoria.ui.adapter.DeckAdapter;
 import com.example.memoria.utils.GeminiHelper;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
@@ -33,9 +37,11 @@ import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
 public class DeckListFragment extends Fragment {
-
-    private LibraryViewModel viewModel;
+    private LibraryViewModel libraryViewModel;
+    private SharedDeckViewModel sharedDeckViewModel;
     private DeckAdapter deckAdapter;
+
+    private ProgressDialog progressDialog;
 
     @Nullable
     @Override
@@ -47,12 +53,13 @@ public class DeckListFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Dùng chung ViewModel
-        viewModel = new ViewModelProvider(requireActivity()).get(LibraryViewModel.class);
+        libraryViewModel = new ViewModelProvider(requireActivity()).get(LibraryViewModel.class);
+        sharedDeckViewModel = new ViewModelProvider(requireActivity()).get(SharedDeckViewModel.class);
 
         RecyclerView rvDeckList = view.findViewById(R.id.rv_deck_list);
         FloatingActionButton btnAdd = view.findViewById(R.id.btn_deck_add);
         FloatingActionButton btnAddAi = view.findViewById(R.id.btn_deck_add_ai);
+        FloatingActionButton btnImport = view.findViewById(R.id.btn_deck_import);
 
         rvDeckList.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -65,22 +72,35 @@ public class DeckListFragment extends Fragment {
         rvDeckList.setAdapter(deckAdapter);
 
         // Lắng nghe dữ liệu
-        viewModel.getDecks().observe(getViewLifecycleOwner(), decks -> {
+        libraryViewModel.getDecks().observe(getViewLifecycleOwner(), decks -> {
             deckAdapter.setDecks(decks);
+        });
+
+        // Progress pop-up when importing
+        progressDialog = new ProgressDialog(requireContext());
+        progressDialog.setMessage(getString(R.string.msg_import_loading));
+        progressDialog.setCancelable(false);
+
+        sharedDeckViewModel.isLoading.observe(getViewLifecycleOwner(), isLoading -> {
+            if (isLoading) {
+                if (!progressDialog.isShowing()) progressDialog.show();
+            } else {
+                progressDialog.dismiss();
+            }
         });
 
         btnAdd.setOnClickListener(v -> showAddDialog());
 
-        btnAddAi.setOnClickListener(v -> {
-            showDeckCreatedByAIDialog();
-        });
+        btnAddAi.setOnClickListener(v -> showDeckCreatedByAIDialog());
+
+        btnImport.setOnClickListener(v -> showCustomImportDialog());
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (viewModel != null) {
-            viewModel.loadDecks();
+        if (libraryViewModel != null) {
+            libraryViewModel.loadDecks();
         }
     }
 
@@ -99,7 +119,7 @@ public class DeckListFragment extends Fragment {
                 newDeck.setDeckId(UUID.randomUUID());
                 newDeck.setDeckName(enteredName);
                 newDeck.setCreatedAt(new Date());
-                viewModel.addNewDeck(newDeck);
+                libraryViewModel.addNewDeck(newDeck);
             }
         });
 
@@ -191,7 +211,7 @@ public class DeckListFragment extends Fragment {
                     }
 
                     // Đẩy qua ViewModel để lưu vào SQLite
-                    viewModel.saveAIDeckWithCards(newDeck, cardsToSave, () -> {
+                    libraryViewModel.saveAIDeckWithCards(newDeck, cardsToSave, () -> {
                         if (isAdded() && getActivity() != null) {
                             requireActivity().runOnUiThread(() -> {
                                 progressDialog.dismiss();
@@ -211,6 +231,48 @@ public class DeckListFragment extends Fragment {
                     }
                 }
             });
+        });
+    }
+
+    private void showCustomImportDialog() {
+        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_import_deck, null);
+        EditText edtImportCode = dialogView.findViewById(R.id.edt_import_code);
+        Button btnCancel = dialogView.findViewById(R.id.btn_dialog_cancel);
+        Button btnDownload = dialogView.findViewById(R.id.btn_dialog_download);
+
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(requireContext())
+                .setView(dialogView);
+        androidx.appcompat.app.AlertDialog dialog = builder.create();
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
+        }
+        dialog.show();
+
+        btnCancel.setOnClickListener(v -> dialog.dismiss());
+
+        btnDownload.setOnClickListener(v -> {
+            String code = edtImportCode.getText() != null ? edtImportCode.getText().toString().trim() : "";
+            if (code.isEmpty()) {
+                edtImportCode.setError(getString(R.string.error_empty_export_code));
+                edtImportCode.requestFocus();
+            } else {
+                dialog.dismiss();
+
+                sharedDeckViewModel.importDeckFromCode(code, (success, newDeckId, message) -> {
+                    if (isAdded() && getActivity() != null) {
+                        requireActivity().runOnUiThread(() -> {
+                            if (success) {
+                                Toast.makeText(requireContext(), getString(R.string.msg_import_deck_success), Toast.LENGTH_SHORT).show();
+                                libraryViewModel.loadDecks();
+                            } else {
+                                Log.e("ImportError", "Lỗi từ hệ thống: " + message);
+                                Toast.makeText(requireContext(), getString(R.string.msg_share_deck_error), Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    }
+                });
+            }
         });
     }
 }
