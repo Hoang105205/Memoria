@@ -44,8 +44,16 @@ public class SharedDeckService {
         this.executor = Executors.newSingleThreadExecutor();
     }
 
-    private String generateShareCode() {
-        return UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+    private String generateShareCode(String userId) {
+        if (userId == null || userId.isEmpty()) {
+            userId = "ANONYMOUS";
+        }
+
+        String prefix = userId.length() >= 9 ? userId.substring(0, 9) : userId;
+
+        String randomPart = UUID.randomUUID().toString().substring(0, 8);
+
+        return (prefix + "-" + randomPart).toUpperCase();
     }
 
     public void exportDeck(String userId, String authorName, String localDeckId, Callback<String> callback) {
@@ -59,73 +67,99 @@ public class SharedDeckService {
                     if (callback != null) callback.onResult(false, null, "Bộ bài rỗng hoặc không tồn tại!");
                     return;
                 }
-
-                String shareCode = generateShareCode();
-                WriteBatch batch = firestore.batch();
-
-                // Luu thong tin
-                Map<String, Object> sharedDeckData = new HashMap<>();
-                sharedDeckData.put("shareCode", shareCode);
-                sharedDeckData.put("originalDeckId", localDeckId);
-                sharedDeckData.put("authorId", userId);
-                sharedDeckData.put("authorName", authorName);
-                sharedDeckData.put("deckName", localDeck.getDeckName());
-                sharedDeckData.put("coverColor", localDeck.getCoverColor());
-                sharedDeckData.put("totalCards", localCards.size());
-                sharedDeckData.put("sharedAt", new Date());
-
-                batch.set(firestore.collection("shared_decks").document(shareCode), sharedDeckData);
-
-                for (Card card : localCards) {
-                    Card sharedCard = new Card();
-                    sharedCard.setCardId(card.getCardId());
-                    sharedCard.setDeckId(card.getDeckId());
-                    sharedCard.setFrontText(card.getFrontText());
-                    sharedCard.setFrontImage(card.getFrontImage());
-                    sharedCard.setCardType(card.getCardType());
-
-                    if (card.getBackTypes() != null) {
-                        sharedCard.setBackTypes(new ArrayList<>(card.getBackTypes()));
-                    }
-                    if (card.getBackMeanings() != null) {
-                        sharedCard.setBackMeanings(new ArrayList<>(card.getBackMeanings()));
-                    }
-
-                    // reset flashcard learn mode card
-                    sharedCard.setCreatedAt(new Date());
-                    sharedCard.setUpdatedAt(new Date());
-
-                    sharedCard.setEaseFactor(2.5);
-                    sharedCard.setIntervalDays(0);
-                    sharedCard.setLastResult(0);
-                    sharedCard.setLastReviewAt(null);
-                    sharedCard.setNextReviewDate(null);
-                    sharedCard.setReviewCount(0);
-
-                    sharedCard.setFirestoreId(null);
-                    sharedCard.setSyncStatus(0);
-
-                    batch.set(
-                            firestore.collection("shared_decks").document(shareCode)
-                                    .collection("cards").document(card.getCardId().toString()),
-                            sharedCard
-                    );
-                }
-
-                batch.commit().addOnCompleteListener(task -> {
-                    if (callback != null) {
-                        if (task.isSuccessful()) {
-                            callback.onResult(true, shareCode, "Tạo mã chia sẻ thành công!");
-                        } else {
-                            callback.onResult(false, null, "Lỗi kết nối Firebase: " + task.getException().getMessage());
-                        }
-                    }
-                });
+                uploadWithUniqueCode(localDeck, localCards, userId, authorName, callback);
 
             } catch (Exception e) {
                 if (callback != null) callback.onResult(false, null, "Lỗi xử lý hệ thống: " + e.getMessage());
             }
         });
+    }
+
+    private void uploadWithUniqueCode(Deck localDeck, List<Card> localCards, String userId, String authorName, Callback<String> callback) {
+        String shareCode = generateShareCode(userId);
+
+        firestore.collection("shared_decks").document(shareCode).get()
+                .addOnCompleteListener(checkTask -> {
+                    if (checkTask.isSuccessful()) {
+                        if (checkTask.getResult().exists()) {
+                            uploadWithUniqueCode(localDeck, localCards, userId, authorName, callback);
+                        } else {
+                            executeFirebaseBatch(shareCode, localDeck, localCards, userId, authorName, callback);
+                        }
+                    } else {
+                        if (callback != null) {
+                            callback.onResult(false, null, "Lỗi kết nối Firebase khi kiểm tra mã: " + checkTask.getException().getMessage());
+                        }
+                    }
+                });
+    }
+
+    private void executeFirebaseBatch(String shareCode, Deck localDeck, List<Card> localCards, String userId, String authorName, Callback<String> callback) {
+        try {
+            WriteBatch batch = firestore.batch();
+
+            // Luu thong tin Deck
+            Map<String, Object> sharedDeckData = new HashMap<>();
+            sharedDeckData.put("shareCode", shareCode);
+            sharedDeckData.put("originalDeckId", localDeck.getDeckId().toString());
+            sharedDeckData.put("authorId", userId);
+            sharedDeckData.put("authorName", authorName);
+            sharedDeckData.put("deckName", localDeck.getDeckName());
+            sharedDeckData.put("coverColor", localDeck.getCoverColor());
+            sharedDeckData.put("totalCards", localCards.size());
+            sharedDeckData.put("sharedAt", new Date());
+
+            batch.set(firestore.collection("shared_decks").document(shareCode), sharedDeckData);
+
+            // Luu thong tin card
+            for (Card card : localCards) {
+                Card sharedCard = new Card();
+                sharedCard.setCardId(card.getCardId());
+                sharedCard.setDeckId(card.getDeckId());
+                sharedCard.setFrontText(card.getFrontText());
+                sharedCard.setFrontImage(card.getFrontImage());
+                sharedCard.setCardType(card.getCardType());
+
+                if (card.getBackTypes() != null) {
+                    sharedCard.setBackTypes(new ArrayList<>(card.getBackTypes()));
+                }
+                if (card.getBackMeanings() != null) {
+                    sharedCard.setBackMeanings(new ArrayList<>(card.getBackMeanings()));
+                }
+
+                // Reset flashcard learn mode data
+                sharedCard.setCreatedAt(new Date());
+                sharedCard.setUpdatedAt(new Date());
+                sharedCard.setEaseFactor(2.5);
+                sharedCard.setIntervalDays(0);
+                sharedCard.setLastResult(0);
+                sharedCard.setLastReviewAt(null);
+                sharedCard.setNextReviewDate(null);
+                sharedCard.setReviewCount(0);
+                sharedCard.setFirestoreId(null);
+                sharedCard.setSyncStatus(0);
+
+                batch.set(
+                        firestore.collection("shared_decks").document(shareCode)
+                                .collection("cards").document(card.getCardId().toString()),
+                        sharedCard
+                );
+            }
+
+            // Commit Batch
+            batch.commit().addOnCompleteListener(task -> {
+                if (callback != null) {
+                    if (task.isSuccessful()) {
+                        callback.onResult(true, shareCode, "Tạo mã chia sẻ thành công!");
+                    } else {
+                        callback.onResult(false, null, "Lỗi kết nối Firebase: " + task.getException().getMessage());
+                    }
+                }
+            });
+
+        } catch (Exception e) {
+            if (callback != null) callback.onResult(false, null, "Lỗi khi xử lý dữ liệu: " + e.getMessage());
+        }
     }
 
     public void downloadSharedDeck(String shareCode, Callback<DeckWithCard> callback) {
