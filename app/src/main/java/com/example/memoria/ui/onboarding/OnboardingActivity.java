@@ -3,6 +3,7 @@ package com.example.memoria.ui.onboarding;
 import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
@@ -12,9 +13,8 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 import com.example.memoria.R;
-import com.example.memoria.data.model.OnboardingItem;
+import com.example.memoria.data.model.entity.OnboardingItem;
 import com.example.memoria.ui.auth.LoginActivity;
-import com.example.memoria.ui.permission.PermissionHelper;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import java.util.ArrayList;
@@ -63,10 +63,21 @@ public class OnboardingActivity extends AppCompatActivity {
                 viewPager.setCurrentItem(viewPager.getCurrentItem() + 1);
             } else {
                 markOnboardingFinished();
-                requestPermissionsLauncher.launch(new String[]{
-                        Manifest.permission.CAMERA,
-                        Manifest.permission.RECORD_AUDIO
-                });
+
+                // Tạo danh sách quyền dựa trên phiên bản Android
+                List<String> permissionsList = new ArrayList<>();
+                permissionsList.add(Manifest.permission.CAMERA);
+                permissionsList.add(Manifest.permission.RECORD_AUDIO);
+
+                // Chỉ thêm quyền POST_NOTIFICATIONS nếu máy chạy Android 13 (API 33) trở lên
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    permissionsList.add(Manifest.permission.POST_NOTIFICATIONS);
+                }
+
+                // Chuyển List thành Array để truyền vào launcher
+                String[] permissionsArray = permissionsList.toArray(new String[0]);
+
+                requestPermissionsLauncher.launch(permissionsArray);
             }
         });
 

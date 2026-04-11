@@ -14,13 +14,19 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.example.memoria.service.ReminderManager;
 import com.example.memoria.ui.auth.LoginActivity;
 import com.example.memoria.ui.onboarding.OnboardingActivity;
+import com.example.memoria.utils.SyncHelper;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import com.example.memoria.ui.study.LearnFragment;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -38,12 +44,16 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // 2. Kiểm tra Login
-        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser == null) {
             startActivity(new Intent(this, LoginActivity.class));
             finish();
             return;
         }
 
+        // Gọi hàm để thực hiện đồng bộ dữ liệu lên Firebase: Ngay lập tức và chạy ngầm
+        SyncHelper.triggerImmediateSync(this, currentUser.getUid());
+        SyncHelper.startPeriodicSync(this, currentUser.getUid());
 
         setContentView(R.layout.activity_main);
 
@@ -56,5 +66,10 @@ public class MainActivity extends AppCompatActivity {
             NavController navController = navHostFragment.getNavController();
             NavigationUI.setupWithNavController(bottomNavigationView, navController);
         }
+
+        ReminderManager.scheduleDailyReminder(this);
+
+
+
     }
 }

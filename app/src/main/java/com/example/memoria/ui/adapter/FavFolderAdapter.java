@@ -8,12 +8,13 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.memoria.R;
-import com.example.memoria.data.model.FavFolder;
+import com.example.memoria.data.model.entity.FavFolder;
+import com.example.memoria.data.model.entity.FavFolderWithCount;
 import java.util.ArrayList;
 import java.util.List;
 
 public class FavFolderAdapter extends RecyclerView.Adapter<FavFolderAdapter.FavFolderViewHolder> {
-    private List<FavFolder> folderList = new ArrayList<>();
+    private List<FavFolderWithCount> folderList = new ArrayList<>();
     private OnFolderClickListener listener;
 
     public interface OnFolderClickListener {
@@ -23,7 +24,7 @@ public class FavFolderAdapter extends RecyclerView.Adapter<FavFolderAdapter.FavF
     public FavFolderAdapter(OnFolderClickListener listener) {
         this.listener = listener;
     }
-    public void setFolders(List<FavFolder> folders) {
+    public void setFolders(List<FavFolderWithCount> folders) {
         this.folderList = folders;
         notifyDataSetChanged();
     }
@@ -38,15 +39,18 @@ public class FavFolderAdapter extends RecyclerView.Adapter<FavFolderAdapter.FavF
 
     @Override
     public void onBindViewHolder(@NonNull FavFolderViewHolder holder, int position) {
-        FavFolder folder = folderList.get(position);
+        FavFolderWithCount item = folderList.get(position);
+        FavFolder folder = item.folder;
         Context context = holder.itemView.getContext();
 
         holder.tvName.setText(folder.getFolderName());
 
-        // Mặc định tạo mới sẽ có 0 từ (Sau này bạn query từ DB đếm số lượng thật sau)
-        int wordCount = 0;
+        // LẤY SỐ LƯỢNG THỰC TẾ TỪ DB
+        int wordCount = item.wordCount;
 
-        // Gọi string từ res: %1$d words -> 0 words
+        holder.tvName.setText(folder.getFolderName());
+
+        // Hiển thị số lượng thực tế
         holder.tvCount.setText(context.getString(R.string.word_count, wordCount));
 
         // click vào dòng folder

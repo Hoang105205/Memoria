@@ -1,12 +1,14 @@
 package com.example.memoria.data.database.dao;
 
 import androidx.room.Dao;
+import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+import androidx.room.Update;
 
-import com.example.memoria.data.model.QuizHistory;
-import com.example.memoria.data.model.QuizStat;
+import com.example.memoria.data.model.entity.QuizHistory;
+import com.example.memoria.data.model.entity.QuizStat;
 
 import java.util.List;
 import java.util.UUID;
@@ -24,7 +26,13 @@ public interface QuizDao {
 
     // --- Phần Lịch Sử Quiz (QuizHistory) ---
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insertQuizHistory(QuizHistory history);
+    void insertHistory(QuizHistory history);
+
+    @Update
+    void updateHistory(QuizHistory history);
+
+    @Delete
+    void deleteHistory(QuizHistory history);
 
     // Lấy lịch sử Quiz của 1 bộ thẻ cụ thể, mới nhất xếp trước
     @Query("SELECT * FROM quiz_his WHERE deck_id = :deckId ORDER BY taken_at DESC")
@@ -33,4 +41,42 @@ public interface QuizDao {
     // Lấy toàn bộ lịch sử Quiz của người dùng
     @Query("SELECT * FROM quiz_his ORDER BY taken_at DESC")
     List<QuizHistory> getAllHistory();
+
+    @Query("SELECT * FROM quiz_his WHERE sync_status IN (0, 2)")
+    List<QuizHistory> getUnsyncedHistories();
+
+    // --- Phần Thông số Quiz (QuizStats) ---
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertStat(QuizStat stat);
+
+    @Update
+    void updateStat(QuizStat stat);
+
+    @Delete
+    void deleteStat(QuizStat stat);
+
+    @Query ("SELECT * from quiz_stat WHERE stat_id = 1 LIMIT 1")
+    QuizStat getQuizStat();
+
+    @Query("SELECT * FROM quiz_stat WHERE sync_status IN (0, 2) LIMIT 1")
+    QuizStat getUnsyncedStats();
+
+    @Query("SELECT DISTINCT (taken_at / 86400000) * 86400000 FROM quiz_his " +
+            "WHERE taken_at >= :startOfMonth AND taken_at <= :endOfMonth")
+    List<Long> getStudyDaysInMonth(long startOfMonth, long endOfMonth);
+
+    @Query("SELECT (taken_at / 86400000) * 86400000 AS date, " +
+            "SUM(correct_count) AS total_correct, " +
+            "SUM(total_questions - correct_count) AS total_incorrect " +
+            "FROM quiz_his " +
+            "WHERE taken_at >= :start AND taken_at <= :end " +
+            "GROUP BY date ORDER BY date ASC")
+    List<WeeklyChartData> getWeeklyReport(long start, long end);
+
+    // Class hứng dữ liệu tạm thời
+    class WeeklyChartData {
+        public long date;
+        public int total_correct;
+        public int total_incorrect;
+    }
 }

@@ -7,16 +7,18 @@ import android.view.View;
 import android.widget.*;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.memoria.MainActivity;
 import com.example.memoria.R;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.auth.FirebaseAuth;
+import dagger.hilt.android.AndroidEntryPoint;
 
+@AndroidEntryPoint
 public class SignUpActivity extends AppCompatActivity {
 
+    private AuthViewModel viewModel;
     private EditText etEmail, etPassword, etConfirmPassword;
-    private FirebaseAuth mAuth;
     private Button btnSignUp;
     private ProgressBar progressBar;
 
@@ -25,7 +27,7 @@ public class SignUpActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auth_signup);
 
-        mAuth = FirebaseAuth.getInstance();
+        viewModel = new ViewModelProvider(this).get(AuthViewModel.class);
 
         etEmail = findViewById(R.id.auth_signup_et_email);
         etPassword = findViewById(R.id.auth_signup_et_password);
@@ -34,19 +36,36 @@ public class SignUpActivity extends AppCompatActivity {
         TextView tvTabLogin = findViewById(R.id.auth_signup_tv_tab_login);
         progressBar = findViewById(R.id.auth_signup_progressBar);
 
+        setupObservers();
+
         btnSignUp.setOnClickListener(v -> {
             String email = etEmail.getText().toString().trim();
             String password = etPassword.getText().toString().trim();
             String confirmPass = etConfirmPassword.getText().toString().trim();
 
             if (checkValidInput(email, password, confirmPass)) {
-                registerUser(email, password);
+                viewModel.signUp(email, password);
             }
         });
 
         tvTabLogin.setOnClickListener(v -> {
             finish();
             overridePendingTransition(0, 0);
+        });
+    }
+
+    private void setupObservers() {
+        viewModel.getIsLoading().observe(this, this::setLoading);
+
+        viewModel.getSnackbarMessage().observe(this, message -> {
+            if (message != null) showSnackbar(message);
+        });
+
+        viewModel.getNavigateToMain().observe(this, shouldNavigate -> {
+            if (shouldNavigate) {
+                viewModel.resetNavigation();
+                goToMainActivity();
+            }
         });
     }
 
@@ -84,21 +103,6 @@ public class SignUpActivity extends AppCompatActivity {
         return true;
     }
 
-    private void registerUser(String email, String password) {
-        setLoading(true);
-
-        mAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, task -> {
-                    setLoading(false);
-                    if (task.isSuccessful()) {
-                        showSnackbar(getString(R.string.success_signup));
-                        goToMainActivity();
-                    } else {
-                        showSnackbar(task.getException() != null ? task.getException().getMessage() : getString(R.string.err_signup));
-                    }
-                });
-    }
-
     private void showSnackbar(String message) {
         Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_SHORT).show();
     }
@@ -110,12 +114,7 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
     private void setLoading(boolean isLoading) {
-        if (isLoading) {
-            progressBar.setVisibility(View.VISIBLE);
-            btnSignUp.setEnabled(false);
-        } else {
-            progressBar.setVisibility(View.GONE);
-            btnSignUp.setEnabled(true);
-        }
+        progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+        btnSignUp.setEnabled(!isLoading);
     }
 }

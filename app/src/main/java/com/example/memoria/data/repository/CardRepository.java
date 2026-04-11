@@ -1,28 +1,32 @@
 package com.example.memoria.data.repository;
 
-import android.app.Application;
+import android.net.Uri;
 
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 
-import com.example.memoria.data.database.AppDatabase;
+import com.cloudinary.android.MediaManager;
+import com.cloudinary.android.callback.ErrorInfo;
+import com.cloudinary.android.callback.UploadCallback;
 import com.example.memoria.data.database.dao.CardDao;
-import com.example.memoria.data.model.Card;
+import com.example.memoria.data.model.entity.Card;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+@Singleton
 public class CardRepository {
     private final CardDao cardDao;
     private final ExecutorService executor;
 
-    public CardRepository(Application application) {
-        AppDatabase db = AppDatabase.getDatabase(application);
-        cardDao = db.cardDao();
+    @Inject
+    public CardRepository(CardDao cardDao) {
+        this.cardDao = cardDao;
         executor = Executors.newSingleThreadExecutor();
     }
 
@@ -32,49 +36,150 @@ public class CardRepository {
 
     // Lấy danh sách thẻ theo Deck ID
     public LiveData<List<Card>> getCardsByDeckId(UUID deckId) {
-        MutableLiveData<List<Card>> liveData = new MutableLiveData<>();
-        // List<Card> data = cardDao.getCardsByDeckId(deckId);
-
-        // Mockup-data
-        List<Card> data = new ArrayList<>();
-
-        Card c1 = new Card(UUID.randomUUID());
-        c1.setFrontText("Scrumptious");
-        c1.setBackTypes(new ArrayList<>(Arrays.asList("adj", "adj", "adj", "adj", "adj", "adj", "adj", "adj", "adj")));
-        c1.setBackMeanings(new ArrayList<>(Arrays.asList("(Of food) Very delicious", "(Of a person) Very attractive", "Who know?", "Who care?", "I know!", "And I CARE!", "ADJ", "WOWOw")));
-        data.add(c1);
-
-        Card c2 = new Card(UUID.randomUUID());
-        c2.setFrontText("Serendipity");
-        c2.setBackTypes(new ArrayList<>(Arrays.asList("noun", "noun")));
-        c2.setBackMeanings(new ArrayList<>(Arrays.asList("The occurrence of events by chance in a happy or beneficial way", "Good luck in finding valuable things one was not looking for")));
-        data.add(c2);
-
-        Card c3 = new Card(UUID.randomUUID());
-        c3.setFrontText("Petrichor");
-        c3.setBackTypes(new ArrayList<>(Arrays.asList("noun", "noun")));
-        c3.setBackMeanings(new ArrayList<>(Arrays.asList("A pleasant smell that frequently accompanies the first rain after a long period of warm, dry weather", "(Context) The distinct scent of rain on dry earth")));
-        data.add(c3);
-
-        Card c4 = new Card(UUID.randomUUID());
-        c4.setFrontText("Ephemeral");
-        c4.setBackTypes(new ArrayList<>(Arrays.asList("adj", "adj")));
-        c4.setBackMeanings(new ArrayList<>(Arrays.asList("Lasting for a very short time", "(Of plants) Having a very short life cycle")));
-        data.add(c4);
-
-        Card c5 = new Card(UUID.randomUUID());
-        c5.setFrontText("Ineffable");
-        c5.setBackTypes(new ArrayList<>(Arrays.asList("adj", "adj")));
-        c5.setBackMeanings(new ArrayList<>(Arrays.asList("Too great or extreme to be expressed in words", "(Of a name) Too sacred to be spoken")));
-        data.add(c5);
-
-        liveData.setValue(data);
-
-        return liveData;
+        return cardDao.getCardsByDeckId(deckId);
     }
 
     // Cập nhật thẻ sau khi học xong (Nhớ/Quên)
-    public void updateCard(Card card) {
-        executor.execute(() -> cardDao.updateCard(card));
+    public void updateCard(Card card, Runnable onUIComplete, Runnable onCloudComplete) {
+        executor.execute(() -> {
+            card.setSyncStatus(0);
+            cardDao.updateCard(card);
+            if (onUIComplete != null) onUIComplete.run();
+
+            if (card.getCardType() == 1 && card.getFrontImage() != null && !card.getFrontImage().startsWith("http")) {
+                uploadFlashcardImageToCloudinary(card, onCloudComplete);
+            } else {
+                if (onCloudComplete != null) {
+                    onCloudComplete.run();
+                }
+            }
+        });
+    }
+
+    public void insertCard(Card card, Runnable onUIComplete, Runnable onCloudComplete) {
+        executor.execute(() -> {
+            card.setSyncStatus(0);
+            cardDao.insertCard(card);
+            if (onUIComplete != null) onUIComplete.run();
+
+            if (card.getCardType() == 1 && card.getFrontImage() != null && !card.getFrontImage().startsWith("http")) {
+                uploadFlashcardImageToCloudinary(card, onCloudComplete);
+            } else {
+                if (onCloudComplete != null) {
+                    onCloudComplete.run();
+                }
+            }
+        });
+    }
+
+    private void uploadFlashcardImageToCloudinary(Card card, Runnable onCloudComplete) {
+        // KỊCH BẢN 1: Bỏ qua nếu không phải thẻ Ảnh, hoặc không có ảnh, hoặc ảnh đã là link Cloud (http)
+        if (card.getCardType() != 1 || card.getFrontImage() == null || card.getFrontImage().startsWith("http")) {
+            if (onCloudComplete != null) onCloudComplete.run();
+            return;
+        }
+
+        // KỊCH BẢN 2: Có ảnh Local -> Bắt đầu đẩy lên Cloudinary
+        Uri localUri = Uri.parse(card.getFrontImage());
+        String cardIdString = card.getCardId().toString();
+
+        MediaManager.get().upload(localUri)
+                .option("folder", "flashcards")    // Tạo folder riêng biệt cho Flashcard cho sạch sẽ
+                .option("public_id", cardIdString)       // Đặt tên file bằng đúng UUID của thẻ
+                .option("overwrite", true)         // Cho phép ghi đè
+                .callback(new UploadCallback() {
+                    @Override
+                    public void onStart(String requestId) {
+                        // Đang up ngầm, không cần làm phiền UI
+                    }
+
+                    @Override
+                    public void onProgress(String requestId, long bytes, long totalBytes) {
+                        // Bỏ qua
+                    }
+
+                    @Override
+                    public void onSuccess(String requestId, Map resultData) {
+                        String secureUrl = (String) resultData.get("secure_url");
+
+                        card.setFrontImage(secureUrl);
+
+                        executor.execute(() -> {
+                            cardDao.updateCard(card);
+
+                            if (onCloudComplete != null) {
+                                onCloudComplete.run();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onError(String requestId, ErrorInfo error) {
+                        android.util.Log.e("Cloudinary", "Lỗi up ảnh thẻ: " + error.getDescription());
+                    }
+
+                    @Override
+                    public void onReschedule(String requestId, ErrorInfo error) {
+                        // Bỏ qua
+                    }
+                }).dispatch();
+    }
+
+    public void deleteCard(Card card, Runnable onComplete) {
+        executor.execute(() -> {
+            card.setSyncStatus(2); // Đánh dấu chờ xóa
+            cardDao.updateCard(card); // Update để trigger lấy list unsynced
+            if (onComplete != null) onComplete.run();
+        });
+    }
+
+    public void markCardsForDeleted(UUID deckId, Runnable onComplete) {
+        executor.execute(() -> {
+            cardDao.markCardsForDeleted(deckId);
+            if (onComplete != null) onComplete.run();
+        });
+    }
+
+    // Lấy số từ đã học hôm nay
+
+    public LiveData<Integer> getWordsLearnedTodayLiveData(long startOfToday) {
+        return cardDao.countCardsReviewedToday(startOfToday);
+    }
+
+    public LiveData<List<Long>> getAllReviewDaysLiveData() {
+        return cardDao.getDistinctStudyDays();
+    }
+    public int getDueCardsCountSync(long currentTime) {
+        return cardDao.countDueCards(currentTime);
+    }
+
+    // Thêm Card nếu chưa tồn tại
+    public void insertCardIfNotExists(Card card, DataCallback<Boolean> callback) {
+        executor.execute(() -> {
+            // Kiểm tra số lượng thẻ trùng lặp trong Deck
+            int count = cardDao.checkCardExist(card.getDeckId(), card.getFrontText());
+
+            if (count == 0) {
+                card.setSyncStatus(0);
+                cardDao.insertCard(card); // Chưa có thì thêm vào
+                if (callback != null) callback.onDataLoaded(true); // Trả về true (Thành công)
+            } else {
+                if (callback != null) callback.onDataLoaded(false); // Trả về false (Đã tồn tại)
+            }
+        });
+    }
+
+    public void getCardsByDeckIdList(UUID deckId, DataCallback<List<Card>> callback) {
+        executor.execute(() -> {
+            List<Card> cards = cardDao.getCardsByDeckIdSync(deckId);
+            callback.onDataLoaded(cards);
+        });
+    }
+
+    public void searchCards(UUID deckId, String keyword, DataCallback<List<Card>> callback) {
+        executor.execute(() -> {
+            List<Card> cards = cardDao.searchCardsInDeck(deckId, keyword);
+            callback.onDataLoaded(cards);
+        });
     }
 }

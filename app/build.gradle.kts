@@ -1,13 +1,27 @@
+import java.util.Properties
+
+// Đọc file local.properties
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localProperties.load(localPropertiesFile.inputStream())
+}
+
 plugins {
     alias(libs.plugins.android.application)
 
     id("com.google.gms.google-services")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
     namespace = "com.example.memoria"
     compileSdk {
         version = release(36)
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 
     defaultConfig {
@@ -18,6 +32,10 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "CLOUD_NAME", "\"${localProperties.getProperty("CLOUDINARY_CLOUD_NAME", "")}\"")
+        buildConfigField("String", "API_KEY", "\"${localProperties.getProperty("CLOUDINARY_API_KEY", "")}\"")
+        buildConfigField("String", "API_SECRET", "\"${localProperties.getProperty("CLOUDINARY_API_SECRET", "")}\"")
     }
 
     buildTypes {
@@ -49,6 +67,9 @@ dependencies {
     // Firebase
     implementation(platform("com.google.firebase:firebase-bom:34.9.0"))
     implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.firebase:firebase-storage")
+    implementation("com.google.firebase:firebase-firestore")
+    implementation("com.cloudinary:cloudinary-android:2.5.0")
 
     //Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
@@ -69,4 +90,53 @@ dependencies {
     // Glide
     implementation("com.github.bumptech.glide:glide:5.0.5")
 
+    // Hilt
+    implementation("com.google.dagger:hilt-android:2.57.1")
+    annotationProcessor("com.google.dagger:hilt-android-compiler:2.57.1")
+    // FlexboxLayoutManager
+    implementation("com.google.android.flexbox:flexbox:3.0.0")
+
+    //Camera
+    val cameraxVersion = "1.3.4"
+
+    implementation("androidx.camera:camera-core:$cameraxVersion")
+    implementation("androidx.camera:camera-camera2:$cameraxVersion")
+    implementation("androidx.camera:camera-lifecycle:$cameraxVersion")
+    implementation("androidx.camera:camera-view:$cameraxVersion")
+
+    // ML Kit - Text Recognition (Latin)
+    implementation("com.google.mlkit:text-recognition:16.0.1")
+    implementation("com.google.android.material:material:1.12.0")
+    implementation("androidx.exifinterface:exifinterface:1.3.7")
+
+    //Calendar
+    implementation("com.github.prolificinteractive:material-calendarview:2.0.1")
+    implementation("com.jakewharton.threetenabp:threetenabp:1.2.1")
+
+    //Chart
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+    
+    // WorkManager & Hilt Work
+    val workVersion = "2.9.0"
+    implementation("androidx.work:work-runtime:$workVersion")
+    implementation("androidx.hilt:hilt-work:1.2.0")
+    annotationProcessor("androidx.hilt:hilt-compiler:1.2.0")
+
+    // Firebase AI - Gemini API
+    // Import the BoM for the Firebase platform
+    implementation(platform("com.google.firebase:firebase-bom:34.11.0"))
+
+    // Add the dependency for the Firebase AI Logic library
+    // When using the BoM, you don't specify versions in Firebase library dependencies
+    implementation("com.google.firebase:firebase-ai")
+
+    // Required for one-shot operations (to use `ListenableFuture` from Guava Android)
+    implementation("com.google.guava:guava:31.0.1-android")
+
+    // Required for streaming operations (to use `Publisher` from Reactive Streams)
+    implementation("org.reactivestreams:reactive-streams:1.0.4")
+
+    //Media player
+    implementation("androidx.media:media:1.7.0")
+    implementation("androidx.core:core:1.13.1")
 }

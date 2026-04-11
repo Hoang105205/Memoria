@@ -15,13 +15,16 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.memoria.R;
-import com.example.memoria.data.model.FavFolder;
+import com.example.memoria.data.model.entity.FavFolder;
 import com.example.memoria.ui.adapter.FavFolderAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.Date;
 import java.util.UUID;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class FavFolderListFragment extends Fragment {
 
     private LibraryViewModel viewModel;

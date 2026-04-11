@@ -1,7 +1,6 @@
 package com.example.memoria.ui.search;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,10 +18,18 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.memoria.R;
+import com.example.memoria.data.model.dto.Definition;
+import com.example.memoria.data.model.dto.DictionaryResponse;
+import com.example.memoria.data.model.dto.Meaning;
+import com.example.memoria.ui.adapter.SearchWordResultAdapter;
+import com.example.memoria.utils.PronunciationManager;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class SearchResultFragment extends Fragment {
 
     private SearchViewModel viewModel;
@@ -31,6 +38,9 @@ public class SearchResultFragment extends Fragment {
     private SearchWordResultAdapter adapter;
     private AutoCompleteTextView actvSpeed;
     private ImageButton btnFavorite, btnSave, btnPlay;
+
+    private PronunciationManager audioManager;
+    private float currentSpeed = 1.0f;
 
     @Nullable
     @Override
@@ -55,14 +65,7 @@ public class SearchResultFragment extends Fragment {
         rvMeanings.setLayoutManager(new LinearLayoutManager(requireContext()));
         rvMeanings.setAdapter(adapter);
 
-        // Setup Speed Dropdown
-        String[] speeds = {"0.5x", "1x", "1.5x"};
-        ArrayAdapter<String> speedAdapter = new ArrayAdapter<>(requireContext(),
-                android.R.layout.simple_dropdown_item_1line, speeds);
-        actvSpeed.setAdapter(speedAdapter);
-        actvSpeed.setOnItemClickListener((parent, v, position, id) -> {
-            Log.d("TTS", "Speed changed to: " + speeds[position]);
-        });
+        audioManager = new PronunciationManager(requireContext());
 
         // Sử dụng requireActivity() để dùng chung ViewModel với SearchFragment
         viewModel = new ViewModelProvider(requireActivity()).get(SearchViewModel.class);
@@ -76,9 +79,28 @@ public class SearchResultFragment extends Fragment {
         });
 
         // Action listeners
-        btnFavorite.setOnClickListener(v -> Log.d("ACTION", "Add to favorites clicked"));
-        btnSave.setOnClickListener(v -> Log.d("ACTION", "Create flashcard clicked"));
-        btnPlay.setOnClickListener(v -> Log.d("TTS", "Play audio triggered"));
+        btnFavorite.setOnClickListener(v -> {
+            // Chỉ đơn giản là gọi Dialog hiện lên.
+            // Dialog không cần nhận param, ViewModel sẽ tự lo phần data.
+            SelectFavFolderDialog dialog = new SelectFavFolderDialog();
+            dialog.show(getChildFragmentManager(), "SelectFavFolderDialog");
+        });
+
+        btnSave.setOnClickListener(v -> {
+            SelectDeckDialog dialog = new SelectDeckDialog();
+            dialog.show(getChildFragmentManager(), "SelectDeckDialog");
+        });
+
+        btnPlay.setOnClickListener(v -> {
+            playAudio();
+        });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Mỗi lần quay lại màn hình này, nạp lại danh sách tốc độ
+        setUpSpeedDropdown();
     }
 
     private void updateUI(DictionaryResponse data) {
@@ -104,5 +126,49 @@ public class SearchResultFragment extends Fragment {
             }
         }
         adapter.submitItems(uiItems);
+    }
+
+    private void setUpSpeedDropdown() {
+        // 1. Dùng mảng String cố định để bảo toàn thứ tự hiển thị
+        String[] speedOptions = {"0.5x", "1.0x", "1.5x", "2.0x"};
+
+        ArrayAdapter<String> speedAdapter = new ArrayAdapter<>(requireContext(),
+                android.R.layout.simple_dropdown_item_1line, speedOptions);
+        actvSpeed.setAdapter(speedAdapter);
+
+        // 2. Set giá trị mặc định hiển thị trên ô text
+        actvSpeed.setText("1.0x", false);
+
+        // 3. Lắng nghe sự kiện người dùng bấm chọn tốc độ mới
+        actvSpeed.setOnItemClickListener((parent, view, position, id) -> {
+            // Lấy chữ user vừa chọn (VD: "1.5x")
+            String selectedSpeedStr = (String) parent.getItemAtPosition(position);
+
+            // Cắt bỏ chữ "x" và chuyển phần số thành kiểu float
+            String numberOnly = selectedSpeedStr.replace("x", ""); // "1.5x" -> "1.5"
+            currentSpeed = Float.parseFloat(numberOnly); // Lưu vào biến toàn cục: 1.5f
+        });
+    }
+
+    private void playAudio() {
+        if (viewModel.getSearchResult().getValue() != null) {
+            String word = viewModel.getSearchResult().getValue().word;
+            String audioUrl = "";
+
+            if (viewModel.getSearchResult().getValue().phonetics != null
+                    && !viewModel.getSearchResult().getValue().phonetics.isEmpty()) {
+                audioUrl = viewModel.getSearchResult().getValue().phonetics.get(0).audio;
+            }
+
+            audioManager.playSound(word, audioUrl, currentSpeed);
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (audioManager != null) {
+            audioManager.releaseResources();
+        }
     }
 }

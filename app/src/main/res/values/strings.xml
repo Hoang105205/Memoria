@@ -19,6 +19,12 @@
     <string name="title_reset_password">Reset Password</string>
     <string name="msg_reset_password">A reset link has been sent to your email address.</string>
 
+    <!-- Change Password -->
+    <string name="title_change_password">Change Password</string>
+    <string name="current_password">Current Password</string>
+    <string name="new_password">New Password</string>
+    <string name="action_change">Change</string>
+
     <!-- Error messages -->
     <string name="err_email_empty">Email cannot be empty</string>
     <string name="err_email_invalid">Invalid email format</string>
@@ -28,11 +34,14 @@
     <string name="err_login">Login failed</string>
     <string name="err_signup">Sign up failed</string>
     <string name="err_forgot_password">Request to reset password failed</string>
+    <string name="err_wrong_current_password">Current password is wrong</string>
+
 
     <!-- Success messages -->
     <string name="success_login">Login successful</string>
     <string name="success_signup">Sign up successful</string>
     <string name="success_forgot_password">Reset email sent!</string>
+    <string name="success_change_password">Change password successful</string>
     <string name="home">Home</string>
     <string name="search">Search</string>
     <string name="library">Library</string>
@@ -44,14 +53,23 @@
     <string name="forgot_flashcard">FORGOT</string>
     <string name="mockup_flashcard">Congratulation! You have done the quiz.</string>
     <string name="edit_profile">Edit profile</string>
+    <string name="username">Username</string>
+    <string name="username_input">Enter your name</string>
+    <string name="saving">Saving</string>
+    <string name="successfully_edit_your_profile">Successfully edit your profile</string>
     <string name="progress">Progress</string>
     <string name="words_learn_today">words learn today</string>
     <string name="days_streak">days streak</string>
     <string name="setting">Setting</string>
     <string name="sign_out">Sign out</string>
+    <string name="passive_learning">Passive Learning</string>
+    <string name="passive_learning_select_deck">Select deck</string>
+    <string name="select_all">Select all</string>
 
     <string name="lang_en">English</string>
     <string name="lang_vi">Vietnamese</string>
+    <string name="theme">Theme</string>
+    <string name="theme_dark_mode">Dark mode</string>
 
     <!-- Search -->
     <string name="camera" translatable="false">Camera</string>
@@ -68,6 +86,15 @@
     <string name="master_vocabulary_des">Retain words longer using our scientific Spaced Repetition flashcard system.</string>
     <string name="get_started">Get Started</string>
     <string name="later">Later</string>
+    <string name="recent">Recent</string>
+    <string name="voice_prompt">Listening…</string>
+    <string name="mic_permission">Microphone Permission</string>
+    <string name="mic_permission_message">You need to grant Microphone permission to use voice search.</string>
+    <string name="mic_permission_cancel">You need to grant Microphone permission to use voice search. You have turned off Microphone permission. Please turn it back on in Settings to use voice search.</string>
+    <string name="btn_cancel">Cancel</string>
+    <string name="btn_setting">Setting</string>
+    <string name="search_hint">Search</string>
+    <string name="no_results">No results found for "%1$s"</string>
 
     <!-- Library -->
     <string name="title_library">Library</string>
@@ -90,4 +117,140 @@
     <string name="dialog_title_add_folder">Please enter your favorite folder name</string>
     <string name="dialog_title_add_deck">Please enter your deck name</string>
     <string name="action_create">Create</string>
+    <string name="dialog_add_favword_to_favfolder">Add this word to folder ...</string>
+    <string name="add_new_fav_folder">Add new favorite folder</string>
+    <string name="msg_save_success">Save successfully!</string>
+    <string name="msg_word_exists">Word already exists in this folder!</string>
+
+    <string name="action_edit_deck_name">Edit deck name</string>
+    <string name="action_share_deck">Share deck</string>
+    <string name="action_edit_card_theme">Edit card theme</string>
+    <string name="action_add_new_card">Add new card</string>
+    <string name="action_delete_deck">Delete deck</string>
+
+    <string name="dialog_title_edit_deck_name">Edit Deck Name</string>
+    <string name="dialog_hint_deck_name">Enter new deck name</string>
+
+    <string name="dialog_title_delete_deck">Delete Deck?</string>
+    <string name="dialog_message_delete_deck">Are you sure you want to delete this deck? All cards inside will be permanently removed.</string>
+
+    <string name="create_new_card">Create New Card</string>
+    <string name="edit_card">Edit Card Content</string>
+    <string name="front_text_hint">Enter front text...</string>
+    <string name="meaning_label">Meaning %1$d</string>
+    <string name="meaning_hint">Enter meaning...</string>
+    <string name="error_empty_card">Please enter front text and at least 1 meaning!</string>
+    <string name="action_add_meaning">+ Add Meaning</string>
+    <string name="card_update_success">Card update successfully!</string>
+    <string name="card_add_success">Add new card successfully!</string>
+
+    <string name="action_delete_card">Delete card</string>
+    <string name="dialog_title_delete_card">Delete Card</string>
+    <string name="dialog_message_delete_card">Are you sure you want to delete this card?</string>
+
+    <plurals name="time_days">
+        <item quantity="one">%d day</item>
+        <item quantity="other">%d days</item>
+    </plurals>
+
+    <plurals name="time_hours">
+        <item quantity="one">%d hour</item>
+        <item quantity="other">%d hours</item>
+    </plurals>
+
+    <plurals name="time_minutes">
+        <item quantity="one">%d minute</item>
+        <item quantity="other">%d minutes</item>
+    </plurals>
+
+    <string name="time_few_seconds">a few seconds</string>
+
+    <string name="time_hours_and_minutes">%1$s %2$s</string>
+    <string name="empty_deck_message">Current deck is empty.\nPlease add a new card!</string>
+    <string name="next_flashcard_message">Next flashcard will be opened in\n%1$s.</string>
+    <string name="done_deck_message">You\'ve memorized all the cards in this set!</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="monthly_progress">Monthly Progress</string>
+    <string name="today">Today</string>
+    <string name="streak">Streak</string>
+    <string name="word_learned">Word learned</string>
+    <string name="weekly_retention_rate">Weekly Retention Rate</string>
+    <string name="time_for_reviewing">It\'s time for reviewing</string>
+    <string name="noti_note">due card. Don\'t miss out!</string>
+    <string name="study_reminder">Study reminder</string>
+    <string name="err_get_data_from_firestore">Unable to download all data. Please check your network.</string>
+    <string name="dialog_select_deck">Select a deck to save new card</string>
+    <string name="msg_card_exists">This word to card is already exist in this deck</string>
+    <string name="action_enter_learn_mode">Start Learning</string>
+    <string name="action_enter_quiz_mode">Take a Quiz</string>
+
+
+    <string name="quiz_word_instruction">Select the correct meaning?</string>
+    <string name="quiz_audio_instruction">What do you hear?</string>
+    <string name="quiz_synonym_instruction">Choose the most similar word in meaning</string>
+    <string name="quiz_btn_check">CHECK</string>
+    <string name="quiz_tv_loading">Loading quiz data...</string>
+    <string name="quiz_start_timer" translatable="false">00:00</string>
+    <string name="quiz_null_deck">Deck not found</string>
+    <string name="quiz_empty_deck">Your deck is empty</string>
+    <string name="quiz_null_selected">Please select an answer!</string>
+    <string name="quiz_load_error">Failed to load questions. Please try again</string>
+    <string name="quiz_save_error">Failed to save results</string>
+    <string name="quiz_result_tv_overall_score">Overall Score</string>
+    <string name="quiz_result_tv_review">Words to Practice</string>
+    <string name="quiz_result_btn_retake">TEST AGAIN</string>
+    <string name="quiz_result_btn_return">BACK TO LIBRARY</string>
+    <string name="quiz_return_content_desc">Go back</string>
+    <string name="quiz_result_tv_congratulate">Awesome! All answers are correct</string>
+    <string name="action_publish_deck">Publish to Community</string>
+    <string name="publish_deck_dialog_content">Your deck will be published to our community. This action will take some time.</string>
+    <string name="action_publish">Publish</string>
+    <string name="msg_publishing_deck">Publishing to community. Please wait...</string>
+    <string name="type_hint">Type</string>
+    <string name="error_empty_image">Please select an image for the front card</string>
+    <string name="front_audio_hint">Enter text for voice pronunciation...</string>
+    <string name="text">Text</string>
+    <string name="image">Image</string>
+    <string name="audio">Audio</string>
+    <string name="front_text_image_hint">Enter word (for this image)...</string>
+    <string name="btn_create_deck_with_ai_des">Create deck with AI</string>
+
+    <!-- AI creates Deck Dialog -->
+    <string name="dialog_title_ai_deck">Create smart decks with AI!</string>
+    <string name="dialog_label_topic">Enter topic:</string>
+    <string name="dialog_hint_topic">e.g., Animals, Technology...</string>
+    <string name="dialog_label_card_count">Enter number of cards (max 20):</string>
+    <string name="error_topic_required">Please enter a topic.</string>
+    <string name="error_card_count_max">Maximum 20 cards allowed.</string>
+    <string name="msg_ai_deck_loading">Asking AI to generate %1$d cards for topic: %2$s...</string>
+    <string name="msg_ai_deck_success">Successfully created deck: %1$s</string>
+    <string name="msg_ai_deck_error">Error creating with AI: %1$s</string>
+
+    <!-- Public Deck -->
+    <string name="dialog_title_clone_deck">Clone Deck</string>
+    <string name="dialog_message_clone_deck">Do you want to download and clone \'%1$s\' to your library?</string>
+    <string name="action_clone">Clone</string>
+    <string name="msg_loading_clone">Cloning deck...</string>
+    <string name="msg_clone_success">Successfully cloned \'%1$s\' to your library!</string>
+    <string name="msg_clone_error">Failed to clone deck: %1$s</string>
+    <string name="msg_no_cards_preview">There is no card to preview</string>
+    <string name="preview_title">Xem trước bộ thẻ</string>
+    <string name="dialog_import_title">Import Deck</string>
+    <string name="dialog_import_message">Please paste the deck code below to download it to your device.</string>
+    <string name="dialog_share_code_hint">e.g., MEMO-123-XYZ</string>
+    <string name="action_import">Enter Export code</string>
+    <string name="action_download">DOWNLOAD DECK</string>
+    <string name="error_empty_export_code">Please enter a deck code!</string>
+    <string name="action_cancel_share">CANCEL</string>
+    <string name="msg_import_loading">Loading data…</string>
+    <string name="action_export">GENERATE CODE</string>
+    <string name="action_copy">Copy</string>
+    <string name="dialog_export_already_shared">Created on: %1$s\n\nWould you like to generate a new backup?</string>
+    <string name="msg_copy_success">Code copied: %1$s</string>
+    <string name="dialog_exporting_data">Packaging data…</string>
+    <string name="dialog_export_not_shared">This deck hasn\'t been shared yet.\n\nTap \'Generate Code\' to create a cloud backup.</string>
+    <string name="msg_import_deck_success">Deck downloaded successfully!</string>
+    <string name="msg_export_deck_success">Share code created successfully!</string>
+    <string name="msg_share_deck_error">An error occurred while sharing. Please try again later!</string>
+    <string name="dialog_export_title">Export Deck</string>
 </resources>

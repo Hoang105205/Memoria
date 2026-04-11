@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="brand_blue">#4D7BFF</color>
+    <color name="colorPrimary">@color/brand_blue</color>
+    <color name="brand_blue_dark">#7FA2FF</color>
+
+    <!-- Semantic surfaces -->
+    <color name="screen_background">#10131A</color>
+    <color name="surface_primary">#1A1F2B</color>
+    <color name="surface_card">#1E2431</color>
+    <color name="surface_muted">#283042</color>
+    <color name="surface_header">#161C28</color>
+
+    <!-- Semantic text/icon -->
+    <color name="card_background">#1B2334</color>
+    <color name="input_background">#202A3D</color>
+    <color name="text_primary">#E8ECF7</color>
+    <color name="text_strong">#F4F7FF</color>
+    <color name="text_default">#DEE4F2</color>
+    <color name="text_hint">#AEB9CF</color>
+    <color name="text_soft">#95A3BD</color>
+    <color name="icon_muted">#AEB9CF</color>
+    <color name="icon_subtle">#8B98B3</color>
+    <color name="icon_placeholder">#74829D</color>
+    <color name="search_hint">#7F8CA6</color>
+    <color name="search_icon">#9AA7C2</color>
+
+    <!-- Accent/status -->
+    <color name="profile_gradient_start">#2F4FAF</color>
+    <color name="profile_gradient_end">#6540A6</color>
+    <color name="progress_card_bg_1">#2A3042</color>
+    <color name="progress_card_bg_2">#323321</color>
+    <color name="profile_action_card_bg">#1A2338</color>
+    <color name="switch_accent">#8E88FF</color>
+    <color name="button_success_bg">#5BAF35</color>
+    <color name="button_secondary_bg">#5568D8</color>
+    <color name="button_primary_bg">#3D78FF</color>
+    <color name="status_error">#FF7C74</color>
+    <color name="status_success">#6EDB87</color>
+    <color name="streak_accent">#FF9D6C</color>
+    <color name="status_shadow">#10131A</color>
+    <color name="status_success_soft">#203828</color>
+    <color name="status_error_soft">#3A2528</color>
+    <color name="pill_bg">#3A2F4E</color>
+    <color name="pill_text">#D6B8FF</color>
+    <color name="quiz_choice_selected_bg">#2D3A5A</color>
+    <color name="quiz_choice_selected_stroke">#5D7EC8</color>
+    <color name="quiz_play_button_bg">#5A8DFF</color>
+    <color name="quiz_progress_start">#6F95F4</color>
+    <color name="quiz_progress_end">#4E72CC</color>
+    <color name="home_create_deck_bg">#243A52</color>
+    <color name="calendar_streak_dot">#FFB86C</color>
+    <color name="chart_remembered">#8A7A3C</color>
+    <color name="chart_forgotten">#7F4B67</color>
+    <color name="scrim_overlay">#66000000</color>
+    <color name="surface_overlay">#B31A1F2B</color>
+
+    <!-- Inputs/borders -->
+    <color name="input_border">#93A0BA</color>
+    <color name="border_subtle">#3A4358</color>
+
+    <!-- Keep legacy names for compatibility -->
+    <color name="bg_screen">#10131A</color>
+    <color name="text_secondary">#95A3BD</color>
+    <color name="blue_primary">#74A7FF</color>
+    <color name="progress_track">#3A4358</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="bg_detail_header">#253047</color>
+    <color name="white_translucent">#66FFFFFF</color>
+    <color name="purple_500">#8E88FF</color>
+
+    <color name="primary_blue">#74A7FF</color>
+    <color name="light_gray">#30384B</color>
+    <color name="text_primary_quiz">#E2E7F2</color>
+    <color name="text_secondary_quiz">#AEB9CF</color>
+    <color name="correct_status">#6EDB87</color>
+    <color name="incorrect_choice">#FF7C74</color>
+</resources>
+

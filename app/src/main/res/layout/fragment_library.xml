@@ -18,7 +18,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="220dp"
-        android:background="#40000000"
+        android:background="@color/scrim_overlay"
         app:layout_constraintBottom_toBottomOf="@+id/img_library_header"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1.0" />
@@ -50,7 +50,7 @@
         app:tabIndicatorHeight="0dp"
 
         app:tabBackground="@drawable/selector_tab_background"
-        app:tabSelectedTextColor="@color/black"
+        app:tabSelectedTextColor="@color/text_primary"
         app:tabTextColor="@color/white"
 
         app:tabPaddingStart="8dp"

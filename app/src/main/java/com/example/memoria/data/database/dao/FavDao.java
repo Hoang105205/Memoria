@@ -5,11 +5,11 @@ import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
-import androidx.room.Transaction;
 import androidx.room.Update;
 
-import com.example.memoria.data.model.FavFolder;
-import com.example.memoria.data.model.FavWord;
+import com.example.memoria.data.model.entity.FavFolder;
+import com.example.memoria.data.model.entity.FavFolderWithCount;
+import com.example.memoria.data.model.entity.FavWord;
 
 import java.util.List;
 import java.util.UUID;
@@ -27,7 +27,7 @@ public interface FavDao {
     void deleteFolder(FavFolder folder);
 
     // Lấy toàn bộ danh sách Favorite folder, sắp xếp theo ngày tạo mới nhất
-    @Query("SELECT * FROM fav_folders ORDER BY created_at DESC")
+    @Query("SELECT * FROM fav_folders WHERE sync_status IN (0, 1) ORDER BY created_at DESC")
     List<FavFolder> getAllFolders();
 
     // Lấy chi tiết 1 favorite folder theo ID
@@ -38,14 +38,44 @@ public interface FavDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertWord(FavWord word);
 
+    @Update
+    void updateWord(FavWord word);
+
     @Delete
     void deleteWord(FavWord word);
 
+    @Query("UPDATE fav_words SET sync_status = 2 WHERE folder_id = :folderId")
+    void markWordsForDeleted(UUID folderId);
+
     // Lấy danh sách từ trong 1 folder, đưa các từ được ghim (pin) lên đầu
-    @Query("SELECT * FROM fav_words WHERE folder_id = :folderId ORDER BY pin_status DESC, added_at DESC")
+    @Query("SELECT * FROM fav_words WHERE folder_id = :folderId AND sync_status IN (0, 1) ORDER BY pin_status DESC, added_at DESC")
     List<FavWord> getWordsByFolder(UUID folderId);
 
-    // Xóa nhanh 1 từ theo ID
-    @Query("DELETE FROM fav_words WHERE fav_id = :wordId")
-    void deleteWordById(UUID wordId);
+    // Truy vấn danh sách thư mục kèm theo số lượng từ bên trong
+    @Query("SELECT f.*, (SELECT COUNT(fav_id) FROM fav_words WHERE folder_id = f.folder_id AND sync_status IN (0, 1)) AS word_count " +
+            "FROM fav_folders f WHERE f.sync_status IN (0, 1) ORDER BY f.created_at DESC")
+    List<FavFolderWithCount> getFoldersWithWordCount();
+
+    // Kiểm tra xem từ vựng đã tồn tại trong thư mục chưa (Trả về số lượng)
+    @Query("SELECT COUNT(fav_id) FROM fav_words WHERE folder_id = :folderId AND word_text = :wordText AND sync_status IN (0, 1)")
+    int checkWordExist(UUID folderId, String wordText);
+
+    // --- Phần Sync ---
+    // Lấy danh sách Folder chưa đồng bộ
+    @Query("SELECT * FROM fav_folders WHERE sync_status NOT IN (1)")
+    List<FavFolder> getUnsyncedFolders();
+
+    // Lấy danh sách Word chưa đồng bộ
+    @Query("SELECT * FROM fav_words WHERE sync_status NOT IN (1)")
+    List<FavWord> getUnsyncedWords();
+
+    // Truy vấn danh sách thư mục kèm số lượng từ, lọc theo tên (Search)
+    @Query("SELECT f.*, (SELECT COUNT(fav_id) FROM fav_words WHERE folder_id = f.folder_id AND sync_status IN (0, 1)) AS word_count " +
+            "FROM fav_folders f WHERE f.sync_status IN (0, 1) AND f.folder_name LIKE '%' || :keyword || '%' " +
+            "ORDER BY f.created_at DESC")
+    List<FavFolderWithCount> searchFoldersWithWordCount(String keyword);
+
+    // Tìm kiếm từ vựng trong 1 folder theo từ khóa, ưu tiên từ được ghim lên đầu
+    @Query("SELECT * FROM fav_words WHERE folder_id = :folderId AND sync_status IN (0, 1) AND word_text LIKE '%' || :keyword || '%' ORDER BY pin_status DESC, added_at DESC")
+    List<FavWord> searchWordsInFolder(UUID folderId, String keyword);
 }

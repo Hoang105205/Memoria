@@ -1,6 +1,5 @@
 package com.example.memoria.ui.auth;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Patterns;
 import android.view.View;
@@ -8,41 +7,61 @@ import android.widget.*;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.memoria.R;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.auth.FirebaseAuth;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class ForgotPasswordActivity extends AppCompatActivity {
 
+    private AuthViewModel viewModel;
     private EditText etEmail;
     private Button btnReset;
     private ProgressBar progressBar;
-    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auth_forgot_password);
 
-        mAuth = FirebaseAuth.getInstance();
+        viewModel = new ViewModelProvider(this).get(AuthViewModel.class);
 
         etEmail = findViewById(R.id.auth_forgot_et_email);
         btnReset = findViewById(R.id.auth_forgot_btn_reset);
         progressBar = findViewById(R.id.auth_forgot_progressBar);
         TextView tvBackToLogin = findViewById(R.id.auth_forgot_tv_back_to_login);
 
+        setupObservers();
+
         btnReset.setOnClickListener(v -> {
             String email = etEmail.getText().toString().trim();
 
             if (checkValidateEmail(email)) {
-                resetPassword(email);
+                viewModel.resetPassword(email);
             }
         });
 
         tvBackToLogin.setOnClickListener(v -> {
             finish();
             overridePendingTransition(0, 0);
+        });
+    }
+
+    private void setupObservers() {
+        viewModel.getIsLoading().observe(this, this::setLoading);
+
+        viewModel.getSnackbarMessage().observe(this, message -> {
+            if (message != null) showSnackbar(message);
+        });
+
+        viewModel.getShowResetSuccessDialog().observe(this, showDialog -> {
+            if (showDialog) {
+                viewModel.resetDialogState();
+                showSuccessDialog();
+            }
         });
     }
 
@@ -60,19 +79,6 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         return true;
     }
 
-    private void resetPassword(String email) {
-        setLoading(true);
-        // Firebase password reset logic
-        mAuth.sendPasswordResetEmail(email).addOnCompleteListener(task -> {
-            setLoading(false);
-            if (task.isSuccessful()) {
-                showSuccessDialog();
-            } else {
-                showSnackbar(getString(R.string.err_forgot_password));
-            }
-        });
-    }
-
     private void showSuccessDialog() {
         new AlertDialog.Builder(this)
                 .setTitle(getString(R.string.title_reset_password))
@@ -87,12 +93,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
     }
 
     private void setLoading(boolean isLoading) {
-        if (isLoading) {
-            progressBar.setVisibility(View.VISIBLE);
-            btnReset.setEnabled(false);
-        } else {
-            progressBar.setVisibility(View.GONE);
-            btnReset.setEnabled(true);
-        }
+        progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+        btnReset.setEnabled(!isLoading);
     }
 }

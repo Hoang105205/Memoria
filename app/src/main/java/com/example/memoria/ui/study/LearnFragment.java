@@ -3,16 +3,20 @@ package com.example.memoria.ui.study;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
+import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.example.memoria.data.model.Card;
-import com.example.memoria.data.repository.CardRepository;
+import com.bumptech.glide.Glide;
+import com.example.memoria.data.model.entity.Card;
 
 import android.annotation.SuppressLint;
 import androidx.annotation.NonNull;
@@ -20,17 +24,29 @@ import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.memoria.R;
+import com.example.memoria.service.MemoriaWidgetProvider;
+import com.example.memoria.ui.library.CardViewModel;
+import com.example.memoria.utils.PronunciationManager;
+import com.example.memoria.utils.SpacedRepetitionAlgo;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-public class LearnFragment extends Fragment {
+import dagger.hilt.android.AndroidEntryPoint;
 
-    private final UUID currentDeckId;
-    private static CardRepository localCardRepo;
+@AndroidEntryPoint
+public class LearnFragment extends Fragment {
+    private UUID deckId;
+    private String deckName;
+
+    private CardViewModel viewModel;
+    private PronunciationManager pronunciationManager;
+
     private CardView cardTop, cardBottom;
     private TextView tvBadgeRemember, tvBadgeForgot;
     private View vBackgroundRemember, vBackgroundForgot;
@@ -41,26 +57,40 @@ public class LearnFragment extends Fragment {
     private int currentIndex = 0;
     private boolean flipable = true;
     private float startX;
-    private static final int CLICK_THRESHOLD = 15;
-
-    public LearnFragment(UUID currentDeckId) {
-        this.currentDeckId = currentDeckId;
-    }
+    public static final int CLICK_THRESHOLD = 15;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (localCardRepo == null) {
-            localCardRepo = new CardRepository(requireActivity().getApplication());
+        if (getArguments() != null) {
+            deckId = (UUID) getArguments().getSerializable("DECK_ID");
+            deckName = getArguments().getString("DECK_NAME");
         }
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.activity_study_fragment_learn, container, false);
+        return inflater.inflate(R.layout.fragment_learn, container, false);
+    }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        pronunciationManager = new PronunciationManager(requireContext());
+
+        initViews(view);
+
+        viewModel = new ViewModelProvider(this).get(CardViewModel.class);
+        TextView tvDeckName = view.findViewById(R.id.tv_deck_name_header);
+        tvDeckName.setText(deckName);
+
+        initCardData();
+    }
+
+    private void initViews(View view) {
         cardTop = view.findViewById(R.id.card_top);
         cardBottom = view.findViewById(R.id.card_bottom);
 
@@ -74,12 +104,13 @@ public class LearnFragment extends Fragment {
         cardTop.setCameraDistance(8000 * scale);
         cardBottom.setCameraDistance(8000 * scale);
 
+        ImageButton btnBack = view.findViewById(R.id.btn_back);
+        if (btnBack != null) {
+            btnBack.setOnClickListener(v -> androidx.navigation.Navigation.findNavController(v).navigateUp());
+        }
+
         settingScrollView(cardTop);
-        initCardData();
-
         setupTouchListener();
-
-        return view;
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -95,7 +126,6 @@ public class LearnFragment extends Fragment {
                         case MotionEvent.ACTION_DOWN:
                             startX = event.getX();
                             startY = event.getY();
-                            // Allow ScrollView continue operate
                             break;
                         case MotionEvent.ACTION_UP:
                             float endX = event.getX();
@@ -109,33 +139,75 @@ public class LearnFragment extends Fragment {
                             }
                             break;
                     }
-                    return v.onTouchEvent(event); // Give back control to ScrollView
+                    return v.onTouchEvent(event);
                 }
             });
         }
     }
 
+    private String formatTimeRemaining(Context context, long currentTime, long futureTime) {
+        long diffInMillis = futureTime - currentTime;
+        long diffInMinutes = diffInMillis / (60 * 1000);
+        long diffInHours = diffInMillis / (60 * 60 * 1000);
+        long diffInDays = diffInMillis / (24 * 60 * 60 * 1000);
+
+        android.content.res.Resources res = context.getResources();
+
+        if (diffInDays > 0) {
+            return res.getQuantityString(R.plurals.time_days, (int) diffInDays, (int) diffInDays);
+        } else if (diffInHours > 0) {
+            long remainingMinutes = diffInMinutes % 60;
+            String hoursString = res.getQuantityString(R.plurals.time_hours, (int) diffInHours, (int) diffInHours);
+
+            if (remainingMinutes > 0) {
+                String minutesString = res.getQuantityString(R.plurals.time_minutes, (int) remainingMinutes, (int) remainingMinutes);
+                return context.getString(R.string.time_hours_and_minutes, hoursString, minutesString);
+            }
+
+            return hoursString;
+        } else if (diffInMinutes > 0) {
+            return res.getQuantityString(R.plurals.time_minutes, (int) diffInMinutes, (int) diffInMinutes);
+        } else {
+            return context.getString(R.string.time_few_seconds);
+        }
+    }
+
     private void initCardData() {
-        LiveData<List<Card>> liveData = localCardRepo.getCardsByDeckId(currentDeckId);
+        LiveData<List<Card>> liveData = viewModel.getCardsByDeckId(deckId);
         liveData.observe(getViewLifecycleOwner(), cardsFromDB -> {
             if (cardsFromDB == null) return;
 
             flashcardList = new ArrayList<>();
             long currentTime = System.currentTimeMillis();
-            long oneDayMillis = 24 * 60 * 60 * 1000L;
+            long closestFutureTime = Long.MAX_VALUE;
 
             for (Card card : cardsFromDB) {
-                long lastReviewTime = card.getLastReviewAt() != null ? card.getLastReviewAt().getTime() : 0;
-                long nextReviewTime = lastReviewTime + ((long) card.getIntervalDays() * oneDayMillis);
+                long nextReviewTime = card.getNextReviewDate() != null ? card.getNextReviewDate().getTime() : 0;
 
                 if (nextReviewTime <= currentTime) {
                     flashcardList.add(card);
+                } else {
+                    if (nextReviewTime < closestFutureTime) {
+                        closestFutureTime = nextReviewTime;
+                    }
                 }
             }
 
-            loadCards();
+            if (flashcardList.isEmpty()) {
+                if (cardsFromDB.isEmpty()) {
+                    tvEmpty.setText(R.string.empty_deck_message);
+                } else if (closestFutureTime != Long.MAX_VALUE) {
+                    String timeRemaining = formatTimeRemaining(requireContext(), currentTime, closestFutureTime);
+                    String finalMessage = getString(R.string.next_flashcard_message, timeRemaining);
+                    tvEmpty.setText(finalMessage);
+                } else {
+                    tvEmpty.setText(R.string.done_deck_message);
+                }
+            } else {
+                tvEmpty.setText(R.string.done_deck_message);
+            }
 
-            // Ngắt kết nối để tránh lỗi cập nhật liên tục
+            loadCards();
             liveData.removeObservers(getViewLifecycleOwner());
         });
     }
@@ -184,15 +256,55 @@ public class LearnFragment extends Fragment {
         TextView tvFront = cardView.findViewById(R.id.tv_word_front);
         TextView tvBack = cardView.findViewById(R.id.tv_word_back);
         TextView tvDef = cardView.findViewById(R.id.tv_definition);
+        ImageView imgFront = cardView.findViewById(R.id.img_flash_card);
+        ImageButton btnPlayAudio = cardView.findViewById(R.id.btn_play_audio);
 
-        if (tvFront != null) tvFront.setText(data.getFrontText());
         if (tvBack != null) tvBack.setText(data.getFrontText());
         if (tvDef != null) tvDef.setText(backText.toString());
 
+        int cardType = data.getCardType();
+
+        if (cardType == 0) {
+            if (tvFront != null) {
+                tvFront.setVisibility(View.VISIBLE);
+                tvFront.setText(data.getFrontText());
+            }
+            if (imgFront != null) imgFront.setVisibility(View.GONE);
+            if (btnPlayAudio != null) btnPlayAudio.setVisibility(View.GONE);
+
+        } else if (cardType == 1) {
+            if (tvFront != null) tvFront.setVisibility(View.GONE);
+            if (btnPlayAudio != null) btnPlayAudio.setVisibility(View.GONE);
+
+            if (imgFront != null) {
+                imgFront.setVisibility(View.VISIBLE);
+                String imageString = data.getFrontImage();
+                if (imageString != null && !imageString.isEmpty()) {
+                    Glide.with(requireContext()).load(imageString).centerCrop().into(imgFront);
+                } else {
+                    Glide.with(requireContext()).clear(imgFront);
+                }
+            }
+
+        } else if (cardType == 2) {
+            if (tvFront != null) tvFront.setVisibility(View.GONE);
+            if (imgFront != null) imgFront.setVisibility(View.GONE);
+
+            if (btnPlayAudio != null) {
+                btnPlayAudio.setVisibility(View.VISIBLE);
+                btnPlayAudio.setOnClickListener(v -> {
+                    if (pronunciationManager != null && data.getFrontText() != null) {
+                        pronunciationManager.playSound(data.getFrontText(), null, 1.0f);
+                    }
+                });
+            }
+        }
+
         View front = cardView.findViewById(R.id.layout_front);
         View back = cardView.findViewById(R.id.layout_back);
-        if(front != null) front.setVisibility(View.VISIBLE);
-        if(back != null) back.setVisibility(View.GONE);
+        if (front != null) front.setVisibility(View.VISIBLE);
+        if (back != null) back.setVisibility(View.GONE);
+        cardView.setRotationY(0f);
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -256,13 +368,13 @@ public class LearnFragment extends Fragment {
 
     private void animateReset(View v) {
         v.animate()
-            .translationX(0f)
-            .translationY(0f)
-            .rotation(0f)
-            .alpha(1f)
-            .setDuration(300)
-            .setListener(null)
-            .start();
+                .translationX(0f)
+                .translationY(0f)
+                .rotation(0f)
+                .alpha(1f)
+                .setDuration(300)
+                .setListener(null)
+                .start();
     }
 
     private void resetCardPosition(View v) {
@@ -291,10 +403,8 @@ public class LearnFragment extends Fragment {
                     public void onAnimationEnd(Animator animation) {
                         Card currentCard = flashcardList.get(currentIndex);
 
-                        // targetX > 0: Right (Remember)
-                        int quality = (targetX > 0) ? 4 : 1;
-
-                        processCardReview(currentCard, quality);
+                        boolean isRemember = targetX > 0;
+                        processCardReview(currentCard, isRemember);
 
                         currentIndex++;
                         loadCards();
@@ -303,16 +413,20 @@ public class LearnFragment extends Fragment {
                 .start();
     }
 
-    private void processCardReview(Card card, int quality) {
-        String word = card.getFrontText();
+    private void processCardReview(Card card, boolean isRemember) {
+        SpacedRepetitionAlgo.SRSResult result = SpacedRepetitionAlgo.SRSResult.calculateNextReview(isRemember, card.getIntervalDays(), card.getEaseFactor(), card.getReviewCount());
+        Date today = new Date();
 
-        if (quality == 4) {
-            // TODO: Mô phỏng: Set next_review_date lên 3 ngày sau
-        } else {
-            // TODO: Mô phỏng: Set next_review_date về 1 phút sau để học lại ngay
-        }
+        card.setEaseFactor(result.newEaseFactor);
+        card.setIntervalDays(result.newInterval);
+        card.setReviewCount(result.newRepetitions);
+        card.setNextReviewDate(result.nextReviewDate);
+        card.setUpdatedAt(today);
+        card.setLastReviewAt(today);
 
-        // TODO: GỌI DAO LƯU DATABASE
+        viewModel.updateCard(card);
+
+        MemoriaWidgetProvider.forceUpdateWidget(requireContext());
     }
 
     private void flipCard(CardView card) {
@@ -366,5 +480,11 @@ public class LearnFragment extends Fragment {
         });
 
         flipOut.start();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (pronunciationManager != null) pronunciationManager.releaseResources();
     }
 }

@@ -2,6 +2,8 @@ package com.example.memoria.ui.library;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,11 +16,18 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.memoria.R;
+import com.example.memoria.data.model.entity.FavWord;
+import com.example.memoria.ui.adapter.FavWordAdapter;
+import com.example.memoria.ui.search.SearchViewModel;
 
 import java.util.UUID;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class FavDetailFragment extends Fragment {
 
     private FavDetailViewModel viewModel;
@@ -34,23 +43,96 @@ public class FavDetailFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        viewModel = new ViewModelProvider(this).get(FavDetailViewModel.class);
+
         tvFolderName = view.findViewById(R.id.tv_fav_name);
         ImageButton btnOptions = view.findViewById(R.id.btn_fav_detail_options);
         ImageButton btnBack = view.findViewById(R.id.btn_back);
+        android.widget.EditText edtSearchWord = view.findViewById(R.id.edt_search);
+        RecyclerView rvCards = view.findViewById(R.id.rv_cards);
 
-        viewModel = new ViewModelProvider(this).get(FavDetailViewModel.class);
-
-        // nhận ID từ Bundle
+        // Nhận ID từ Bundle
+        UUID folderId = null;
         if (getArguments() != null) {
-            UUID folderId = (UUID) getArguments().getSerializable("FOLDER_ID");
+            folderId = (UUID) getArguments().getSerializable("FOLDER_ID");
             if (folderId != null) {
-                viewModel.loadFolder(folderId); // Yêu cầu ViewModel lấy dữ liệu từ DB lên
+                viewModel.loadFolder(folderId);
+                viewModel.loadWords(folderId);
             }
         }
+
+        final UUID finalFolderId = folderId; // Cần final để dùng trong TextWatcher
+
+        // Lắng nghe sự kiện gõ tìm kiếm
+        if (edtSearchWord != null && finalFolderId != null) {
+            edtSearchWord.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    // Truyền folderId và từ khóa vào ViewModel
+                    viewModel.searchWords(finalFolderId, s.toString());
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {}
+            });
+        }
+
+        // Khởi tạo RecyclerView và Adapter
+
+        rvCards.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(requireContext()));
+
+        FavWordAdapter wordAdapter = new FavWordAdapter(new FavWordAdapter.OnWordInteractionListener() {
+            @Override
+            public void onPinClick(FavWord word) {
+                viewModel.togglePinStatus(word);
+            }
+
+            @Override
+            public void onWordClick(FavWord word) {
+                // Dùng Shared ViewModel để truyền chữ
+                SearchViewModel searchViewModel = new ViewModelProvider(requireActivity()).get(SearchViewModel.class);
+                searchViewModel.setExternalSearchQuery(word.getWordText());
+
+                // Tìm NavController
+                androidx.navigation.NavController navController =
+                        androidx.navigation.Navigation.findNavController(requireActivity(), R.id.fragmentContainerView);
+
+                // tạo nav options để giả lập chuyển tab
+                androidx.navigation.NavOptions navOptions = new androidx.navigation.NavOptions.Builder()
+                        .setLaunchSingleTop(true)  // Tránh việc tạo ra 2 tab Search chồng lên nhau
+                        .setRestoreState(true)     // Khôi phục lại trạng thái cũ của tab Search (nếu có)
+                        .setPopUpTo(
+                                navController.getGraph().getStartDestinationId(), // Pop về đồ thị gốc
+                                false, // Không xóa đồ thị gốc
+                                true   // saveState = true -> Lưu lại trạng thái của tab Library đang mở
+                        )
+                        .build();
+
+                // Chuyển tab (Truyền null thay vì bundle)
+                navController.navigate(R.id.search_graph, null, navOptions);
+            }
+
+            @Override
+            public void onWordLongClick(FavWord word) {
+                // Gọi hàm hiển thị Dialog xóa khi ấn giữ
+                showDeleteWordDialog(word);
+            }
+        });
+        rvCards.setAdapter(wordAdapter);
 
         viewModel.getFolder().observe(getViewLifecycleOwner(), folder -> {
             if (folder != null) {
                 tvFolderName.setText(folder.getFolderName());
+            }
+        });
+
+        // Observe danh sách từ để cập nhật lên Adapter
+        viewModel.getFolderWords().observe(getViewLifecycleOwner(), words -> {
+            if (words != null) {
+                wordAdapter.setWords(words);
             }
         });
 
@@ -115,6 +197,18 @@ public class FavDetailFragment extends Fragment {
                     androidx.navigation.Navigation.findNavController(requireView()).navigateUp();
                 })
                 .setNegativeButton(R.string.action_cancel, null)
+                .show();
+    }
+
+    private void showDeleteWordDialog(FavWord word) {
+        new android.app.AlertDialog.Builder(requireContext())
+                .setTitle("Xóa từ vựng")
+                .setMessage("Bạn có chắc muốn xóa từ '" + word.getWordText() + "' khỏi thư mục này không?")
+                .setPositiveButton("Xóa", (dialog, which) -> {
+                    // Gọi ViewModel để thực hiện xóa dưới Database
+                    viewModel.deleteWord(word);
+                })
+                .setNegativeButton("Hủy", null)
                 .show();
     }
 }
