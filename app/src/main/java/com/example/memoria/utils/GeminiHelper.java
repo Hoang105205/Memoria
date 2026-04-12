@@ -133,8 +133,8 @@ public class GeminiHelper {
                 "Trả về CHỈ MỘT mảng JSON hợp lệ, KHÔNG bọc trong markdown code block và tuyệt đối không giải thích gì thêm." +
                 "JSON bao gồm các trường sau:" +
                 "- 'frontText': (String) Từ vựng tiếng Anh.\n" +
-                "- 'backTypes': (Mảng String) Loại từ.\n" +
-                "- 'backMeanings': (Mảng String) Nghĩa tiếng Việt.\n" +
+                "- 'backTypes': (Mảng String) Loại từ. LƯU Ý CHỈ TẠO DUY NHẤT 1 PHẦN TỬ LOẠI TỪ.\n" +
+                "- 'backMeanings': (Mảng String) Nghĩa tiếng Việt. LƯU Ý CHỈ TẠO DUY NHẤT 1 PHẦN TỬ NGHĨA TIẾNG VIỆT.\n" +
                 "Ví dụ: [{\"frontText\":\"cat\",\"backTypes\":[\"Noun\"],\"backMeanings\":[\"Con mèo\"]}...]";
 
         tryFirebaseModelForDeck("gemini-2.5-flash", prompt, () -> {

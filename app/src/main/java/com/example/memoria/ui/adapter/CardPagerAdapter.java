@@ -156,7 +156,14 @@ public class CardPagerAdapter extends RecyclerView.Adapter<CardPagerAdapter.Card
                         type = card.getBackTypes().get(i);
                     }
 
-                    meaningsBuilder.append(String.format("• %s - %s\n\n", type, card.getBackMeanings().get(i)));
+                    String meaning = card.getBackMeanings().get(i);
+
+                    // Xử lý UI đồng nhất: Ẩn dấu gạch ngang nếu Type rỗng
+                    if (type == null || type.trim().isEmpty()) {
+                        meaningsBuilder.append(String.format("• %s\n\n", meaning));
+                    } else {
+                        meaningsBuilder.append(String.format("• %s - %s\n\n", type.trim(), meaning));
+                    }
                 }
                 tvMeanings.setText(meaningsBuilder.toString().trim());
             }
