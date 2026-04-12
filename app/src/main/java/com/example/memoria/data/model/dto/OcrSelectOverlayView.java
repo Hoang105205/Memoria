@@ -14,11 +14,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * OCR selection overlay:
+ * A Custom View responsible for rendering the OCR selection overlay on top of an image.
+ * * Features:
  * - Create initial selection via rubber band (drag) or tap.
  * - Lock selection to a single line (lockedLineIndex).
- * - Show 2 handles (start/end) that can be dragged.
+ * - Show 2 handles (start/end) that can be dragged to adjust the text selection.
  * - IMPORTANT: Dragging one handle does NOT move the other; if it crosses, it clamps instead of swapping.
+ * * Note: While currently located in the 'dto' package, this is conceptually a UI Component.
  */
 public class OcrSelectOverlayView extends View {
 
