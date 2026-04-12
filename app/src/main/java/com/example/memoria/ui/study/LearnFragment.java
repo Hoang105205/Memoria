@@ -243,10 +243,22 @@ public class LearnFragment extends Fragment {
 
         List<String> types = data.getBackTypes();
         List<String> meanings = data.getBackMeanings();
-        int len = meanings.size();
+
+        // Đề phòng trường hợp meanings bị null từ database
+        int len = (meanings != null) ? meanings.size() : 0;
         StringBuilder backText = new StringBuilder();
+
         for (int i = 0; i < len; i++) {
-            backText.append(String.format("• %s - %s", types.get(i), meanings.get(i)));
+            // Nếu types bị hụt so với meanings, cho hiển thị chuỗi rỗng hoặc mặc định
+            String currentType = (types != null && i < types.size()) ? types.get(i) : "";
+            String currentMeaning = meanings.get(i);
+
+            // Nếu không có Type, ẩn luôn dấu gạch nối cho đẹp
+            if (currentType.isEmpty()) {
+                backText.append(String.format("• %s", currentMeaning));
+            } else {
+                backText.append(String.format("• %s - %s", currentType, currentMeaning));
+            }
 
             if (i < len - 1) {
                 backText.append("\n\n");
