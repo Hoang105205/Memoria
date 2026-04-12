@@ -31,6 +31,9 @@ public interface SearchHistoryDao {
     @Query("DELETE FROM search_histories")
     void clearAllSearchHistory();
 
+    @Query("DELETE FROM search_histories WHERE word_text = :word")
+    void deleteByWord(String word);
+
     @Query("SELECT * FROM search_histories WHERE word_text = :word LIMIT 1")
     SearchHistory findByWordText(String word);
 
