@@ -36,6 +36,8 @@ public class PublicDeckFragment extends Fragment {
     // Handler dùng để tạo độ trễ (debounce) khi tìm kiếm
     private final Handler searchHandler = new Handler(Looper.getMainLooper());
     private Runnable searchRunnable;
+    // Thêm biến toàn cục cho ProgressDialog để dễ quản lý bật/tắt
+    private ProgressDialog progressDialog;
 
     public PublicDeckFragment() {
         // Required empty public constructor
@@ -177,15 +179,51 @@ public class PublicDeckFragment extends Fragment {
     }
 
     private void observeViewModel() {
+//        viewModel.publicDecks.observe(getViewLifecycleOwner(), decks -> {
+//            if (decks != null) {
+//                adapter.setDecks(decks);
+//            }
+//        });
+//
+//        viewModel.errorMessage.observe(getViewLifecycleOwner(), error -> {
+//            if (error != null && !error.isEmpty()) {
+//                Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
+//            }
+//        });
+        // Observe Data list (Cũ)
         viewModel.publicDecks.observe(getViewLifecycleOwner(), decks -> {
-            if (decks != null) {
-                adapter.setDecks(decks);
+            if (decks != null) adapter.setDecks(decks);
+        });
+
+        // Hứng Error Message bằng resId
+        viewModel.errorMessageRes.observe(getViewLifecycleOwner(), resId -> {
+            if (resId != null) {
+                Toast.makeText(getContext(), getString(resId), Toast.LENGTH_SHORT).show();
+                viewModel.clearMessages(); // Nhớ Clear!
             }
         });
 
-        viewModel.errorMessage.observe(getViewLifecycleOwner(), error -> {
-            if (error != null && !error.isEmpty()) {
-                Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
+        // Hứng Toast Message (Success) bằng resId
+        viewModel.toastMessageRes.observe(getViewLifecycleOwner(), resId -> {
+            if (resId != null) {
+                Toast.makeText(getContext(), getString(resId), Toast.LENGTH_SHORT).show();
+                viewModel.clearMessages(); // Nhớ Clear!
+            }
+        });
+
+        // Hứng trạng thái Cloning để bật/tắt Dialog tự động
+        viewModel.isCloning.observe(getViewLifecycleOwner(), isCloning -> {
+            if (isCloning) {
+                if (progressDialog == null) {
+                    progressDialog = new ProgressDialog(requireContext());
+                    progressDialog.setMessage(getString(R.string.msg_loading_clone));
+                    progressDialog.setCancelable(false);
+                }
+                progressDialog.show();
+            } else {
+                if (progressDialog != null && progressDialog.isShowing()) {
+                    progressDialog.dismiss();
+                }
             }
         });
     }
@@ -199,38 +237,49 @@ public class PublicDeckFragment extends Fragment {
         }
     }
 
+//    private void showCloneDialog(PublicDeck deck) {
+//        // Hiển thị Dialog Xác nhận
+//        new AlertDialog.Builder(requireContext())
+//                .setTitle(R.string.dialog_title_clone_deck)
+//                .setMessage(getString(R.string.dialog_message_clone_deck, deck.getDeckName()))
+//                .setPositiveButton(R.string.action_clone, (dialog, which) -> {
+//
+//                    // Hiển thị Loading Dialog
+//                    ProgressDialog progressDialog = new ProgressDialog(requireContext());
+//                    progressDialog.setMessage(getString(R.string.msg_loading_clone));
+//                    progressDialog.setCancelable(false); // Bắt buộc đợi, không cho bấm ra ngoài
+//                    progressDialog.show();
+//
+//                    // Gọi ViewModel để tiến hành clone
+//                    viewModel.clonePublicDeck(deck, (success, message) -> {
+//                        // Việc lưu database diễn ra ở Background Thread, nên cần chạy Toast/Dismiss ở Main Thread
+//                        if (getActivity() != null) {
+//                            getActivity().runOnUiThread(() -> {
+//                                progressDialog.dismiss();
+//                                if (success) {
+//                                    Toast.makeText(requireContext(),
+//                                            getString(R.string.msg_clone_success, deck.getDeckName()),
+//                                            Toast.LENGTH_SHORT).show();
+//                                } else {
+//                                    Toast.makeText(requireContext(),
+//                                            getString(R.string.msg_clone_error, message),
+//                                            Toast.LENGTH_LONG).show();
+//                                }
+//                            });
+//                        }
+//                    });
+//
+//                })
+//                .setNegativeButton(R.string.action_cancel, null)
+//                .show();
+//    }
     private void showCloneDialog(PublicDeck deck) {
-        // Hiển thị Dialog Xác nhận
         new AlertDialog.Builder(requireContext())
                 .setTitle(R.string.dialog_title_clone_deck)
                 .setMessage(getString(R.string.dialog_message_clone_deck, deck.getDeckName()))
                 .setPositiveButton(R.string.action_clone, (dialog, which) -> {
-
-                    // Hiển thị Loading Dialog
-                    ProgressDialog progressDialog = new ProgressDialog(requireContext());
-                    progressDialog.setMessage(getString(R.string.msg_loading_clone));
-                    progressDialog.setCancelable(false); // Bắt buộc đợi, không cho bấm ra ngoài
-                    progressDialog.show();
-
-                    // Gọi ViewModel để tiến hành clone
-                    viewModel.clonePublicDeck(deck, (success, message) -> {
-                        // Việc lưu database diễn ra ở Background Thread, nên cần chạy Toast/Dismiss ở Main Thread
-                        if (getActivity() != null) {
-                            getActivity().runOnUiThread(() -> {
-                                progressDialog.dismiss();
-                                if (success) {
-                                    Toast.makeText(requireContext(),
-                                            getString(R.string.msg_clone_success, deck.getDeckName()),
-                                            Toast.LENGTH_SHORT).show();
-                                } else {
-                                    Toast.makeText(requireContext(),
-                                            getString(R.string.msg_clone_error, message),
-                                            Toast.LENGTH_LONG).show();
-                                }
-                            });
-                        }
-                    });
-
+                    // Fragment chỉ việc "ra lệnh" cho ViewModel, còn lại LiveData sẽ lo!
+                    viewModel.clonePublicDeck(deck);
                 })
                 .setNegativeButton(R.string.action_cancel, null)
                 .show();
