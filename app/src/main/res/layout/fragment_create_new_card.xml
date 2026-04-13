@@ -22,7 +22,9 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_arrow_back" /> <TextView
+            android:src="@drawable/ic_arrow_back"
+            app:tint="@color/text_primary"/>
+        <TextView
         android:id="@+id/tv_deck_name_header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -57,7 +59,8 @@
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:src="@drawable/ic_flip"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="@color/text_primary"/>
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/layout_creator_front"

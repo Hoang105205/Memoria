@@ -103,7 +103,7 @@ public class HomeFragment extends Fragment {
 
                         rvDiscover.setAdapter(adapter);
                     } else {
-                        Toast.makeText(getContext(), "Không tải được gợi ý: " + message, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), getString(R.string.action_fail_load_five_public_deck) + message, Toast.LENGTH_SHORT).show();
                     }
                 });
             }

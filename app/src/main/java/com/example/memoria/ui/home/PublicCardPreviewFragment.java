@@ -77,17 +77,16 @@ public class PublicCardPreviewFragment extends Fragment {
             pagerAdapter.setThemeColor(coverColor);
 
             if (publicDocId != null) {
-                // Lấy danh sách thẻ hiện tại đang có trong ViewModel
-                List<Card> currentCards = viewModel.previewCards.getValue();
-
                 // KHI NÀO MỚI CẦN LOAD LẠI API?
                 // 1. Chưa có data nào cả
                 // 2. Data đang có không thuộc về cái Deck đang mở (User vừa bấm sang Deck khác)
                 boolean needToLoad = true;
-                if (currentCards != null && !currentCards.isEmpty()) {
-                    String existingDeckIdStr = currentCards.get(0).getDeckId().toString();
-                    if (publicDocId.contains(existingDeckIdStr)) {
-                        needToLoad = false; // Đang xem đúng bộ này rồi, khỏi load lại!
+
+                // So sánh trực tiếp ID muốn mở với ID đang lưu trong ViewModel
+                if (publicDocId.equals(viewModel.currentPreviewDocId)) {
+                    List<Card> currentCards = viewModel.previewCards.getValue();
+                    if (currentCards != null && !currentCards.isEmpty()) {
+                        needToLoad = false; // Đã có data và đang xem đúng bộ này
                     }
                 }
 
