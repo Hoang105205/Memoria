@@ -80,8 +80,8 @@ public class ReminderWorker extends Worker {
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, channelId)
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
-                .setContentTitle(context.getString(R.string.time_for_reviewing) +  " \\uD83D\\uDCD6")
-                .setContentText(dueCount + context.getString(R.string.noti_note))
+                .setContentTitle(context.getString(R.string.time_for_reviewing) +  " \uD83D\uDCD6")
+                .setContentText(dueCount + " " + context.getString(R.string.noti_note))
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setContentIntent(pendingIntent)// <--- Gắn PendingIntent vào đây
                 .setAutoCancel(true);
