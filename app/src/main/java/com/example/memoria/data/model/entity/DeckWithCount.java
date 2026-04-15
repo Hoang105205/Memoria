@@ -26,4 +26,12 @@ public class DeckWithCount {
      */
     @ColumnInfo(name = "total_cards")
     public int totalCards;
+
+    /**
+     * The calculated highest score (maximum correct answers) achieved for this deck.
+     * The @ColumnInfo(name = "highest_score") annotation maps this field to the
+     * 'highest_score' alias generated in the SQL query.
+     */
+    @ColumnInfo(name = "highest_score")
+    public Integer highestScore;
 }
