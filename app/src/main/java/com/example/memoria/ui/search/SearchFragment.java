@@ -469,10 +469,20 @@ public class SearchFragment extends Fragment {
                         if (response.isSuccessful() && response.body() != null) {
                             suggestionWords.clear();
 
+                            List<String> singleWords = new ArrayList<>();
+
                             for (Suggestion s : response.body()) {
                                 if (s == null || s.word == null) continue;
 
-                                suggestionWords.add(s.word);
+                                String word = s.word.trim();
+
+                                if (!word.contains(" ")) {
+                                    singleWords.add(word);
+                                }
+                            }
+
+                            for (String w : singleWords) {
+                                suggestionWords.add(w);
                                 if (suggestionWords.size() >= MAX_SUGGESTIONS) break;
                             }
 

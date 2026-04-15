@@ -183,7 +183,7 @@ public class VocabTtsForegroundService extends Service {
         if (!isPlaying || !ttsReady || isStopping) return;
 
         if (playlist.isEmpty()) {
-            speak("Bạn chưa có từ vựng để luyện nghe.");
+            speak("Bạn chưa có từ vựng để luyện nghe.", new Locale("vi", "VN"));
             return;
         }
 
@@ -196,14 +196,18 @@ public class VocabTtsForegroundService extends Service {
         CardAudioItem item = playlist.get(cardIndex);
 
         String text;
+        Locale locale;
+
         if (meaningIndex == -1) {
             text = safe(item.frontText);
+            locale = new Locale("en", "US");
         } else {
             if (item.backMeanings == null || meaningIndex >= item.backMeanings.size()) {
                 playNextCard();
                 return;
             }
             text = safe(item.backMeanings.get(meaningIndex));
+            locale = new Locale("vi", "VN");
         }
 
         if (text.isEmpty()) {
@@ -212,7 +216,7 @@ public class VocabTtsForegroundService extends Service {
         }
 
         updateNotification();
-        speak(text);
+        speak(text, locale);
     }
 
     private void playNextSegment() {
@@ -253,8 +257,10 @@ public class VocabTtsForegroundService extends Service {
     }
 
     @SuppressWarnings("deprecation")
-    private void speak(String text) {
+    private void speak(String text, Locale locale) {
         if (tts == null) return;
+
+        tts.setLanguage(locale);
 
         String utteranceId = "utt_" + System.currentTimeMillis();
 
