@@ -167,6 +167,7 @@ public class SearchHistoryDialog extends DialogFragment {
 
     private List<HistoryListItem> buildSectionedItems(List<SearchHistory> list) {
         Map<Long, List<SearchHistory>> map = new LinkedHashMap<>();
+        list.sort((a, b) -> b.getSearchedAt().compareTo(a.getSearchedAt()));
         for (SearchHistory h : list) {
             Date d = h.getSearchedAt();
             if (d == null) continue;
