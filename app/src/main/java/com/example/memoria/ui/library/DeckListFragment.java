@@ -191,6 +191,9 @@ public class DeckListFragment extends Fragment {
 
                     // Ánh xạ sang danh sách Entity Card
                     List<Card> cardsToSave = new ArrayList<>();
+
+                    long baseTime = System.currentTimeMillis();
+                    int index = 0;
                     for (GeminiHelper.AICardResponse aiCard : generatedCards) {
                         Card card = new Card();
                         card.setCardId(UUID.randomUUID());
@@ -201,13 +204,16 @@ public class DeckListFragment extends Fragment {
                         card.setBackMeanings(aiCard.backMeanings);
 
                         // Cấu hình các thông số mặc định cho thuật toán học
-                        card.setCreatedAt(new Date());
+                        long cardTime = baseTime - (index * 1000L);
+                        card.setCreatedAt(new Date(cardTime));
                         card.setEaseFactor(2.5);
                         card.setIntervalDays(0);
                         card.setReviewCount(0);
                         card.setSyncStatus(0);
 
                         cardsToSave.add(card);
+
+                        index++;
                     }
 
                     // Đẩy qua ViewModel để lưu vào SQLite
