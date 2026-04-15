@@ -40,8 +40,10 @@ public interface DeckDao {
     @Query("SELECT * FROM decks WHERE deck_name LIKE '%' || :keyword || '%'")
     List<Deck> searchDecks(String keyword);
 
-    @Query("SELECT d.*, COUNT(c.card_id) AS total_cards " +
-            "FROM decks d LEFT JOIN cards c ON d.deck_id = c.deck_id AND c.sync_status IN (0, 1) " +
+    @Query("SELECT d.*, COUNT(DISTINCT c.card_id) AS total_cards, MAX(q.correct_count) AS highest_score " +
+            "FROM decks d " +
+            "LEFT JOIN cards c ON d.deck_id = c.deck_id AND c.sync_status IN (0, 1) " +
+            "LEFT JOIN quiz_his q ON d.deck_id = q.deck_id AND q.sync_status IN (0, 1) " +
             "WHERE d.sync_status IN (0, 1) " +
             "GROUP BY d.deck_id " +
             "ORDER BY d.created_at DESC")

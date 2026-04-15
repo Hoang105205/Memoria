@@ -49,9 +49,8 @@ public class DeckAdapter extends RecyclerView.Adapter<DeckAdapter.DeckViewHolder
 
         holder.tvName.setText(deck.getDeckName());
 
-        // Đếm các thẻ trong deck để hiển thị lên thanh tiến độ, hiện tại chưa có chức năng học nên learnedCards = 0
         int totalCards = item.totalCards;
-        int learnedCards = 0;
+        int learnedCards = item.highestScore != null ? item.highestScore : 0;
 
         if (totalCards == 0) {
             // Deck rỗng -> Ẩn thanh tiến độ, hiện "Empty deck"
