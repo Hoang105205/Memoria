@@ -4,6 +4,7 @@ import static android.provider.Settings.System.getString;
 
 import android.content.Context;
 import android.net.Uri;
+import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -193,23 +194,31 @@ public class UserProfileViewModel extends ViewModel {
     public void loadWeeklyProgress(long startOfWeek, long endOfWeek) {
         quizRepository.getWeeklyReport(startOfWeek, endOfWeek, data -> {
             List<float[]> chartValues = new ArrayList<>();
+            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault());
 
-            java.util.Map<Long, float[]> dataMap = new java.util.HashMap<>();
-            for (QuizDao.WeeklyChartData d : data) {
-                dataMap.put(d.date, new float[]{d.total_correct, d.total_incorrect});
+            // 1. Đưa dữ liệu từ DB vào Map với Key là chuỗi "2026-04-15"
+            java.util.Map<String, float[]> dataMap = new java.util.HashMap<>();
+            if (data != null) {
+                for (QuizDao.WeeklyChartData d : data) {
+                    dataMap.put(d.date_str, new float[]{d.total_correct, d.total_incorrect});
+                }
             }
 
+            // 2. Chạy vòng lặp 7 ngày
             for (int i = 0; i < 7; i++) {
-                long currentDay = startOfWeek + (i * 86400000L);
-                if (dataMap.containsKey(currentDay)) {
-                    chartValues.add(dataMap.get(currentDay));
+                java.util.Calendar cal = java.util.Calendar.getInstance();
+                cal.setTimeInMillis(startOfWeek);
+                cal.add(java.util.Calendar.DAY_OF_YEAR, i);
+                String dateKey = sdf.format(cal.getTime()); // Tạo key "2026-04-15"
+
+                if (dataMap.containsKey(dateKey)) {
+                    chartValues.add(dataMap.get(dateKey));
                 } else {
-                    chartValues.add(new float[]{0f, 0f}); // Ngày không học
+                    chartValues.add(new float[]{0f, 0f});
                 }
             }
             weeklyChartData.postValue(chartValues);
         });
     }
-
 
 }

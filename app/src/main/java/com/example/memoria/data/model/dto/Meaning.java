@@ -16,4 +16,6 @@ public class Meaning {
      * A list of detailed definitions under this part of speech.
      */
     public List<Definition> definitions;
+    public List<String> synonyms;
+    public List<String> antonyms;
 }

@@ -55,7 +55,7 @@ public interface QuizDao {
     @Delete
     void deleteStat(QuizStat stat);
 
-    @Query ("SELECT * from quiz_stat WHERE stat_id = 1 LIMIT 1")
+    @Query("SELECT * from quiz_stat WHERE stat_id = 1 LIMIT 1")
     QuizStat getQuizStat();
 
     @Query("SELECT * FROM quiz_stat WHERE sync_status IN (0, 2) LIMIT 1")
@@ -65,17 +65,17 @@ public interface QuizDao {
             "WHERE taken_at >= :startOfMonth AND taken_at <= :endOfMonth")
     List<Long> getStudyDaysInMonth(long startOfMonth, long endOfMonth);
 
-    @Query("SELECT (taken_at / 86400000) * 86400000 AS date, " +
+    @Query("SELECT strftime('%Y-%m-%d', taken_at / 1000, 'unixepoch', 'localtime') AS date_str, " +
             "SUM(correct_count) AS total_correct, " +
             "SUM(total_questions - correct_count) AS total_incorrect " +
             "FROM quiz_his " +
             "WHERE taken_at >= :start AND taken_at <= :end " +
-            "GROUP BY date ORDER BY date ASC")
+            "GROUP BY date_str")
     List<WeeklyChartData> getWeeklyReport(long start, long end);
 
-    // Class hứng dữ liệu tạm thời
+    // Sửa lại class hứng dữ liệu
     class WeeklyChartData {
-        public long date;
+        public String date_str; // Dùng String cho chắc chắn
         public int total_correct;
         public int total_incorrect;
     }

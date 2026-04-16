@@ -24,7 +24,8 @@ import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-
+import android.util.Log;
+import java.util.Arrays;
 
 
 public class ProgressFragment extends Fragment {
@@ -116,6 +117,7 @@ public class ProgressFragment extends Fragment {
         viewModel.loadWeeklyProgress(start, end);
     }
     private void setupObservers() {
+        Log.d("MEMORIA_DEBUG", "setupObservers: Start observing...");
         // Dùng lại thông tin Tên
         viewModel.getUserName().observe(getViewLifecycleOwner(), name -> tvUsername.setText(name));
 
@@ -141,7 +143,10 @@ public class ProgressFragment extends Fragment {
             }
         });
 
-        viewModel.getWeeklyChartData().observe(getViewLifecycleOwner(), this::updateChartData);
+        viewModel.getWeeklyChartData().observe(getViewLifecycleOwner(), data -> {
+            Log.d("MEMORIA_DEBUG", "setupObservers: Data received! Size = " + (data != null ? data.size() : "null"));
+            updateChartData(data);
+        });
     }
 
     private void setupCalendarProgress(List<Long> studyDaysMilis) {
@@ -193,8 +198,17 @@ public class ProgressFragment extends Fragment {
         barChart.getAxisRight().setEnabled(false);
     }
     private void updateChartData(List<float[]> weeklyData) {
+        if (weeklyData == null || weeklyData.isEmpty()) {
+            Log.d("MEMORIA_DEBUG", "Weekly Data is NULL");
+            // Nếu không có dữ liệu, hiển thị biểu đồ trống với các cột bằng 0 để tránh lỗi UI
+            weeklyData = new ArrayList<>();
+            for (int i = 0; i < 7; i++) weeklyData.add(new float[]{0f, 0f});
+        }
+        Log.d("MEMORIA_DEBUG", "Weekly Data Size: " + weeklyData.size());
         ArrayList<BarEntry> entries = new ArrayList<>();
         for (int i = 0; i < weeklyData.size(); i++) {
+            // float[] gồm: [số câu đúng, số câu sai]
+            Log.d("MEMORIA_DEBUG", "Day " + i + ": " + Arrays.toString(weeklyData.get(i)));
             entries.add(new BarEntry(i, weeklyData.get(i)));
         }
 
@@ -220,6 +234,7 @@ public class ProgressFragment extends Fragment {
 
 
         barChart.setData(data);
+        barChart.notifyDataSetChanged();
         barChart.invalidate();
     }
 }
