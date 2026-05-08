@@ -261,15 +261,24 @@ public class HomeFragment extends Fragment {
             title.setText(data.word);
 
             // 1. Gán phiên âm
+            // 1. Gán phiên âm
+            String ipa = "";
             if (data.phonetics != null && !data.phonetics.isEmpty()) {
-                String ipa = "";
                 for (Phonetic p : data.phonetics) {
                     if (p.text != null && !p.text.isEmpty()) {
                         ipa = p.text;
                         break;
                     }
                 }
+            }
+
+// Nếu tìm thấy ipa thì hiện, không thì xóa trắng (hoặc set GONE)
+            if (!ipa.isEmpty()) {
                 phonetic.setText(ipa);
+                phonetic.setVisibility(View.VISIBLE);
+            } else {
+                phonetic.setText(""); // Xóa text mặc định trong XML
+                phonetic.setVisibility(View.GONE); // Hoặc ẩn đi để tiết kiệm diện tích
             }
 
             // 2. Gán Nghĩa và Synonyms
