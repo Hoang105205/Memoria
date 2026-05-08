@@ -120,6 +120,10 @@
     <string name="passive_learning">Học thụ động</string>
     <string name="passive_learning_select_deck">Chọn bộ thẻ</string>
     <string name="select_all">Chọn tất cả bộ thẻ</string>
+    <string name="btn_history">Lịch sử</string>
+    <string name="dialog_message_delete_word_from_history">Bạn chắc chắn muốn xóa từ này khỏi lịch sử?</string>
+    <string name="delete_all">Xoá tất cả</string>
+    <string name="message_delete_all_history">Xoá toàn bộ lịch sử tìm kiếm?</string>
 
     <plurals name="time_days">
         <item quantity="other">%d ngày</item>
@@ -221,4 +225,11 @@
     <string name="msg_export_deck_success">Tạo mã chia sẻ thành công!</string>
     <string name="msg_share_deck_error">Đã có lỗi xảy ra khi chia sẻ. Vui lòng thử lại sau!</string>
     <string name="dialog_export_title">Chia sẻ bộ thẻ</string>
+    <string name="action_fail_load_five_public_deck">"Không tải được gợi ý: "</string>
+    <string name="noname_text">Bộ không tên</string>
+    <string name="err_load_data_failed">Không thể tải dữ liệu. Vui lòng kiểm tra kết nối mạng và thử lại.</string>
+    <string name="err_save_local_failed">Lỗi khi lưu dữ liệu vào bộ nhớ máy.</string>
+    <string name="err_download_failed">Lỗi khi tải dữ liệu từ máy chủ. Vui lòng thử lại sau.</string>
+    <string name="err_load_preview_failed">Không thể tải bản xem trước của bộ thẻ.</string>
+    <string name="msg_clone_success_generic">Đã tải bộ thẻ về máy thành công!</string>
 </resources>

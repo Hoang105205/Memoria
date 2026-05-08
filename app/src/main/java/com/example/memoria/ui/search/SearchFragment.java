@@ -237,6 +237,32 @@ public class SearchFragment extends Fragment {
                 }
         );
 
+        View btnHistory = view.findViewById(R.id.btnHistory);
+        if (btnHistory != null) {
+            btnHistory.setOnClickListener(vh -> {
+                SearchHistoryDialog dialog = new SearchHistoryDialog(
+                        historyRepo,
+                        new SearchHistoryDialog.Listener() {
+                            @Override
+                            public void onSelectWord(String word) {
+                                suppressSuggestionFetch = true;
+                                edtWord.setText(word);
+                                edtWord.setSelection(word.length());
+                                hideSuggestions();
+                                hideNoResults();
+                                searchWord(word);
+                            }
+
+                            @Override
+                            public void onChanged() {
+                                loadRecent();
+                            }
+                        }
+                );
+                dialog.show(getParentFragmentManager(), "SearchHistoryDialog");
+            });
+        }
+
         return view;
     }
 
@@ -382,8 +408,8 @@ public class SearchFragment extends Fragment {
             requireActivity().runOnUiThread(() -> {
                 recentAdapter.submitList(words);
                 boolean empty = words.isEmpty();
-                tvRecent.setVisibility(empty ? View.GONE : View.VISIBLE);
-                rvRecent.setVisibility(empty ? View.GONE : View.VISIBLE);
+                if (tvRecent != null) tvRecent.setVisibility(View.VISIBLE);
+                if (rvRecent != null) rvRecent.setVisibility(empty ? View.GONE : View.VISIBLE);
             });
         });
     }
@@ -443,10 +469,20 @@ public class SearchFragment extends Fragment {
                         if (response.isSuccessful() && response.body() != null) {
                             suggestionWords.clear();
 
+                            List<String> singleWords = new ArrayList<>();
+
                             for (Suggestion s : response.body()) {
                                 if (s == null || s.word == null) continue;
 
-                                suggestionWords.add(s.word);
+                                String word = s.word.trim();
+
+                                if (!word.contains(" ")) {
+                                    singleWords.add(word);
+                                }
+                            }
+
+                            for (String w : singleWords) {
+                                suggestionWords.add(w);
                                 if (suggestionWords.size() >= MAX_SUGGESTIONS) break;
                             }
 

@@ -1,0 +1,55 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/historyDialogRoot"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:clickable="true"
+    android:focusable="true"
+    android:focusableInTouchMode="true">
+
+    <!-- Title row -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/tvTitle"
+            android:text="@string/btn_history"
+            android:textColor="@color/text_default"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+
+        <ImageView
+            android:id="@+id/ivDeleteAll"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_bin"
+            android:contentDescription="Delete all"/>
+
+    </LinearLayout>
+
+    <!-- Search box -->
+    <EditText
+        android:id="@+id/edtFilter"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:hint="@string/search"
+        android:textColor="@color/text_hint"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:layout_marginTop="12dp"
+        android:background="@android:drawable/edit_text"
+        android:backgroundTint="@color/card_background"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvHistory"
+        android:layout_width="match_parent"
+        android:layout_height="400dp"
+        android:layout_marginTop="12dp"/>
+</LinearLayout>

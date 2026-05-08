@@ -59,4 +59,12 @@ public class SearchHistoryRepository {
             searchHistoryDao.upsertAndTrim(h);
         });
     }
+
+    public void deleteByWord(String word) {
+        executor.execute(() -> searchHistoryDao.deleteByWord(word));
+    }
+
+    public void deleteAll() {
+        executor.execute(searchHistoryDao::clearAllSearchHistory);
+    }
 }

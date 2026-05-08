@@ -20,18 +20,20 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_arrow_back" /> <TextView
-        android:id="@+id/tv_deck_name_preview"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:layout_marginStart="16dp"
-        android:text="Tên bộ thẻ"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:textColor="@color/text_primary"
-        android:maxLines="1"
-        android:ellipsize="end"/>
+            android:src="@drawable/ic_arrow_back"
+            app:tint="@color/text_primary"/>
+        <TextView
+            android:id="@+id/tv_deck_name_preview"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="16dp"
+            android:text="Tên bộ thẻ"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@color/text_primary"
+            android:maxLines="1"
+            android:ellipsize="end"/>
     </LinearLayout>
 
     <ProgressBar

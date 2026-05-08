@@ -55,14 +55,16 @@
                 android:layout_height="20dp"
                 android:layout_marginEnd="12dp"
                 android:contentDescription="@string/camera"
-                android:src="@android:drawable/ic_menu_camera" />
+                android:src="@android:drawable/ic_menu_camera"
+                android:tint="@color/text_default"/>
 
             <ImageView
                 android:id="@+id/ivMic"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:contentDescription="@string/microphone"
-                android:src="@android:drawable/ic_btn_speak_now" />
+                android:src="@android:drawable/ic_btn_speak_now"
+                android:tint="@color/text_default"/>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
@@ -77,17 +79,55 @@
         android:layout_marginEnd="8dp"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/tv_search_recent"
-            android:layout_width="wrap_content"
+        <!-- Header row (Recent + clock left, History button right) -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/recent"
-            android:textStyle="bold"
-            android:textColor="@color/text_default"
-            android:drawableEnd="@drawable/ic_clock"
-            android:drawablePadding="6dp"
+            android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:layout_marginBottom="10dp"/>
+            android:layout_marginBottom="10dp">
+
+            <!-- Left group: Recent + icon -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/tv_search_recent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/recent"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_default" />
+
+                <ImageView
+                    android:id="@+id/iv_recent_clock"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_marginStart="6dp"
+                    android:src="@drawable/ic_clock"
+                    android:contentDescription="@string/recent"
+                    android:tint="@color/text_default" />
+            </LinearLayout>
+
+            <!-- Right: History button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnHistory"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minHeight="36dp"
+                android:text="@string/btn_history"
+                android:textColor="@color/text_default"
+                android:drawableStart="@drawable/ic_history"
+                android:drawablePadding="8dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp" />
+
+        </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_search_recent"

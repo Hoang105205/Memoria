@@ -95,6 +95,7 @@
     <string name="btn_setting">Setting</string>
     <string name="search_hint">Search</string>
     <string name="no_results">No results found for "%1$s"</string>
+    <string name="btn_history">History</string>
 
     <!-- Library -->
     <string name="title_library">Library</string>
@@ -121,6 +122,9 @@
     <string name="add_new_fav_folder">Add new favorite folder</string>
     <string name="msg_save_success">Save successfully!</string>
     <string name="msg_word_exists">Word already exists in this folder!</string>
+    <string name="dialog_message_delete_word_from_history">Are you sure to delete this word from history?</string>
+    <string name="delete_all">Delete all</string>
+    <string name="message_delete_all_history">Clear all search history?</string>
 
     <string name="action_edit_deck_name">Edit deck name</string>
     <string name="action_share_deck">Share deck</string>
@@ -253,4 +257,11 @@
     <string name="msg_export_deck_success">Share code created successfully!</string>
     <string name="msg_share_deck_error">An error occurred while sharing. Please try again later!</string>
     <string name="dialog_export_title">Export Deck</string>
+    <string name="action_fail_load_five_public_deck">"Fail to load hint public deck: "</string>
+    <string name="noname_text">No name</string>
+    <string name="err_load_data_failed">Cannot download data. Please check your connection and retry.</string>
+    <string name="err_save_local_failed">Fail to save data into local device.</string>
+    <string name="err_download_failed">Fail to lead data from server. Please try again.</string>
+    <string name="err_load_preview_failed">Cannot load the preview cards of chosen deck.</string>
+    <string name="msg_clone_success_generic">Download deck successfully!</string>
 </resources>

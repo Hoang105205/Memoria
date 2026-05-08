@@ -100,6 +100,11 @@ public class CardDetailFragment extends Fragment {
                             if (cards.get(i).getCardId().equals(targetCardId)) {
                                 startPosition = i;
                                 targetCardId = null; // Xóa đi để tránh tìm lại vào những lần update sau
+
+                                if (getArguments() != null) {
+                                    getArguments().remove("CARD_ID");
+                                }
+
                                 break;
                             }
                         }

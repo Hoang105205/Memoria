@@ -7,7 +7,9 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
 import android.util.Log;
@@ -74,9 +76,14 @@ public class VocabTtsForegroundService extends Service {
             tts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
                 @Override public void onStart(String utteranceId) { }
 
-                @Override public void onDone(String utteranceId) {
+                @Override
+                public void onDone(String utteranceId) {
                     if (!isPlaying || isStopping) return;
-                    playNextSegment();
+
+                    new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                        if (!isPlaying || isStopping) return;
+                        playNextSegment();
+                    }, 1500);
                 }
 
                 @Override public void onError(String utteranceId) {
@@ -176,7 +183,7 @@ public class VocabTtsForegroundService extends Service {
         if (!isPlaying || !ttsReady || isStopping) return;
 
         if (playlist.isEmpty()) {
-            speak("Bạn chưa có từ vựng để luyện nghe.");
+            speak("Bạn chưa có từ vựng để luyện nghe.", new Locale("vi", "VN"));
             return;
         }
 
@@ -189,14 +196,18 @@ public class VocabTtsForegroundService extends Service {
         CardAudioItem item = playlist.get(cardIndex);
 
         String text;
+        Locale locale;
+
         if (meaningIndex == -1) {
             text = safe(item.frontText);
+            locale = new Locale("en", "US");
         } else {
             if (item.backMeanings == null || meaningIndex >= item.backMeanings.size()) {
                 playNextCard();
                 return;
             }
             text = safe(item.backMeanings.get(meaningIndex));
+            locale = new Locale("vi", "VN");
         }
 
         if (text.isEmpty()) {
@@ -205,7 +216,7 @@ public class VocabTtsForegroundService extends Service {
         }
 
         updateNotification();
-        speak(text);
+        speak(text, locale);
     }
 
     private void playNextSegment() {
@@ -246,8 +257,10 @@ public class VocabTtsForegroundService extends Service {
     }
 
     @SuppressWarnings("deprecation")
-    private void speak(String text) {
+    private void speak(String text, Locale locale) {
         if (tts == null) return;
+
+        tts.setLanguage(locale);
 
         String utteranceId = "utt_" + System.currentTimeMillis();
 

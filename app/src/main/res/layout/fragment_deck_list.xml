@@ -8,8 +8,10 @@
         android:id="@+id/rv_deck_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="@dimen/margin_standard"
-        android:clipToPadding="false" />
+        android:paddingHorizontal="@dimen/margin_standard"
+        android:paddingTop="@dimen/margin_standard"
+        android:paddingBottom="88dp"
+        android:clipToPadding="false"/>
 
     <LinearLayout
         android:layout_width="wrap_content"
