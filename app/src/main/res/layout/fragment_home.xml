@@ -40,7 +40,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
-            android:text="Progress"
+            android:text="@string/progress"
             android:textSize="18sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
@@ -93,7 +93,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="words\nlearn today"
+                        android:text="@string/words_learn_today"
                         android:textColor="@color/icon_subtle" />
                 </LinearLayout>
 
@@ -127,7 +127,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="days streak"
+                        android:text="@string/days_streak"
                         android:textColor="@color/icon_subtle" />
                 </LinearLayout>
             </LinearLayout>
@@ -212,7 +212,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Discover more"
+                android:text="@string/discover_more"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 

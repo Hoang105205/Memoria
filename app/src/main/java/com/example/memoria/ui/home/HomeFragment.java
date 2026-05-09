@@ -311,10 +311,14 @@ public class HomeFragment extends Fragment {
     private void setupUserHeaderObservers(TextView tvHello) {
         // Quan sát Tên người dùng
         userViewModel.getUserName().observe(getViewLifecycleOwner(), name -> {
-            if (name != null) {
-                // Tách lấy tên đầu nếu muốn (VD: "Hello, Phương")
-                String firstName = name.split(" ")[name.split(" ").length - 1];
-                tvHello.setText("Hello, " + firstName);
+            if (name != null && !name.isEmpty()) {
+                // Tách lấy tên cuối
+                String[] parts = name.split(" ");
+                String firstName = parts[parts.length - 1];
+
+                // Sử dụng đúng cú pháp format của Android Resource
+                String welcomeText = getString(R.string.hello, firstName);
+                tvHello.setText(welcomeText);
             }
         });
 

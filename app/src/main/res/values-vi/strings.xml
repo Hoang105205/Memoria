@@ -42,7 +42,7 @@
     <string name="username_input">Điền tên của bạn</string>
     <string name="saving">Đang lưu</string>
     <string name="successfully_edit_your_profile">Thành công chỉnh sửa tài khoản của bạn</string>
-    <string name="progress">Tiến trình</string>
+    <string name="progress">Tiến độ</string>
     <string name="words_learn_today">từ đã học hôm nay</string>
     <string name="days_streak">ngày chuỗi</string>
     <string name="setting">Cài đặt</string>
@@ -232,4 +232,6 @@
     <string name="err_download_failed">Lỗi khi tải dữ liệu từ máy chủ. Vui lòng thử lại sau.</string>
     <string name="err_load_preview_failed">Không thể tải bản xem trước của bộ thẻ.</string>
     <string name="msg_clone_success_generic">Đã tải bộ thẻ về máy thành công!</string>
+    <string name="discover_more">Khám phá thêm</string>
+    <string name="hello">Xin chào, %s</string>
 </resources>
