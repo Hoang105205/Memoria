@@ -78,4 +78,7 @@
     <color name="text_secondary_quiz">#555555</color>
     <color name="correct_status">#5ACE5F</color>
     <color name="incorrect_choice">#F64F43</color>
+
+    <color name="wotd_card_bg">#E0F7FF</color>
+    <color name="wotd_synonym_text">#40C4FF</color>
 </resources>
